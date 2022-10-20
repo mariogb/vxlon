@@ -1,0 +1,11 @@
+{
+    "POSTGRES_HOST":"db_postgres",
+    "POSTGRES_DB":"l5",
+    "POSTGRES_USER":"l5",
+    "POSTGRES_PORT":5432,
+    "POSTGRES_PASSWORD":"lonpe321",        
+    "POSTGRES_POOL_MAXSIZE":24,
+    "WITH_HTTPS":false,
+    "VXPORT":8333,
+    "dbPoolMaxSize":8
+}

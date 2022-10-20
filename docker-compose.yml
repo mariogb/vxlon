@@ -1,0 +1,38 @@
+version: "3"
+
+services:
+  db_postgres:
+    image: postgres:latest
+    volumes:
+        - ./initSql.sql:/docker-entrypoint-initdb.d/init.sql
+        - ./pgDatas00:/var/lib/postgresql/data
+    environment:
+      PGDATA: /var/lib/postgresql/data/pgdata
+      POSTGRES_USER: l5
+      POSTGRES_PASSWORD: lonpe321
+      POSTGRES_HOST_AUTH_METHOD: trust
+      # ... other environment variables
+
+  vxlon:
+    image: "vxlon:latest"
+    environment:
+      POSTGRES_HOST: db_postgres  
+      POSTGRES_USER: l5
+      POSTGRES_PASSWORD: lonpe321
+      # ... other environment variables
+    depends_on:
+      - db_postgres
+    expose:
+      - "8333"  
+      
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - vxlon
+    ports:
+      - "8899:8899"      
+      
+  
+  

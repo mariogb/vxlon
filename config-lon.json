@@ -1,0 +1,11 @@
+{
+    "POSTGRES_HOST":"localhost",
+    "POSTGRES_DB":"seis",
+    "POSTGRES_USER":"l5",
+    "POSTGRES_PORT":5432,
+    "POSTGRES_PASSWORD":"12345",        
+    "POSTGRES_POOL_MAXSIZE":24,
+    "WITH_HTTPS":false,
+    "VXPORT":8899,
+    "dbPoolMaxSize":8
+}

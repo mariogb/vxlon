@@ -1,0 +1,14 @@
+version: "3"
+
+services:
+  db_postgres:
+    image: postgres:latest
+    volumes:
+        - ./initSql.sql:/docker-entrypoint-initdb.d/init.sql
+        - ./pgData1:/
+    environment:
+      POSTGRES_USER: l5
+      POSTGRES_PASSWORD: lonpe321
+      # ... other environment variables
+  
+  
