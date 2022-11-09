@@ -31,9 +31,3 @@ To run your application:
 
 
 
-=== Login
-
-curl -d '{"username":"programadorDaniel", "password":"Salud2020#"}' -H "Content-Type: application/json" -X POST http://localhost:9090/consultaVac/login
-
-=== Vacunas en esquema curl -H "Beared"
-
