@@ -17,6 +17,9 @@ import org.lonpe.services.AbstractServiceLon;
 import org.lonpe.services.ConditionInfo;
 import org.lonpe.lonvx.sqlbuilders.SqlLonConditionsBuilder;
 import org.apache.poi.xssf.usermodel.XSSFRow;
+import static org.lonpe.lonvx.ctes.CteLon.*;
+
+
 
 
 
@@ -26,7 +29,6 @@ import org.apache.poi.xssf.usermodel.XSSFRow;
  *   PaymentOutTypeService 
  * 
  */
-   
   
 public class PaymentOutTypeService extends AbstractServiceLon<PaymentOutType>{
 
@@ -41,9 +43,15 @@ public class PaymentOutTypeService extends AbstractServiceLon<PaymentOutType>{
     private static final String SQLDELETE = "DELETE FROM payment_out_type WHERE id = $1 returning id";
     private static final String TABLENAME ="payment_out_type";
     
+
+    public PaymentOutTypeService() {
+        init0();
+    }
+
     
+
     @Override
-    public  String getTableName(){
+    public String getTableName(){
         return TABLENAME;
     }
 
@@ -57,14 +65,12 @@ public class PaymentOutTypeService extends AbstractServiceLon<PaymentOutType>{
         return SQLLKEYIN;
     }
 
-/**
-    
+/**    
     private static String sql00 = "SELECT payment_out_type.id as payment_out_type_id,
 payment_out_type.pkey as payment_out_type_pkey,
 payment_out_type.pname as payment_out_type_pname 
   FROM 
-  payment_out_type ; 
-"
+  payment_out_type "
 */
 
     @Override
@@ -84,28 +90,21 @@ payment_out_type.pname as payment_out_type_pname
     /**
      * sql select property alias field names
      */
-     
-    private static final LinkedHashSet<String> names;
+    private final LinkedHashSet<String> names =  new LinkedHashSet<>();;
     
     /**
      * Map field insert/update to property 
      */
-    private static final HashMap<String,String> insertMapFields; 
+    private final HashMap<String,String> insertMapFields = new HashMap<>(); 
     
     /**
     * Map property to field order 
     */
-    private static final HashMap<String, String> sortMapFields;
+    private final HashMap<String, String> sortMapFields = new  HashMap<>();
 
-    private static final JsonObject dcModel;
+    private final JsonObject dcModel  = new JsonObject();
     
-    static{
-        names = new LinkedHashSet<>();
-        insertMapFields = new HashMap<>();
-        sortMapFields= new  HashMap<>();
-
-        dcModel = new JsonObject();
-
+    private void init0(){
         
     dcModel.put("dc", "paymentOutType");
 
@@ -117,30 +116,24 @@ payment_out_type.pname as payment_out_type_pname
     final JsonArray ps = new JsonArray();   
  
 //pkey
-    names.add("pkey");
-    insertMapFields.put("payment_out_type.pkey","pkey");  
-
-//Create property pkey       
-    final JsonObject pkey = ps00a("pkey", "String",true);
+    doFieldSort("pkey","pkey","payment_out_type");               
    
 //Used to map error on index to source property because IS Unique
     insertMapFields.put("payment_out_type.payment_out_type_uidx_pkey","pkey");  
 
+//Create property pkey       
+    final JsonObject pkey = psString("pkey",true);
+
 // IS Unique     
     pkey.put("uq",true);                    
-
-    sortMapFields.put("pkey", "payment_out_type_pkey");                   
  
     ps.add(pkey);
  
 //pname
-    names.add("pname");
-    insertMapFields.put("payment_out_type.pname","pname");  
+    doFieldSort("pname","pname","payment_out_type");               
 
 //Create property pname       
-    final JsonObject pname = ps00a("pname", "String",true);
-
-    sortMapFields.put("pname", "payment_out_type_pname");                   
+    final JsonObject pname = psString("pname",true);
   
 //PC
     dcModel.put("pc","pname");  
@@ -150,9 +143,7 @@ payment_out_type.pname as payment_out_type_pname
 //Add ps to model            
     dcModel.put("ps", ps);        
         
-
         
-
     }        
     @Override
     public LinkedHashSet<String> getNames() {
@@ -177,45 +168,42 @@ payment_out_type.pname as payment_out_type_pname
     @Override
     public JsonArray toJsonArray(final Row r){
         final JsonArray jsa = new JsonArray();
-        jsa.add(r.getLong("payment_out_type_id") );
-        jsa.add(r.getString("payment_out_type_pkey") );
+        jsa.add(r.getLong("payment_out_type_id") );       
+        jsa.add(r.getString("payment_out_type_pkey") );       
         jsa.add(r.getString("payment_out_type_pname") );
         return jsa;
     }
 
     @Override
-    public void fillXRow(final Row r, final XSSFRow row, int nc,boolean withIds) {
-        fillXRow0(r, row, nc, withIds);
+    public int fillXRow(final Row r, final XSSFRow row, int nc,boolean withIds) {
+        return fillXRow0(r, row, nc, withIds);
     }
 
     @Override
     public HashMap<String,String> lXRowH(final boolean withIds, final int level) {        
         
-    final  LinkedHashMap<String,String> m_ = new LinkedHashMap<>();
-    if(withIds){
-                m_.put("paymentOutType_id","Long");
-            }
-            
-    //pkey       
-            m_.put("paymentOutType_pkey","String"); 
-            
-    //pname       
-            m_.put("paymentOutType_pname","String"); 
-            
+    final  LinkedHashMap<String,String> m = new LinkedHashMap<>();
     
-    return m_;
+    if(withIds){
+        m.put("paymentOutType_id",LONG);
+    }        
+//pkey    
+    m.put("paymentOutType_pkey",STRING);              
+//pname    
+    m.put("paymentOutType_pname",STRING);          
+    
+    return m;
     
     }
     
-    private void fillXRow0(final Row r, final XSSFRow row,int nc, boolean withIds){
-        if(withIds){
-        lToCell(r, row,"payment_out_type_id", nc++); 
-        }
+    private int fillXRow0(final Row r, final XSSFRow row,int nc, final boolean withIds){
         
-    //pkey       
-            sToCell(r, row,"payment_out_type_pkey", nc++); 
-    //pname       
+    if(withIds){
+        lToCell(r, row,"payment_out_type_id", nc++); 
+    }            //pkey       
+            sToCell(r, row,"payment_out_type_pkey", nc++);     //pname       
             sToCell(r, row,"payment_out_type_pname", nc++); 
+        return nc;
     }
 
     @Override
@@ -235,15 +223,16 @@ payment_out_type.pname as payment_out_type_pname
 
     @Override
     public void fillTupleInsert(final PaymentOutType dc0, final Tuple t){
-                t.addString(dc0.getPkey());
-        t.addString(dc0.getPname());
+                
+    t.addString(dc0.getPkey());        
+    t.addString(dc0.getPname());
     }
 
     @Override
     public void fillTupleUpdate(final PaymentOutType dc0, final Tuple t){
-                t.addString(dc0.getPname());
-
-        t.addLong(dc0.getId());
+        
+    t.addString(dc0.getPname());
+    t.addLong(dc0.getId());
             
     }    
 
@@ -264,7 +253,6 @@ payment_out_type.pname as payment_out_type_pname
     public void fillTupleInsert(final JsonObject js,final Tuple t){       
         
     fTString("pkey", js, t);
-
     fTString("pname", js, t);       
     }
 
@@ -286,11 +274,9 @@ fTLong("id",js,t);
     @Override
     public PaymentOutType doFrom(final Row r){
         final PaymentOutType paymentOutType = new PaymentOutType();
-         paymentOutType.setId(r.getLong("payment_out_type_id"));
-         
-                paymentOutType.setPkey(  r.getString("payment_out_type_pkey"));
-         
-                paymentOutType.setPname(  r.getString("payment_out_type_pname"));  
+         paymentOutType.setId(r.getLong("payment_out_type_id"));         
+                paymentOutType.setPkey(  r.getString("payment_out_type_pkey"));                       
+                paymentOutType.setPname(  r.getString("payment_out_type_pname"));                
         return paymentOutType;
     }
     
@@ -299,8 +285,9 @@ fTLong("id",js,t);
         PaymentOutType paymentOutType = new PaymentOutType();
         paymentOutType.setId(js.getLong("id"));
         
-                paymentOutType.setPkey(js.getString("pkey"));
-        paymentOutType.setPname(js.getString("pname"));
+                
+                paymentOutType.setPkey(js.getString("pkey"));        
+                paymentOutType.setPname(js.getString("pname"));
         return paymentOutType;
     }
 

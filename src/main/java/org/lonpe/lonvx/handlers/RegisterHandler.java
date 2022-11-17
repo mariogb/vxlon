@@ -1,4 +1,3 @@
-
 package org.lonpe.lonvx.handlers;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -69,13 +68,13 @@ public class RegisterHandler implements Handler<RoutingContext> {
         rctx.request().bodyHandler((Buffer bff) -> {
             final HttpServerResponse response = rctx.response();
             final JsonObject dataRecived = bff.toJsonObject();
-            
+
             final JsonObject user0 = dataRecived.getJsonObject("user");
-            if(user0==null){
+            if (user0 == null) {
                 response.setStatusCode(500).end("NOUSRDATA");
                 return;
             }
-            
+
             final JsonObject r = verifyUserData(user0);
             if (r.containsKey("ERROR")) {
                 response.setStatusCode(400).putHeader(HttpHeaders.CONTENT_TYPE, "application/json").end(r.encode());
@@ -89,11 +88,10 @@ public class RegisterHandler implements Handler<RoutingContext> {
                 System.out.println("------dddd22222----->" + r);
                 final String un = user0.getString("username");
                 final String email = user0.getString("email");
-                
-               // user0.put("pname",un);
-                
+
+                // user0.put("pname",un);
                 sqlC.preparedQuery("SELECT username, email from user_lon where username = $1 OR email = $2 limit 2")
-                        .execute(Tuple.of(un,email), new RegistUserExecutor(response, sqlC, user0));
+                        .execute(Tuple.of(un, email), new RegistUserExecutor(response, sqlC, user0));
             });
 
             connection.onFailure((err) -> {
@@ -102,13 +100,12 @@ public class RegisterHandler implements Handler<RoutingContext> {
 
             });
 
-
         });
 
     }
-    private static final String SQLINSERT = "INSERT INTO " + 
-            USER_LON_TBL +
-            " (id,pname,password_expired,type_lon,username,account_locked,account_expired,enabled,email,password,pkey) VALUES ((select nextval('seq_" + USER_LON_TBL + "')),$1,$2,$3,$4,$5,$6,$7,$8,$9,$10) returning *";
+    private static final String SQLINSERT = "INSERT INTO "
+            + USER_LON_TBL
+            + " (id,pname,password_expired,type_lon,username,account_locked,account_expired,enabled,email,password,pkey) VALUES ((select nextval('seq_" + USER_LON_TBL + "')),$1,$2,$3,$4,$5,$6,$7,$8,$9,$10) returning *";
 
     private static Tuple doTuple(final JsonObject user0) {
         Tuple tuple = Tuple.tuple();
@@ -125,7 +122,7 @@ public class RegisterHandler implements Handler<RoutingContext> {
         BCryptPasswordEncoder b = new BCryptPasswordEncoder();
         tuple.addString(b.encode(user0.getString("password")));
         tuple.addString(user0.getString("username"));//pkey
-        
+
         return tuple;
     }
 
@@ -154,28 +151,28 @@ public class RegisterHandler implements Handler<RoutingContext> {
             if (result.size() > 0) {
                 sqlC.close();
                 r.put("ERROR", "USER EXISTS");
-                response.setStatusCode(400).putHeader(HttpHeaders.CONTENT_TYPE, "application/json").end(r.toString());               
+                response.setStatusCode(400).putHeader(HttpHeaders.CONTENT_TYPE, "application/json").end(r.toString());
                 return;
             }
 
             sqlC.preparedQuery(SQLINSERT).execute(doTuple(user0), (AsyncResult<RowSet<Row>> ar3) -> {
                 sqlC.close();
-                
+
                 if (ar3.succeeded()) {
                     final RowSet<Row> result1 = ar3.result();
-                    System.out.println("rrr "+result1);
-                    System.out.println("columnsNames "+result1.columnsNames());
-                    
+                    System.out.println("rrr " + result1);
+                    System.out.println("columnsNames " + result1.columnsNames());
+
                     r.put("GOOD", 1);
                     response.setStatusCode(200).putHeader(HttpHeaders.CONTENT_TYPE, "application/json").end(r.toString());
                 } else {
                     String message = ar3.cause().getMessage();
-                    System.out.println("message "+message);
+                    System.out.println("message " + message);
                     JsonObject jsonObject = new JsonObject(message);
                     r.put("ERROR", jsonObject);
                     response.setStatusCode(400).putHeader(HttpHeaders.CONTENT_TYPE, "application/json").end(r.encode());
                 }
-                
+
             });
 
         }

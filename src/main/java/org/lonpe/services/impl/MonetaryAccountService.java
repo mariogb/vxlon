@@ -17,6 +17,9 @@ import org.lonpe.services.AbstractServiceLon;
 import org.lonpe.services.ConditionInfo;
 import org.lonpe.lonvx.sqlbuilders.SqlLonConditionsBuilder;
 import org.apache.poi.xssf.usermodel.XSSFRow;
+import static org.lonpe.lonvx.ctes.CteLon.*;
+
+
 
 
 
@@ -26,7 +29,6 @@ import org.apache.poi.xssf.usermodel.XSSFRow;
  *   MonetaryAccountService 
  * 
  */
-   
   
 public class MonetaryAccountService extends AbstractServiceLon<MonetaryAccount>{
 
@@ -41,9 +43,15 @@ public class MonetaryAccountService extends AbstractServiceLon<MonetaryAccount>{
     private static final String SQLDELETE = "DELETE FROM monetary_account WHERE id = $1 returning id";
     private static final String TABLENAME ="monetary_account";
     
+
+    public MonetaryAccountService() {
+        init0();
+    }
+
     
+
     @Override
-    public  String getTableName(){
+    public String getTableName(){
         return TABLENAME;
     }
 
@@ -57,14 +65,12 @@ public class MonetaryAccountService extends AbstractServiceLon<MonetaryAccount>{
         return SQLLKEYIN;
     }
 
-/**
-    
+/**    
     private static String sql00 = "SELECT monetary_account.id as monetary_account_id,
 monetary_account.pkey as monetary_account_pkey,
 monetary_account.pname as monetary_account_pname 
   FROM 
-  monetary_account ; 
-"
+  monetary_account "
 */
 
     @Override
@@ -84,28 +90,21 @@ monetary_account.pname as monetary_account_pname
     /**
      * sql select property alias field names
      */
-     
-    private static final LinkedHashSet<String> names;
+    private final LinkedHashSet<String> names =  new LinkedHashSet<>();;
     
     /**
      * Map field insert/update to property 
      */
-    private static final HashMap<String,String> insertMapFields; 
+    private final HashMap<String,String> insertMapFields = new HashMap<>(); 
     
     /**
     * Map property to field order 
     */
-    private static final HashMap<String, String> sortMapFields;
+    private final HashMap<String, String> sortMapFields = new  HashMap<>();
 
-    private static final JsonObject dcModel;
+    private final JsonObject dcModel  = new JsonObject();
     
-    static{
-        names = new LinkedHashSet<>();
-        insertMapFields = new HashMap<>();
-        sortMapFields= new  HashMap<>();
-
-        dcModel = new JsonObject();
-
+    private void init0(){
         
     dcModel.put("dc", "monetaryAccount");
 
@@ -117,30 +116,24 @@ monetary_account.pname as monetary_account_pname
     final JsonArray ps = new JsonArray();   
  
 //pkey
-    names.add("pkey");
-    insertMapFields.put("monetary_account.pkey","pkey");  
-
-//Create property pkey       
-    final JsonObject pkey = ps00a("pkey", "String",true);
+    doFieldSort("pkey","pkey","monetary_account");               
    
 //Used to map error on index to source property because IS Unique
     insertMapFields.put("monetary_account.monetary_account_uidx_pkey","pkey");  
 
+//Create property pkey       
+    final JsonObject pkey = psString("pkey",true);
+
 // IS Unique     
     pkey.put("uq",true);                    
-
-    sortMapFields.put("pkey", "monetary_account_pkey");                   
  
     ps.add(pkey);
  
 //pname
-    names.add("pname");
-    insertMapFields.put("monetary_account.pname","pname");  
+    doFieldSort("pname","pname","monetary_account");               
 
 //Create property pname       
-    final JsonObject pname = ps00a("pname", "String",true);
-
-    sortMapFields.put("pname", "monetary_account_pname");                   
+    final JsonObject pname = psString("pname",true);
   
 //PC
     dcModel.put("pc","pname");  
@@ -160,9 +153,7 @@ monetary_account.pname as monetary_account_pname
 
 /** OTM ON MODEL  **/
         dcModel.put("otm",otm);  
-
         
-
     }        
     @Override
     public LinkedHashSet<String> getNames() {
@@ -187,45 +178,42 @@ monetary_account.pname as monetary_account_pname
     @Override
     public JsonArray toJsonArray(final Row r){
         final JsonArray jsa = new JsonArray();
-        jsa.add(r.getLong("monetary_account_id") );
-        jsa.add(r.getString("monetary_account_pkey") );
+        jsa.add(r.getLong("monetary_account_id") );       
+        jsa.add(r.getString("monetary_account_pkey") );       
         jsa.add(r.getString("monetary_account_pname") );
         return jsa;
     }
 
     @Override
-    public void fillXRow(final Row r, final XSSFRow row, int nc,boolean withIds) {
-        fillXRow0(r, row, nc, withIds);
+    public int fillXRow(final Row r, final XSSFRow row, int nc,boolean withIds) {
+        return fillXRow0(r, row, nc, withIds);
     }
 
     @Override
     public HashMap<String,String> lXRowH(final boolean withIds, final int level) {        
         
-    final  LinkedHashMap<String,String> m_ = new LinkedHashMap<>();
-    if(withIds){
-                m_.put("monetaryAccount_id","Long");
-            }
-            
-    //pkey       
-            m_.put("monetaryAccount_pkey","String"); 
-            
-    //pname       
-            m_.put("monetaryAccount_pname","String"); 
-            
+    final  LinkedHashMap<String,String> m = new LinkedHashMap<>();
     
-    return m_;
+    if(withIds){
+        m.put("monetaryAccount_id",LONG);
+    }        
+//pkey    
+    m.put("monetaryAccount_pkey",STRING);              
+//pname    
+    m.put("monetaryAccount_pname",STRING);          
+    
+    return m;
     
     }
     
-    private void fillXRow0(final Row r, final XSSFRow row,int nc, boolean withIds){
-        if(withIds){
-        lToCell(r, row,"monetary_account_id", nc++); 
-        }
+    private int fillXRow0(final Row r, final XSSFRow row,int nc, final boolean withIds){
         
-    //pkey       
-            sToCell(r, row,"monetary_account_pkey", nc++); 
-    //pname       
+    if(withIds){
+        lToCell(r, row,"monetary_account_id", nc++); 
+    }            //pkey       
+            sToCell(r, row,"monetary_account_pkey", nc++);     //pname       
             sToCell(r, row,"monetary_account_pname", nc++); 
+        return nc;
     }
 
     @Override
@@ -245,15 +233,16 @@ monetary_account.pname as monetary_account_pname
 
     @Override
     public void fillTupleInsert(final MonetaryAccount dc0, final Tuple t){
-                t.addString(dc0.getPkey());
-        t.addString(dc0.getPname());
+                
+    t.addString(dc0.getPkey());        
+    t.addString(dc0.getPname());
     }
 
     @Override
     public void fillTupleUpdate(final MonetaryAccount dc0, final Tuple t){
-                t.addString(dc0.getPname());
-
-        t.addLong(dc0.getId());
+        
+    t.addString(dc0.getPname());
+    t.addLong(dc0.getId());
             
     }    
 
@@ -274,7 +263,6 @@ monetary_account.pname as monetary_account_pname
     public void fillTupleInsert(final JsonObject js,final Tuple t){       
         
     fTString("pkey", js, t);
-
     fTString("pname", js, t);       
     }
 
@@ -296,11 +284,9 @@ fTLong("id",js,t);
     @Override
     public MonetaryAccount doFrom(final Row r){
         final MonetaryAccount monetaryAccount = new MonetaryAccount();
-         monetaryAccount.setId(r.getLong("monetary_account_id"));
-         
-                monetaryAccount.setPkey(  r.getString("monetary_account_pkey"));
-         
-                monetaryAccount.setPname(  r.getString("monetary_account_pname"));  
+         monetaryAccount.setId(r.getLong("monetary_account_id"));         
+                monetaryAccount.setPkey(  r.getString("monetary_account_pkey"));                       
+                monetaryAccount.setPname(  r.getString("monetary_account_pname"));                
         return monetaryAccount;
     }
     
@@ -309,8 +295,9 @@ fTLong("id",js,t);
         MonetaryAccount monetaryAccount = new MonetaryAccount();
         monetaryAccount.setId(js.getLong("id"));
         
-                monetaryAccount.setPkey(js.getString("pkey"));
-        monetaryAccount.setPname(js.getString("pname"));
+                
+                monetaryAccount.setPkey(js.getString("pkey"));        
+                monetaryAccount.setPname(js.getString("pname"));
         return monetaryAccount;
     }
 

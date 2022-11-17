@@ -17,6 +17,9 @@ import org.lonpe.services.AbstractServiceLon;
 import org.lonpe.services.ConditionInfo;
 import org.lonpe.lonvx.sqlbuilders.SqlLonConditionsBuilder;
 import org.apache.poi.xssf.usermodel.XSSFRow;
+import static org.lonpe.lonvx.ctes.CteLon.*;
+
+
 
 
 
@@ -26,7 +29,6 @@ import org.apache.poi.xssf.usermodel.XSSFRow;
  *   ProductTypeService 
  * 
  */
-   
   
 public class ProductTypeService extends AbstractServiceLon<ProductType>{
 
@@ -41,9 +43,15 @@ public class ProductTypeService extends AbstractServiceLon<ProductType>{
     private static final String SQLDELETE = "DELETE FROM product_type WHERE id = $1 returning id";
     private static final String TABLENAME ="product_type";
     
+
+    public ProductTypeService() {
+        init0();
+    }
+
     
+
     @Override
-    public  String getTableName(){
+    public String getTableName(){
         return TABLENAME;
     }
 
@@ -57,8 +65,7 @@ public class ProductTypeService extends AbstractServiceLon<ProductType>{
         return SQLLKEYIN;
     }
 
-/**
-    
+/**    
     private static String sql00 = "SELECT product_type.id as product_type_id,
 product_type.pkey as product_type_pkey,
 product_type.afect_stock as product_type_afect_stock,
@@ -69,8 +76,7 @@ product_type.pname as product_type_pname,
 product_type.taxable as product_type_taxable,
 product_type.with_serial_number as product_type_with_serial_number 
   FROM 
-  product_type ; 
-"
+  product_type "
 */
 
     @Override
@@ -90,28 +96,21 @@ product_type.with_serial_number as product_type_with_serial_number
     /**
      * sql select property alias field names
      */
-     
-    private static final LinkedHashSet<String> names;
+    private final LinkedHashSet<String> names =  new LinkedHashSet<>();;
     
     /**
      * Map field insert/update to property 
      */
-    private static final HashMap<String,String> insertMapFields; 
+    private final HashMap<String,String> insertMapFields = new HashMap<>(); 
     
     /**
     * Map property to field order 
     */
-    private static final HashMap<String, String> sortMapFields;
+    private final HashMap<String, String> sortMapFields = new  HashMap<>();
 
-    private static final JsonObject dcModel;
+    private final JsonObject dcModel  = new JsonObject();
     
-    static{
-        names = new LinkedHashSet<>();
-        insertMapFields = new HashMap<>();
-        sortMapFields= new  HashMap<>();
-
-        dcModel = new JsonObject();
-
+    private void init0(){
         
     dcModel.put("dc", "productType");
 
@@ -123,48 +122,40 @@ product_type.with_serial_number as product_type_with_serial_number
     final JsonArray ps = new JsonArray();   
  
 //pkey
-    names.add("pkey");
-    insertMapFields.put("product_type.pkey","pkey");  
-
-//Create property pkey       
-    final JsonObject pkey = ps00a("pkey", "String",true);
+    doFieldSort("pkey","pkey","product_type");               
    
 //Used to map error on index to source property because IS Unique
     insertMapFields.put("product_type.product_type_uidx_pkey","pkey");  
 
+//Create property pkey       
+    final JsonObject pkey = psString("pkey",true);
+
 // IS Unique     
     pkey.put("uq",true);                    
-
-    sortMapFields.put("pkey", "product_type_pkey");                   
  
     ps.add(pkey);
  
 //afectStock
-    names.add("afectStock");
-    insertMapFields.put("product_type.afect_stock","afectStock");  
+    doFieldSort("afectStock","afect_stock","product_type");               
 
 //Create property afectStock       
-    final JsonObject afectStock = ps00a("afectStock", "Boolean",true);
-
-    sortMapFields.put("afectStock", "product_type_afect_stock");               
+    final JsonObject afectStock = psBoolean("afectStock",true);
  
     ps.add(afectStock);
  
 //description
-    names.add("description");
-    insertMapFields.put("product_type.description","description");  
+    doField("description","description","product_type");               
 
 //Create property description       
-    final JsonObject description = ps00a("description", "String",false);
+    final JsonObject description = psString("description",false);
  
     ps.add(description);
  
 //fastKey
-    names.add("fastKey");
-    insertMapFields.put("product_type.fast_key","fastKey");  
+    doField("fastKey","fast_key","product_type");               
 
 //Create property fastKey       
-    final JsonObject fastKey = ps00a("fastKey", "String",false);
+    final JsonObject fastKey = psString("fastKey",false);
 
 // hasIndex 
     fastKey.put("withIndex",true);  
@@ -172,24 +163,18 @@ product_type.with_serial_number as product_type_with_serial_number
     ps.add(fastKey);
  
 //isService
-    names.add("isService");
-    insertMapFields.put("product_type.is_service","isService");  
+    doFieldSort("isService","is_service","product_type");               
 
 //Create property isService       
-    final JsonObject isService = ps00a("isService", "Boolean",true);
-
-    sortMapFields.put("isService", "product_type_is_service");               
+    final JsonObject isService = psBoolean("isService",true);
  
     ps.add(isService);
  
 //pname
-    names.add("pname");
-    insertMapFields.put("product_type.pname","pname");  
+    doFieldSort("pname","pname","product_type");               
 
 //Create property pname       
-    final JsonObject pname = ps00a("pname", "String",true);
-
-    sortMapFields.put("pname", "product_type_pname");                   
+    final JsonObject pname = psString("pname",true);
   
 //PC
     dcModel.put("pc","pname");  
@@ -197,24 +182,18 @@ product_type.with_serial_number as product_type_with_serial_number
     ps.add(pname);
  
 //taxable
-    names.add("taxable");
-    insertMapFields.put("product_type.taxable","taxable");  
+    doFieldSort("taxable","taxable","product_type");               
 
 //Create property taxable       
-    final JsonObject taxable = ps00a("taxable", "Boolean",true);
-
-    sortMapFields.put("taxable", "product_type_taxable");               
+    final JsonObject taxable = psBoolean("taxable",true);
  
     ps.add(taxable);
  
 //withSerialNumber
-    names.add("withSerialNumber");
-    insertMapFields.put("product_type.with_serial_number","withSerialNumber");  
+    doFieldSort("withSerialNumber","with_serial_number","product_type");               
 
 //Create property withSerialNumber       
-    final JsonObject withSerialNumber = ps00a("withSerialNumber", "Boolean",true);
-
-    sortMapFields.put("withSerialNumber", "product_type_with_serial_number");               
+    final JsonObject withSerialNumber = psBoolean("withSerialNumber",true);
  
     ps.add(withSerialNumber);
 
@@ -241,9 +220,7 @@ product_type.with_serial_number as product_type_with_serial_number
 /** OTM 2  ON MODEL**/
         dcModel.put("otm2",otm2);
         
-
         
-
     }        
     @Override
     public LinkedHashSet<String> getNames() {
@@ -268,81 +245,66 @@ product_type.with_serial_number as product_type_with_serial_number
     @Override
     public JsonArray toJsonArray(final Row r){
         final JsonArray jsa = new JsonArray();
-        jsa.add(r.getLong("product_type_id") );
-        jsa.add(r.getString("product_type_pkey") );
-        jsa.add(r.getBoolean("product_type_afect_stock") );
-        jsa.add(r.getString("product_type_description") );
-        jsa.add(r.getString("product_type_fast_key") );
-        jsa.add(r.getBoolean("product_type_is_service") );
-        jsa.add(r.getString("product_type_pname") );
-        jsa.add(r.getBoolean("product_type_taxable") );
+        jsa.add(r.getLong("product_type_id") );       
+        jsa.add(r.getString("product_type_pkey") );       
+        jsa.add(r.getBoolean("product_type_afect_stock") );       
+        jsa.add(r.getString("product_type_description") );       
+        jsa.add(r.getString("product_type_fast_key") );       
+        jsa.add(r.getBoolean("product_type_is_service") );       
+        jsa.add(r.getString("product_type_pname") );       
+        jsa.add(r.getBoolean("product_type_taxable") );       
         jsa.add(r.getBoolean("product_type_with_serial_number") );
         return jsa;
     }
 
     @Override
-    public void fillXRow(final Row r, final XSSFRow row, int nc,boolean withIds) {
-        fillXRow0(r, row, nc, withIds);
+    public int fillXRow(final Row r, final XSSFRow row, int nc,boolean withIds) {
+        return fillXRow0(r, row, nc, withIds);
     }
 
     @Override
     public HashMap<String,String> lXRowH(final boolean withIds, final int level) {        
         
-    final  LinkedHashMap<String,String> m_ = new LinkedHashMap<>();
-    if(withIds){
-                m_.put("productType_id","Long");
-            }
-            
-    //pkey       
-            m_.put("productType_pkey","String"); 
-            
-    //afectStock       
-            m_.put("productType_afectStock","Boolean"); 
-            
-    //description       
-            m_.put("productType_description","String"); 
-            
-    //fastKey       
-            m_.put("productType_fastKey","String"); 
-            
-    //isService       
-            m_.put("productType_isService","Boolean"); 
-            
-    //pname       
-            m_.put("productType_pname","String"); 
-            
-    //taxable       
-            m_.put("productType_taxable","Boolean"); 
-            
-    //withSerialNumber       
-            m_.put("productType_withSerialNumber","Boolean"); 
-            
+    final  LinkedHashMap<String,String> m = new LinkedHashMap<>();
     
-    return m_;
+    if(withIds){
+        m.put("productType_id",LONG);
+    }        
+//pkey    
+    m.put("productType_pkey",STRING);              
+//afectStock    
+    m.put("productType_afectStock",BOOLEAN);              
+//description    
+    m.put("productType_description",STRING);              
+//fastKey    
+    m.put("productType_fastKey",STRING);              
+//isService    
+    m.put("productType_isService",BOOLEAN);              
+//pname    
+    m.put("productType_pname",STRING);              
+//taxable    
+    m.put("productType_taxable",BOOLEAN);              
+//withSerialNumber    
+    m.put("productType_withSerialNumber",BOOLEAN);          
+    
+    return m;
     
     }
     
-    private void fillXRow0(final Row r, final XSSFRow row,int nc, boolean withIds){
-        if(withIds){
-        lToCell(r, row,"product_type_id", nc++); 
-        }
+    private int fillXRow0(final Row r, final XSSFRow row,int nc, final boolean withIds){
         
-    //pkey       
-            sToCell(r, row,"product_type_pkey", nc++); 
-    //afectStock     
-                bToCell(r, row,"product_type_afect_stock", nc++); 
-    //description       
-            sToCell(r, row,"product_type_description", nc++); 
-    //fastKey       
-            sToCell(r, row,"product_type_fast_key", nc++); 
-    //isService     
-                bToCell(r, row,"product_type_is_service", nc++); 
-    //pname       
-            sToCell(r, row,"product_type_pname", nc++); 
-    //taxable     
-                bToCell(r, row,"product_type_taxable", nc++); 
-    //withSerialNumber     
+    if(withIds){
+        lToCell(r, row,"product_type_id", nc++); 
+    }            //pkey       
+            sToCell(r, row,"product_type_pkey", nc++);     //afectStock     
+                bToCell(r, row,"product_type_afect_stock", nc++);     //description       
+            sToCell(r, row,"product_type_description", nc++);     //fastKey       
+            sToCell(r, row,"product_type_fast_key", nc++);     //isService     
+                bToCell(r, row,"product_type_is_service", nc++);     //pname       
+            sToCell(r, row,"product_type_pname", nc++);     //taxable     
+                bToCell(r, row,"product_type_taxable", nc++);     //withSerialNumber     
                 bToCell(r, row,"product_type_with_serial_number", nc++); 
+        return nc;
     }
 
     @Override
@@ -362,27 +324,28 @@ product_type.with_serial_number as product_type_with_serial_number
 
     @Override
     public void fillTupleInsert(final ProductType dc0, final Tuple t){
-                t.addString(dc0.getPkey());
-        t.addBoolean(dc0.getAfectStock());
-        t.addString(dc0.getDescription());
-        t.addString(dc0.getFastKey());
-        t.addBoolean(dc0.getIsService());
-        t.addString(dc0.getPname());
-        t.addBoolean(dc0.getTaxable());
-        t.addBoolean(dc0.getWithSerialNumber());
+                
+    t.addString(dc0.getPkey());        
+    t.addBoolean(dc0.getAfectStock());        
+    t.addString(dc0.getDescription());        
+    t.addString(dc0.getFastKey());        
+    t.addBoolean(dc0.getIsService());        
+    t.addString(dc0.getPname());        
+    t.addBoolean(dc0.getTaxable());        
+    t.addBoolean(dc0.getWithSerialNumber());
     }
 
     @Override
     public void fillTupleUpdate(final ProductType dc0, final Tuple t){
-                t.addBoolean(dc0.getAfectStock());
-        t.addString(dc0.getDescription());
-        t.addString(dc0.getFastKey());
-        t.addBoolean(dc0.getIsService());
-        t.addString(dc0.getPname());
-        t.addBoolean(dc0.getTaxable());
-        t.addBoolean(dc0.getWithSerialNumber());
-
-        t.addLong(dc0.getId());
+        
+    t.addBoolean(dc0.getAfectStock());
+    t.addString(dc0.getDescription());
+    t.addString(dc0.getFastKey());
+    t.addBoolean(dc0.getIsService());
+    t.addString(dc0.getPname());
+    t.addBoolean(dc0.getTaxable());
+    t.addBoolean(dc0.getWithSerialNumber());
+    t.addLong(dc0.getId());
             
     }    
 
@@ -415,19 +378,12 @@ product_type.with_serial_number as product_type_with_serial_number
     public void fillTupleInsert(final JsonObject js,final Tuple t){       
         
     fTString("pkey", js, t);
-
     fTBoolean("afectStock", js, t);
-
     fTString("description", js, t);
-
     fTString("fastKey", js, t);
-
     fTBoolean("isService", js, t);
-
     fTString("pname", js, t);
-
     fTBoolean("taxable", js, t);
-
     fTBoolean("withSerialNumber", js, t);       
     }
 
@@ -455,23 +411,15 @@ fTLong("id",js,t);
     @Override
     public ProductType doFrom(final Row r){
         final ProductType productType = new ProductType();
-         productType.setId(r.getLong("product_type_id"));
-         
-                productType.setPkey(  r.getString("product_type_pkey"));
-         
-                productType.setAfectStock(  r.getBoolean("product_type_afect_stock"));
-         
-                productType.setDescription(  r.getString("product_type_description"));
-         
-                productType.setFastKey(  r.getString("product_type_fast_key"));
-         
-                productType.setIsService(  r.getBoolean("product_type_is_service"));
-         
-                productType.setPname(  r.getString("product_type_pname"));
-         
-                productType.setTaxable(  r.getBoolean("product_type_taxable"));
-         
-                productType.setWithSerialNumber(  r.getBoolean("product_type_with_serial_number"));  
+         productType.setId(r.getLong("product_type_id"));         
+                productType.setPkey(  r.getString("product_type_pkey"));                       
+                productType.setAfectStock(  r.getBoolean("product_type_afect_stock"));                       
+                productType.setDescription(  r.getString("product_type_description"));                       
+                productType.setFastKey(  r.getString("product_type_fast_key"));                       
+                productType.setIsService(  r.getBoolean("product_type_is_service"));                       
+                productType.setPname(  r.getString("product_type_pname"));                       
+                productType.setTaxable(  r.getBoolean("product_type_taxable"));                       
+                productType.setWithSerialNumber(  r.getBoolean("product_type_with_serial_number"));                
         return productType;
     }
     
@@ -480,14 +428,15 @@ fTLong("id",js,t);
         ProductType productType = new ProductType();
         productType.setId(js.getLong("id"));
         
-                productType.setPkey(js.getString("pkey"));
-        productType.setAfectStock(js.getBoolean("afectStock"));
-        productType.setDescription(js.getString("description"));
-        productType.setFastKey(js.getString("fastKey"));
-        productType.setIsService(js.getBoolean("isService"));
-        productType.setPname(js.getString("pname"));
-        productType.setTaxable(js.getBoolean("taxable"));
-        productType.setWithSerialNumber(js.getBoolean("withSerialNumber"));
+                
+                productType.setPkey(js.getString("pkey"));        
+                productType.setAfectStock(js.getBoolean("afectStock"));        
+                productType.setDescription(js.getString("description"));        
+                productType.setFastKey(js.getString("fastKey"));        
+                productType.setIsService(js.getBoolean("isService"));        
+                productType.setPname(js.getString("pname"));        
+                productType.setTaxable(js.getBoolean("taxable"));        
+                productType.setWithSerialNumber(js.getBoolean("withSerialNumber"));
         return productType;
     }
 

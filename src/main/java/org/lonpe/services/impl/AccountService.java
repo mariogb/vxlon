@@ -17,6 +17,9 @@ import org.lonpe.services.AbstractServiceLon;
 import org.lonpe.services.ConditionInfo;
 import org.lonpe.lonvx.sqlbuilders.SqlLonConditionsBuilder;
 import org.apache.poi.xssf.usermodel.XSSFRow;
+import static org.lonpe.lonvx.ctes.CteLon.*;
+
+
 
 
 
@@ -26,7 +29,6 @@ import org.apache.poi.xssf.usermodel.XSSFRow;
  *   AccountService 
  * 
  */
-   
   
 public class AccountService extends AbstractServiceLon<Account>{
 
@@ -41,9 +43,15 @@ public class AccountService extends AbstractServiceLon<Account>{
     private static final String SQLDELETE = "DELETE FROM account WHERE id = $1 returning id";
     private static final String TABLENAME ="account";
     
+
+    public AccountService() {
+        init0();
+    }
+
     
+
     @Override
-    public  String getTableName(){
+    public String getTableName(){
         return TABLENAME;
     }
 
@@ -57,16 +65,14 @@ public class AccountService extends AbstractServiceLon<Account>{
         return SQLLKEYIN;
     }
 
-/**
-    
+/**    
     private static String sql00 = "SELECT account.id as account_id,
 account.pkey as account_pkey,
 account.description as account_description,
 account.pname as account_pname,
 account.type as account_type 
   FROM 
-  account ; 
-"
+  account "
 */
 
     @Override
@@ -86,28 +92,21 @@ account.type as account_type
     /**
      * sql select property alias field names
      */
-     
-    private static final LinkedHashSet<String> names;
+    private final LinkedHashSet<String> names =  new LinkedHashSet<>();;
     
     /**
      * Map field insert/update to property 
      */
-    private static final HashMap<String,String> insertMapFields; 
+    private final HashMap<String,String> insertMapFields = new HashMap<>(); 
     
     /**
     * Map property to field order 
     */
-    private static final HashMap<String, String> sortMapFields;
+    private final HashMap<String, String> sortMapFields = new  HashMap<>();
 
-    private static final JsonObject dcModel;
+    private final JsonObject dcModel  = new JsonObject();
     
-    static{
-        names = new LinkedHashSet<>();
-        insertMapFields = new HashMap<>();
-        sortMapFields= new  HashMap<>();
-
-        dcModel = new JsonObject();
-
+    private void init0(){
         
     dcModel.put("dc", "account");
 
@@ -119,39 +118,32 @@ account.type as account_type
     final JsonArray ps = new JsonArray();   
  
 //pkey
-    names.add("pkey");
-    insertMapFields.put("account.pkey","pkey");  
-
-//Create property pkey       
-    final JsonObject pkey = ps00a("pkey", "String",true);
+    doFieldSort("pkey","pkey","account");               
    
 //Used to map error on index to source property because IS Unique
     insertMapFields.put("account.account_uidx_pkey","pkey");  
 
+//Create property pkey       
+    final JsonObject pkey = psString("pkey",true);
+
 // IS Unique     
     pkey.put("uq",true);                    
-
-    sortMapFields.put("pkey", "account_pkey");                   
  
     ps.add(pkey);
  
 //description
-    names.add("description");
-    insertMapFields.put("account.description","description");  
+    doField("description","description","account");               
 
 //Create property description       
-    final JsonObject description = ps00a("description", "String",false);
+    final JsonObject description = psString("description",false);
  
     ps.add(description);
  
 //pname
-    names.add("pname");
-    insertMapFields.put("account.pname","pname");  
+    doFieldSort("pname","pname","account");               
 
 //Create property pname       
-    final JsonObject pname = ps00a("pname", "String",true);
-
-    sortMapFields.put("pname", "account_pname");                   
+    final JsonObject pname = psString("pname",true);
   
 //PC
     dcModel.put("pc","pname");  
@@ -159,11 +151,10 @@ account.type as account_type
     ps.add(pname);
  
 //type
-    names.add("type");
-    insertMapFields.put("account.type","type");  
+    doField("type","type","account");               
 
 //Create property type       
-    final JsonObject type = ps00a("type", "String",true);
+    final JsonObject type = psString("type",true);
 
     final JsonArray typeInList = new JsonArray();
                 typeInList.add("ACTIVE"); 
@@ -175,9 +166,7 @@ typeInList.add("PASIVE");
 //Add ps to model            
     dcModel.put("ps", ps);        
         
-
         
-
     }        
     @Override
     public LinkedHashSet<String> getNames() {
@@ -202,57 +191,50 @@ typeInList.add("PASIVE");
     @Override
     public JsonArray toJsonArray(final Row r){
         final JsonArray jsa = new JsonArray();
-        jsa.add(r.getLong("account_id") );
-        jsa.add(r.getString("account_pkey") );
-        jsa.add(r.getString("account_description") );
-        jsa.add(r.getString("account_pname") );
+        jsa.add(r.getLong("account_id") );       
+        jsa.add(r.getString("account_pkey") );       
+        jsa.add(r.getString("account_description") );       
+        jsa.add(r.getString("account_pname") );       
         jsa.add(r.getString("account_type") );
         return jsa;
     }
 
     @Override
-    public void fillXRow(final Row r, final XSSFRow row, int nc,boolean withIds) {
-        fillXRow0(r, row, nc, withIds);
+    public int fillXRow(final Row r, final XSSFRow row, int nc,boolean withIds) {
+        return fillXRow0(r, row, nc, withIds);
     }
 
     @Override
     public HashMap<String,String> lXRowH(final boolean withIds, final int level) {        
         
-    final  LinkedHashMap<String,String> m_ = new LinkedHashMap<>();
-    if(withIds){
-                m_.put("account_id","Long");
-            }
-            
-    //pkey       
-            m_.put("account_pkey","String"); 
-            
-    //description       
-            m_.put("account_description","String"); 
-            
-    //pname       
-            m_.put("account_pname","String"); 
-            
-    //type       
-            m_.put("account_type","String"); 
-            
+    final  LinkedHashMap<String,String> m = new LinkedHashMap<>();
     
-    return m_;
+    if(withIds){
+        m.put("account_id",LONG);
+    }        
+//pkey    
+    m.put("account_pkey",STRING);              
+//description    
+    m.put("account_description",STRING);              
+//pname    
+    m.put("account_pname",STRING);              
+//type    
+    m.put("account_type",STRING);          
+    
+    return m;
     
     }
     
-    private void fillXRow0(final Row r, final XSSFRow row,int nc, boolean withIds){
-        if(withIds){
-        lToCell(r, row,"account_id", nc++); 
-        }
+    private int fillXRow0(final Row r, final XSSFRow row,int nc, final boolean withIds){
         
-    //pkey       
-            sToCell(r, row,"account_pkey", nc++); 
-    //description       
-            sToCell(r, row,"account_description", nc++); 
-    //pname       
-            sToCell(r, row,"account_pname", nc++); 
-    //type       
+    if(withIds){
+        lToCell(r, row,"account_id", nc++); 
+    }            //pkey       
+            sToCell(r, row,"account_pkey", nc++);     //description       
+            sToCell(r, row,"account_description", nc++);     //pname       
+            sToCell(r, row,"account_pname", nc++);     //type       
             sToCell(r, row,"account_type", nc++); 
+        return nc;
     }
 
     @Override
@@ -272,19 +254,20 @@ typeInList.add("PASIVE");
 
     @Override
     public void fillTupleInsert(final Account dc0, final Tuple t){
-                t.addString(dc0.getPkey());
-        t.addString(dc0.getDescription());
-        t.addString(dc0.getPname());
-        t.addString(dc0.getType());
+                
+    t.addString(dc0.getPkey());        
+    t.addString(dc0.getDescription());        
+    t.addString(dc0.getPname());        
+    t.addString(dc0.getType());
     }
 
     @Override
     public void fillTupleUpdate(final Account dc0, final Tuple t){
-                t.addString(dc0.getDescription());
-        t.addString(dc0.getPname());
-        t.addString(dc0.getType());
-
-        t.addLong(dc0.getId());
+        
+    t.addString(dc0.getDescription());
+    t.addString(dc0.getPname());
+    t.addString(dc0.getType());
+    t.addLong(dc0.getId());
             
     }    
 
@@ -309,11 +292,8 @@ typeInList.add("PASIVE");
     public void fillTupleInsert(final JsonObject js,final Tuple t){       
         
     fTString("pkey", js, t);
-
     fTString("description", js, t);
-
     fTString("pname", js, t);
-
     fTString("type", js, t);       
     }
 
@@ -337,15 +317,11 @@ fTLong("id",js,t);
     @Override
     public Account doFrom(final Row r){
         final Account account = new Account();
-         account.setId(r.getLong("account_id"));
-         
-                account.setPkey(  r.getString("account_pkey"));
-         
-                account.setDescription(  r.getString("account_description"));
-         
-                account.setPname(  r.getString("account_pname"));
-         
-                account.setType(  r.getString("account_type"));  
+         account.setId(r.getLong("account_id"));         
+                account.setPkey(  r.getString("account_pkey"));                       
+                account.setDescription(  r.getString("account_description"));                       
+                account.setPname(  r.getString("account_pname"));                       
+                account.setType(  r.getString("account_type"));                
         return account;
     }
     
@@ -354,10 +330,11 @@ fTLong("id",js,t);
         Account account = new Account();
         account.setId(js.getLong("id"));
         
-                account.setPkey(js.getString("pkey"));
-        account.setDescription(js.getString("description"));
-        account.setPname(js.getString("pname"));
-        account.setType(js.getString("type"));
+                
+                account.setPkey(js.getString("pkey"));        
+                account.setDescription(js.getString("description"));        
+                account.setPname(js.getString("pname"));        
+                account.setType(js.getString("type"));
         return account;
     }
 

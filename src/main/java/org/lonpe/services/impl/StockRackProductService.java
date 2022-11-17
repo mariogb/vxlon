@@ -17,16 +17,18 @@ import org.lonpe.services.AbstractServiceLon;
 import org.lonpe.services.ConditionInfo;
 import org.lonpe.lonvx.sqlbuilders.SqlLonConditionsBuilder;
 import org.apache.poi.xssf.usermodel.XSSFRow;
+import static org.lonpe.lonvx.ctes.CteLon.*;
 
 
 
 import org.lonpe.lonvx.sqlbuilders.ZtatUnitInfoLon;
+import org.lonpe.lonvx.sqlbuilders.ZtatUnitInfoLon2;
+import org.lonpe.lonvx.sqlbuilders.ZtatUnitInfoLon3;
 
 /**
  *   StockRackProductService 
  * 
  */
-   
   
 public class StockRackProductService extends AbstractServiceLon<StockRackProduct>{
 
@@ -41,23 +43,18 @@ public class StockRackProductService extends AbstractServiceLon<StockRackProduct
     private static final String SQLDELETE = "DELETE FROM stock_rack_product WHERE id = $1 returning id";
     private static final String TABLENAME ="stock_rack_product";
     
-//1
-    private static final ZtatUnitInfoLon zStockRack;
 
-//1
-    private static final ZtatUnitInfoLon zProduct;
+    public StockRackProductService() {
+        init0();
+    }
 
-//2
-    private static final ZtatUnitInfoLon zWorkSpace;
-
-//2
-    private static final ZtatUnitInfoLon zProductType;
-
-//3
-    private static final ZtatUnitInfoLon zWorkSpaceGroup;
     
+    private static final Map<String, ZtatUnitInfoLon> mz1 = new HashMap<>(6);                       
+    private static final Map<String, ZtatUnitInfoLon2> mz2 = new HashMap<>(6);                       
+    private static final Map<String, ZtatUnitInfoLon3> mz3 = new HashMap<>(6);                       
+
     @Override
-    public  String getTableName(){
+    public String getTableName(){
         return TABLENAME;
     }
 
@@ -71,32 +68,30 @@ public class StockRackProductService extends AbstractServiceLon<StockRackProduct
         return SQLLKEYIN;
     }
 
-/**
-    
+/**    
     private static String sql00 = "SELECT stock_rack_product.id as stock_rack_product_id,
 stock_rack_product.pkey as stock_rack_product_pkey,
 stock_rack_product.pname as stock_rack_product_pname,
 stock_rack_product.quantity as stock_rack_product_quantity,
 stock_rack_product.serial_number as stock_rack_product_serial_number,
 stock_rack.id as stock_rack_id,stock_rack.pkey as stock_rack_pkey,stock_rack.pname as stock_rack_pname,
-product.id as product_id,product.pkey as product_pkey,product.pname as product_pname,
 work_space.id as work_space_id, work_space.pkey as work_space_pkey,work_space.pname as work_space_pname,
-product_type.id as product_type_id, product_type.pkey as product_type_pkey,product_type.pname as product_type_pname,
-work_space_group.id as work_space_group_id, work_space_group.pkey as work_space_group_pkey,work_space_group.pname as work_space_group_pname 
+work_space_group.id as work_space_group_id, work_space_group.pkey as work_space_group_pkey,work_space_group.pname as work_space_group_pname,
+product.id as product_id,product.pkey as product_pkey,product.pname as product_pname,
+product_type.id as product_type_id, product_type.pkey as product_type_pkey,product_type.pname as product_type_pname 
   FROM 
   stock_rack_product,
   stock_rack as stock_rack,
-  product as product,
   work_space as work_space,
-  product_type as product_type,
-  work_space_group as work_space_group  
+  work_space_group as work_space_group,
+  product as product,
+  product_type as product_type  
  WHERE 
  stock_rack_product.stock_rack_id = stock_rack.id
- AND stock_rack_product.product_id = product.id
  AND stock_rack.work_space_id = work_space.id
- AND product.product_type_id = product_type.id
- AND work_space.work_space_group_id = work_space_group.id; 
-"
+ AND work_space.work_space_group_id = work_space_group.id
+ AND stock_rack_product.product_id = product.id
+ AND product.product_type_id = product_type.id"
 */
 
     @Override
@@ -116,28 +111,21 @@ work_space_group.id as work_space_group_id, work_space_group.pkey as work_space_
     /**
      * sql select property alias field names
      */
-     
-    private static final LinkedHashSet<String> names;
+    private final LinkedHashSet<String> names =  new LinkedHashSet<>();;
     
     /**
      * Map field insert/update to property 
      */
-    private static final HashMap<String,String> insertMapFields; 
+    private final HashMap<String,String> insertMapFields = new HashMap<>(); 
     
     /**
     * Map property to field order 
     */
-    private static final HashMap<String, String> sortMapFields;
+    private final HashMap<String, String> sortMapFields = new  HashMap<>();
 
-    private static final JsonObject dcModel;
+    private final JsonObject dcModel  = new JsonObject();
     
-    static{
-        names = new LinkedHashSet<>();
-        insertMapFields = new HashMap<>();
-        sortMapFields= new  HashMap<>();
-
-        dcModel = new JsonObject();
-
+    private void init0(){
         
     dcModel.put("dc", "stockRackProduct");
 
@@ -149,30 +137,24 @@ work_space_group.id as work_space_group_id, work_space_group.pkey as work_space_
     final JsonArray ps = new JsonArray();   
  
 //pkey
-    names.add("pkey");
-    insertMapFields.put("stock_rack_product.pkey","pkey");  
-
-//Create property pkey       
-    final JsonObject pkey = ps00a("pkey", "String",true);
+    doFieldSort("pkey","pkey","stock_rack_product");               
    
 //Used to map error on index to source property because IS Unique
     insertMapFields.put("stock_rack_product.stock_rack_product_uidx_pkey","pkey");  
 
+//Create property pkey       
+    final JsonObject pkey = psString("pkey",true);
+
 // IS Unique     
     pkey.put("uq",true);                    
-
-    sortMapFields.put("pkey", "stock_rack_product_pkey");                   
  
     ps.add(pkey);
  
 //pname
-    names.add("pname");
-    insertMapFields.put("stock_rack_product.pname","pname");  
+    doFieldSort("pname","pname","stock_rack_product");               
 
 //Create property pname       
-    final JsonObject pname = ps00a("pname", "String",true);
-
-    sortMapFields.put("pname", "stock_rack_product_pname");                   
+    final JsonObject pname = psString("pname",true);
   
 //PC
     dcModel.put("pc","pname");  
@@ -180,22 +162,18 @@ work_space_group.id as work_space_group_id, work_space_group.pkey as work_space_
     ps.add(pname);
  
 //quantity
-    names.add("quantity");
-    insertMapFields.put("stock_rack_product.quantity","quantity");  
+    doFieldSort("quantity","quantity","stock_rack_product");               
 
 //Create property quantity       
-    final JsonObject quantity = ps00a("quantity", "Long",true);
-
-    sortMapFields.put("quantity", "stock_rack_product_quantity");               
+    final JsonObject quantity = psLong("quantity",true);
  
     ps.add(quantity);
  
 //serialNumber
-    names.add("serialNumber");
-    insertMapFields.put("stock_rack_product.serial_number","serialNumber");  
+    doField("serialNumber","serial_number","stock_rack_product");               
 
 //Create property serialNumber       
-    final JsonObject serialNumber = ps00a("serialNumber", "String",false);
+    final JsonObject serialNumber = psString("serialNumber",false);
  
     ps.add(serialNumber);
 
@@ -204,86 +182,91 @@ work_space_group.id as work_space_group_id, work_space_group.pkey as work_space_
 
     final JsonArray mto = new JsonArray();      
 
-//(1)  stockRack --------------------
-    names.add("stockRack_id");      
-    insertMapFields.put("stock_rack_product.stock_rack_id","stockRack_id");    
-       
-    names.add("stockRack_pkey");        
-    sortMapFields.put( "stockRack_pkey", "stock_rack_pkey");        
+//(1)  stockRack
+    doFieldMT0("stock_rack_product","stockRack", "stock_rack");  
 
     final JsonObject stockRack =  doMto("stockRack","stockRack");        
    
     names.add("stockRack_pname");
-    sortMapFields.put( "stockRack_pname", "stock_rack_pname");         
-
+    sortMapFields.put( "stockRack_pname", "stock_rack_pname");                
     stockRack.put("pc","pname");          
 
     mto.add(stockRack);
         
 
-//(1)  product --------------------
-    names.add("product_id");      
-    insertMapFields.put("stock_rack_product.product_id","product_id");    
-       
-    names.add("product_pkey");        
-    sortMapFields.put( "product_pkey", "product_pkey");        
+    //1  stock_rack  -- stock_rack_id
+    final ZtatUnitInfoLon zStockRack = new ZtatUnitInfoLon("stock_rack_id", "stockRack",  "stock_rack","pname","stock_rack");
+    mz1.put("zStockRack", zStockRack);    
+
+//(1)  product
+    doFieldMT0("stock_rack_product","product", "product");  
 
     final JsonObject product =  doMto("product","product");        
    
     names.add("product_pname");
-    sortMapFields.put( "product_pname", "product_pname");         
-
+    sortMapFields.put( "product_pname", "product_pname");                
     product.put("pc","pname");          
 
     mto.add(product);
         
 
+    //1  product  -- product_id
+    final ZtatUnitInfoLon zProduct = new ZtatUnitInfoLon("product_id", "product",  "product","pname","product");
+    mz1.put("zProduct", zProduct);    
+
     dcModel.put("mto",mto);     
 
     final JsonArray mto2 = new JsonArray();        
-//(2)   workSpace 
-        
+
+//(2)  workSpace   workSpace  
     names.add("workSpace_id");          
     names.add("workSpace_pkey");
 
-    final JsonObject workSpace =   doMto2("workSpace","workSpace","stockRack");        
+    final JsonObject workSpaceFromStockRack =   doMto2("workSpace","workSpace","stockRack");        
    
-    names.add("workSpace_pname");  
-    workSpace.put("pc","pname");             
-   
-    sortMapFields.put( "workSpace_pname", "work_space_pname");            
+    names.add("workSpace_pname");           
+    sortMapFields.put( "workSpace_pname", "work_space_pname");  
+    workSpaceFromStockRack.put("pc","pname");    
          
-    mto2.add(workSpace);        
-//(2)   productType 
-        
+    mto2.add(workSpaceFromStockRack);        
+
+    final ZtatUnitInfoLon2 zWorkSpaceFromStockRack = new ZtatUnitInfoLon2(zStockRack, "work_space_id", "workSpace",  "work_space","pname","work_space");
+    mz2.put("zWorkSpaceFromStockRack",zWorkSpaceFromStockRack);
+
+//(2)  productType   productType  
     names.add("productType_id");          
     names.add("productType_pkey");
 
-    final JsonObject productType =   doMto2("productType","productType","product");        
+    final JsonObject productTypeFromProduct =   doMto2("productType","productType","product");        
    
-    names.add("productType_pname");  
-    productType.put("pc","pname");             
-   
-    sortMapFields.put( "productType_pname", "product_type_pname");            
+    names.add("productType_pname");           
+    sortMapFields.put( "productType_pname", "product_type_pname");  
+    productTypeFromProduct.put("pc","pname");    
          
-    mto2.add(productType);        
+    mto2.add(productTypeFromProduct);        
+
+    final ZtatUnitInfoLon2 zProductTypeFromProduct = new ZtatUnitInfoLon2(zProduct, "product_type_id", "productType",  "product_type","pname","product_type");
+    mz2.put("zProductTypeFromProduct",zProductTypeFromProduct);
 
     dcModel.put("mto2",mto2);    
 
     final JsonArray mto3 = new JsonArray();           
-//(3)   workSpaceGroup 
-        
+
+//(3)   workSpaceGroup   
     names.add("workSpaceGroup_id");          
     names.add("workSpaceGroup_pkey");
 
-    final JsonObject workSpaceGroup =   doMto2("workSpaceGroup","workSpaceGroup","workSpace");        
+    final JsonObject workSpaceGroupFromWorkSpaceFromStockRack =   doMto2("workSpaceGroup","workSpaceGroup","workSpace");        
    
-    names.add("workSpaceGroup_pname");  
-    workSpaceGroup.put("pc","pname");             
-   
-    sortMapFields.put( "workSpaceGroup_pname", "work_space_group_pname");            
+    names.add("workSpaceGroup_pname");            
+    sortMapFields.put( "workSpaceGroup_pname", "work_space_group_pname"); 
+    workSpaceGroupFromWorkSpaceFromStockRack.put("pc","pname");     
          
-    mto3.add(workSpaceGroup);        
+    mto3.add(workSpaceGroupFromWorkSpaceFromStockRack);        
+
+     
+    final ZtatUnitInfoLon3 zWorkSpaceGroupFromWorkSpaceFromStockRack = new ZtatUnitInfoLon3(zWorkSpaceFromStockRack, "work_space_group_id", "workSpaceGroup",  "work_space_group","pname","work_space_group");
+    mz3.put("zWorkSpaceGroupFromWorkSpaceFromStockRack",zWorkSpaceGroupFromWorkSpaceFromStockRack);    
 
     dcModel.put("mto3",mto3);       
         
@@ -297,23 +280,7 @@ work_space_group.id as work_space_group_id, work_space_group.pkey as work_space_
 
 /** OTM ON MODEL  **/
         dcModel.put("otm",otm);  
-
         
-//1  stock_rack  -- stock_rack_id
-    zStockRack = new ZtatUnitInfoLon("stock_rack_id", "stockRack",  "stock_rack","pname","stock_rack");
-
-//1  product  -- product_id
-    zProduct = new ZtatUnitInfoLon("product_id", "product",  "product","pname","product");
-
-//2    
-    zWorkSpace = new ZtatUnitInfoLon("work_space_id", "workSpace",  "work_space","pname","work_space");
-
-//2    
-    zProductType = new ZtatUnitInfoLon("product_type_id", "productType",  "product_type","pname","product_type");
-
-//3
-    zWorkSpaceGroup = new ZtatUnitInfoLon("work_space_group_id", "workSpaceGroup",  "work_space_group","pname","work_space_group");
-
     }        
     @Override
     public LinkedHashSet<String> getNames() {
@@ -338,164 +305,150 @@ work_space_group.id as work_space_group_id, work_space_group.pkey as work_space_
     @Override
     public JsonArray toJsonArray(final Row r){
         final JsonArray jsa = new JsonArray();
-        jsa.add(r.getLong("stock_rack_product_id") );
-        jsa.add(r.getString("stock_rack_product_pkey") );
-        jsa.add(r.getString("stock_rack_product_pname") );
-        jsa.add(r.getLong("stock_rack_product_quantity") );
+        jsa.add(r.getLong("stock_rack_product_id") );       
+        jsa.add(r.getString("stock_rack_product_pkey") );       
+        jsa.add(r.getString("stock_rack_product_pname") );       
+        jsa.add(r.getLong("stock_rack_product_quantity") );       
         jsa.add(r.getString("stock_rack_product_serial_number") );
-        jsa.add(r.getLong("stock_rack_id"));
-        jsa.add(r.getString("stock_rack_pkey"));
-        jsa.add(r.getString("stock_rack_pname"));
-        jsa.add(r.getLong("product_id"));
-        jsa.add(r.getString("product_pkey"));
-        jsa.add(r.getString("product_pname"));
-        jsa.add(r.getLong("work_space_id"));
-        jsa.add(r.getString("work_space_pkey"));
-        jsa.add(r.getString("work_space_pname"));
-        jsa.add(r.getLong("product_type_id"));
-        jsa.add(r.getString("product_type_pkey"));
-        jsa.add(r.getString("product_type_pname"));
-        jsa.add(r.getLong("work_space_group_id"));
-        jsa.add(r.getString("work_space_group_pkey"));
-        jsa.add(r.getString("work_space_group_pname"));
+    jsa.add(r.getLong("stock_rack_id"));
+    jsa.add(r.getString("stock_rack_pkey"));   
+    
+        
+    jsa.add(r.getString("stock_rack_pname"));
+    jsa.add(r.getLong("product_id"));
+    jsa.add(r.getString("product_pkey"));   
+    
+        
+    jsa.add(r.getString("product_pname"));
+    jsa.add(r.getLong("work_space_id"));
+    jsa.add(r.getString("work_space_pkey"));
+    
+
+    jsa.add(r.getString("work_space_pname"));
+    
+    jsa.add(r.getLong("product_type_id"));
+    jsa.add(r.getString("product_type_pkey"));
+    
+
+    jsa.add(r.getString("product_type_pname"));
+    
+    jsa.add(r.getLong("work_space_group_id"));
+    jsa.add(r.getString("work_space_group_pkey"));
+    
+
+    jsa.add(r.getString("work_space_group_pname"));
+    
         return jsa;
     }
 
     @Override
-    public void fillXRow(final Row r, final XSSFRow row, int nc,boolean withIds) {
-        fillXRow0(r, row, nc, withIds);
+    public int fillXRow(final Row r, final XSSFRow row, int nc,boolean withIds) {
+        return fillXRow0(r, row, nc, withIds);
     }
 
     @Override
     public HashMap<String,String> lXRowH(final boolean withIds, final int level) {        
         
-    final  LinkedHashMap<String,String> m_ = new LinkedHashMap<>();
-    if(withIds){
-                m_.put("stockRackProduct_id","Long");
-            }
-            
-    //pkey       
-            m_.put("stockRackProduct_pkey","String"); 
-            
-    //pname       
-            m_.put("stockRackProduct_pname","String"); 
-            
-    //quantity       
-            m_.put("stockRackProduct_quantity","Long"); 
-            
-    //serialNumber       
-            m_.put("stockRackProduct_serialNumber","String"); 
-            
-if(level<1){
-                return m_;    
-            }
-            
- // stockRack
-if(withIds){
-            m_.put("stockRack_id","Long");   
-                    
-            }
-
-        m_.put("stockRack_pkey","String");   
-        
-
-            m_.put("stockRack_pname","String");   
-            
- // product
-if(withIds){
-            m_.put("product_id","Long");   
-                    
-            }
-
-        m_.put("product_pkey","String");   
-        
-
-            m_.put("product_pname","String");   
-            
-//[2] workSpace  
-
-        if(level>1){
-            if(withIds){
-               m_.put("workSpace_id","Long");              
-            }      
-        
-        m_.put("workSpace_pkey","String");  
-
-            m_.put("workSpace_pname","String");    
- 
-                      }             
-//[2] productType  
-
-        if(level>1){
-            if(withIds){
-               m_.put("productType_id","Long");              
-            }      
-        
-        m_.put("productType_pkey","String");  
-
-            m_.put("productType_pname","String");    
- 
-                      }             
-//[3] workSpaceGroup  
-
-        if(level>2){
-            if(withIds){
-               m_.put("workSpaceGroup_id","Long");              
-            }      
-        
-        m_.put("workSpaceGroup_pkey","String");  
-
-            m_.put("workSpaceGroup_pname","String");    
- 
-                      }             
+    final  LinkedHashMap<String,String> m = new LinkedHashMap<>();
     
-    return m_;
+    if(withIds){
+        m.put("stockRackProduct_id",LONG);
+    }        
+//pkey    
+    m.put("stockRackProduct_pkey",STRING);              
+//pname    
+    m.put("stockRackProduct_pname",STRING);              
+//quantity    
+    m.put("stockRackProduct_quantity",LONG);              
+//serialNumber    
+    m.put("stockRackProduct_serialNumber",STRING);          
+    if(level<1){
+        return m;    
+    }       
+// stockRack   stockRack
+    if(withIds){
+        m.put("stockRack_id",LONG);                       
+    }
+    m.put("stockRack_pkey",STRING);     
+    m.put("stockRack_pname",STRING);   
+// product   product
+    if(withIds){
+        m.put("product_id",LONG);                       
+    }
+    m.put("product_pkey",STRING);     
+    m.put("product_pname",STRING);  
+//[2] workSpace --   workSpace
+    if(withIds){
+        m.put("workSpace_id",LONG);              
+    }              
+    m.put("workSpace_pkey",STRING);  
+        
+    m.put("workSpace_pname",STRING);  
+//[2] productType --   productType
+    if(withIds){
+        m.put("productType_id",LONG);              
+    }              
+    m.put("productType_pkey",STRING);  
+        
+    m.put("productType_pname",STRING);  
+//[3] workSpaceGroup --   workSpaceGroup
+    if(withIds){
+        m.put("workSpaceGroup_id",LONG);              
+    }              
+    m.put("workSpaceGroup_pkey",STRING);  
+        
+    m.put("workSpaceGroup_pname",STRING);  
+    
+    return m;
     
     }
     
-    private void fillXRow0(final Row r, final XSSFRow row,int nc, boolean withIds){
-        if(withIds){
-        lToCell(r, row,"stock_rack_product_id", nc++); 
-        }
+    private int fillXRow0(final Row r, final XSSFRow row,int nc, final boolean withIds){
         
-    //pkey       
-            sToCell(r, row,"stock_rack_product_pkey", nc++); 
-    //pname       
-            sToCell(r, row,"stock_rack_product_pname", nc++); 
-    //quantity            
-            ldToCell(r, row,"stock_rack_product_quantity", nc++); 
-    //serialNumber       
+    if(withIds){
+        lToCell(r, row,"stock_rack_product_id", nc++); 
+    }            //pkey       
+            sToCell(r, row,"stock_rack_product_pkey", nc++);     //pname       
+            sToCell(r, row,"stock_rack_product_pname", nc++);     //quantity            
+            ldToCell(r, row,"stock_rack_product_quantity", nc++);     //serialNumber       
             sToCell(r, row,"stock_rack_product_serial_number", nc++); 
- // stockRack
-if(withIds){
-                    lToCell(r, row,"stock_rack_id", nc++);
-                 }
-sToCell(r, row,"stock_rack_pkey", nc++);
-sToCell(r, row,"stock_rack_pname", nc++);
- // product
-if(withIds){
-                    lToCell(r, row,"product_id", nc++);
-                 }
-sToCell(r, row,"product_pkey", nc++);
-sToCell(r, row,"product_pname", nc++);
-// workSpace
-if(withIds){
-            lToCell(r, row,"work_space_id", nc++);
-        }
-sToCell(r, row,"work_space_pkey", nc++);
-sToCell(r, row,"work_space_pname", nc++);
-// productType
-if(withIds){
-            lToCell(r, row,"product_type_id", nc++);
-        }
-sToCell(r, row,"product_type_pkey", nc++);
-sToCell(r, row,"product_type_pname", nc++);
-// workSpaceGroup
-if(withIds){
-            lToCell(r, row,"work_space_group_id", nc++);
-        }
-sToCell(r, row,"work_space_group_pkey", nc++);
-sToCell(r, row,"work_space_group_pname", nc++);
+//stockRack   stock_rack        
+    if(withIds){
+        lToCell(r, row,"stock_rack_id", nc++);
+    }
+    sToCell(r, row,"stock_rack_pkey", nc++);
+    sToCell(r, row,"stock_rack_pname", nc++);
+//product   product        
+    if(withIds){
+        lToCell(r, row,"product_id", nc++);
+    }
+    sToCell(r, row,"product_pkey", nc++);
+    sToCell(r, row,"product_pname", nc++);
+// workSpace  work_space
+    if(withIds){
+       lToCell(r, row,"work_space_id", nc++);
+    }
+
+    sToCell(r, row,"work_space_pkey", nc++);
+
+    sToCell(r, row,"work_space_pname", nc++);
+// productType  product_type
+    if(withIds){
+       lToCell(r, row,"product_type_id", nc++);
+    }
+
+    sToCell(r, row,"product_type_pkey", nc++);
+
+    sToCell(r, row,"product_type_pname", nc++);
+// workSpaceGroup  work_space_group
+    if(withIds){
+       lToCell(r, row,"work_space_group_id", nc++);
+    }
+
+    sToCell(r, row,"work_space_group_pkey", nc++);
+
+    sToCell(r, row,"work_space_group_pname", nc++);
+        return nc;
     }
 
     @Override
@@ -515,35 +468,32 @@ sToCell(r, row,"work_space_group_pname", nc++);
 
     @Override
     public void fillTupleInsert(final StockRackProduct dc0, final Tuple t){
-                t.addString(dc0.getPkey());
-        t.addString(dc0.getPname());
-        t.addLong(dc0.getQuantity());
-        t.addString(dc0.getSerialNumber());
-   
-            if(dc0.getStockRack()!=null){
-               t.addLong(dc0.getStockRack().getId());
-            }
-   
-            if(dc0.getProduct()!=null){
-               t.addLong(dc0.getProduct().getId());
-            }
+                
+    t.addString(dc0.getPkey());        
+    t.addString(dc0.getPname());        
+    t.addLong(dc0.getQuantity());        
+    t.addString(dc0.getSerialNumber());   
+    if(dc0.getStockRack()!=null){
+       t.addLong(dc0.getStockRack().getId());
+    }   
+    if(dc0.getProduct()!=null){
+       t.addLong(dc0.getProduct().getId());
+    }
     }
 
     @Override
     public void fillTupleUpdate(final StockRackProduct dc0, final Tuple t){
-                t.addString(dc0.getPname());
-        t.addLong(dc0.getQuantity());
-        t.addString(dc0.getSerialNumber());
-   
+        
+    t.addString(dc0.getPname());
+    t.addLong(dc0.getQuantity());
+    t.addString(dc0.getSerialNumber());   
 //      if(dc0.getStockRack()!=null){
 //            t.addLong(dc0.getStockRack().getId());
-//      }
-   
+//      }   
 //      if(dc0.getProduct()!=null){
 //            t.addLong(dc0.getProduct().getId());
 //      }
-
-        t.addLong(dc0.getId());
+    t.addLong(dc0.getId());
             
     }    
 
@@ -579,15 +529,10 @@ sToCell(r, row,"work_space_group_pname", nc++);
     public void fillTupleInsert(final JsonObject js,final Tuple t){       
         
     fTString("pkey", js, t);
-
     fTString("pname", js, t);
-
     fTLong("quantity", js, t);
-
-    fTString("serialNumber", js, t);
-     
-    fTLong("stockRack_id",js,t);
-     
+    fTString("serialNumber", js, t);     
+    fTLong("stockRack_id",js,t);     
     fTLong("product_id",js,t);       
     }
 
@@ -615,41 +560,37 @@ fTLong("id",js,t);
     @Override
     public StockRackProduct doFrom(final Row r){
         final StockRackProduct stockRackProduct = new StockRackProduct();
-         stockRackProduct.setId(r.getLong("stock_rack_product_id"));
-         
-                stockRackProduct.setPkey(  r.getString("stock_rack_product_pkey"));
-         
-                stockRackProduct.setPname(  r.getString("stock_rack_product_pname"));
-         
-                stockRackProduct.setQuantity(  r.getLong("stock_rack_product_quantity"));
-         
-                stockRackProduct.setSerialNumber(  r.getString("stock_rack_product_serial_number"));
-
+         stockRackProduct.setId(r.getLong("stock_rack_product_id"));         
+                stockRackProduct.setPkey(  r.getString("stock_rack_product_pkey"));                       
+                stockRackProduct.setPname(  r.getString("stock_rack_product_pname"));                       
+                stockRackProduct.setQuantity(  r.getLong("stock_rack_product_quantity"));                       
+                stockRackProduct.setSerialNumber(  r.getString("stock_rack_product_serial_number"));              
         final StockRack stockRack = new StockRack();
         stockRack.setId(r.getLong("stock_rack_id"));
         stockRack.setPkey(r.getString("stock_rack_pkey"));
+        
         stockRack.setPname(r.getString("stock_rack_pname"));
         stockRackProduct.setStockRack(stockRack);
         
-
         final Product product = new Product();
         product.setId(r.getLong("product_id"));
         product.setPkey(r.getString("product_pkey"));
+        
         product.setPname(r.getString("product_pname"));
         stockRackProduct.setProduct(product);
         
-
         final WorkSpace workSpace = new WorkSpace();
         workSpace.setId(r.getLong("work_space_id"));
         workSpace.setPkey(r.getString("work_space_pkey"));
         workSpace.setPname(r.getString("work_space_pname"));
- stockRack.setWorkSpace(workSpace); 
-
+ 
+        stockRack.setWorkSpace(workSpace); 
         final ProductType productType = new ProductType();
         productType.setId(r.getLong("product_type_id"));
         productType.setPkey(r.getString("product_type_pkey"));
         productType.setPname(r.getString("product_type_pname"));
- product.setProductType(productType);   
+ 
+        product.setProductType(productType);   
         return stockRackProduct;
     }
     
@@ -658,12 +599,13 @@ fTLong("id",js,t);
         StockRackProduct stockRackProduct = new StockRackProduct();
         stockRackProduct.setId(js.getLong("id"));
         
-                stockRackProduct.setPkey(js.getString("pkey"));
-        stockRackProduct.setPname(js.getString("pname"));
-        stockRackProduct.setQuantity(js.getLong("quantity"));
-        stockRackProduct.setSerialNumber(js.getString("serialNumber"));
-        stockRackProduct.setId(js.getLong("stockRack_id"));
-        stockRackProduct.setId(js.getLong("product_id"));
+                
+                stockRackProduct.setPkey(js.getString("pkey"));        
+                stockRackProduct.setPname(js.getString("pname"));        
+                stockRackProduct.setQuantity(js.getLong("quantity"));        
+                stockRackProduct.setSerialNumber(js.getString("serialNumber"));        
+            stockRackProduct.setId(js.getLong("stockRack_id"));        
+            stockRackProduct.setId(js.getLong("product_id"));
         return stockRackProduct;
     }
 
@@ -711,25 +653,27 @@ fTLong("id",js,t);
         slcb.doIlPSimple2( "stockRack_pkey", "stock_rack_pkey");
         slcb.doEQPSimple2( "stockRack_pkey", "stock_rack_pkey");
         slcb.doInLongCondition("stockRack_id", "stock_rack_id");  
-//StockRack 2        
+//StockRack 2        --
         slcb.doIlPSimple2( "stockRack_pname", "stock_rack_pname");    
+        
         slcb.doIlPSimple2( "product_pkey", "product_pkey");
         slcb.doEQPSimple2( "product_pkey", "product_pkey");
         slcb.doInLongCondition("product_id", "product_id");  
-//Product 3        
+//Product 3        --
         slcb.doIlPSimple2( "product_pname", "product_pname");    
-
+        
         slcb.doIlPSimple2( "workSpace_pkey", "work_space_pkey");
         slcb.doEQPSimple2( "workSpace_pkey", "work_space_pkey");
-        slcb.doInLongCondition("workSpace_id", "work_space_id");//WorkSpace 2
+        slcb.doInLongCondition("workSpace_id", "work_space_id");
+//WorkSpace 2
         slcb.doIlPSimple2( "workSpace_pname", "work_space_pname"); 
         slcb.doIlPSimple2( "workSpaceGroup_pkey", "work_space_group_pkey");
         slcb.doEQPSimple2( "workSpaceGroup_pkey", "work_space_group_pkey");
         slcb.doInLongCondition("workSpaceGroup_id", "work_space_group_id"); 
-
         slcb.doIlPSimple2( "productType_pkey", "product_type_pkey");
         slcb.doEQPSimple2( "productType_pkey", "product_type_pkey");
-        slcb.doInLongCondition("productType_id", "product_type_id");//ProductType 5
+        slcb.doInLongCondition("productType_id", "product_type_id");
+//ProductType 5
         slcb.doIlPSimple2( "productType_pname", "product_type_pname"); 
 
         slcb.doSQLORDEN(sortMapFields);
@@ -745,20 +689,17 @@ fTLong("id",js,t);
         final SqlZtatBuilder sz0 = new SqlZtatBuilder(params,"stock_rack_product");
         sz0.addField("COUNT(stock_rack_product.id) as c_stock_rack_product_id").addName("count");
         
-    sz0.addField("sum(stock_rack_product.quantity) as sum_stock_rack_product_quantity").addName("sum_quantity");
-        
+    sz0.addField("sum(stock_rack_product.quantity) as sum_stock_rack_product_quantity").addName("sum_quantity"); 
         
 //level 1
              
-    sz0.applyG1(zStockRack);               
-    sz0.applyG1(zProduct);      
-    //level 2
-    
-    sz0.applyG2(zStockRack,zWorkSpace);                           
-    sz0.applyG2(zProduct,zProductType);                           
-    //level 3
-    
-        sz0.applyG3(zStockRack,zWorkSpace,zWorkSpaceGroup);               
+    sz0.applyG1(mz1.get("zStockRack"))   ;               
+    sz0.applyG1(mz1.get("zProduct"))   ;      
+//level 2    
+    sz0.applyG2(mz2.get("zWorkSpaceFromStockRack"));                           
+    sz0.applyG2(mz2.get("zProductTypeFromProduct"));                           
+//level 3    
+        sz0.applyG3(mz3.get("zWorkSpaceGroupFromWorkSpaceFromStockRack"));               
         return sz0;
     }
 }

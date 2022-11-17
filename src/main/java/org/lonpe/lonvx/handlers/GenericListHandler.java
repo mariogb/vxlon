@@ -88,22 +88,22 @@ public class GenericListHandler extends AbstractGenericList implements Handler<R
 //
 //            ml(" HZ Distributed object: ", t.getName());
 //        });
-        dBLon1.doPreparedQuery(sqlEx2, tuple).doOnError(new Consumer<Throwable>(){
+        dBLon1.doPreparedQuery(sqlEx2, tuple).doOnError(new Consumer<Throwable>() {
             @Override
             public void accept(Throwable t) throws Throwable {
-                System.out.println("sqlEx2 que genera error "+sqlEx2);
-                 System.out.println(t.getMessage());
-                 rctx.response().setStatusCode(500).end("X");
-                 
+                System.out.println("sqlEx2 que genera error " + sqlEx2);
+                System.out.println(t.getMessage());
+                rctx.response().setStatusCode(500).end("X");
+
             }
-        
-        }).subscribe(new ListConsumerLon(dc, rctx, serviceFor, ci, tuple, sqlConds),new Consumer<Throwable>(){
+
+        }).subscribe(new ListConsumerLon(dc, rctx, serviceFor, ci, tuple, sqlConds), new Consumer<Throwable>() {
             @Override
             public void accept(Throwable t) throws Throwable {
-                System.out.println("YA debe de estar tirado"+t.getMessage());
+                System.out.println("YA debe de estar tirado" + t.getMessage());
             }
         });
-      
+
     }
 
     private String doSqlConds00(final String sqlConds) {
@@ -159,7 +159,7 @@ public class GenericListHandler extends AbstractGenericList implements Handler<R
             final String sqlCount = serviceFor.getSqlCount();
             final String sqlToExCount = sqlCount + doSqlConds00(sqlConds);
 
-           dBLon1.doPreparedQuery(sqlToExCount, tuple).subscribe(new TotalConsumerLon(jo, request, response));
+            dBLon1.doPreparedQuery(sqlToExCount, tuple).subscribe(new TotalConsumerLon(jo,  response));
         }
 
     }
@@ -167,12 +167,12 @@ public class GenericListHandler extends AbstractGenericList implements Handler<R
     protected class TotalConsumerLon implements Consumer<RowSet<Row>> {
 
         private final JsonObject jo;
-        private final HttpServerRequest request;
+        
         private final HttpServerResponse response;
 
-        TotalConsumerLon(JsonObject jo, HttpServerRequest request, HttpServerResponse res) {
+        TotalConsumerLon(JsonObject jo, HttpServerResponse res) {
             this.jo = jo;
-            this.request = request;
+        
             this.response = res;
         }
 
@@ -197,7 +197,6 @@ public class GenericListHandler extends AbstractGenericList implements Handler<R
 
     }
 }
-
 
 /**
  *

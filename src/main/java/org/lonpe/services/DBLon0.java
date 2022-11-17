@@ -5,6 +5,8 @@
  */
 package org.lonpe.services;
 
+import io.vertx.core.impl.logging.Logger;
+import io.vertx.core.impl.logging.LoggerFactory;
 import io.vertx.core.AsyncResult;
 import io.vertx.pgclient.PgPool;
 import io.vertx.sqlclient.Row;
@@ -19,6 +21,8 @@ import org.lonpe.services.impl.DcMapForServices;
  */
 public class DBLon0 {
 
+    private static final Logger log = LoggerFactory.getLogger(DBLon0.class);
+    
     private final PgPool client;
     private final DcMapForServices dcMapForServices;
 
@@ -28,24 +32,23 @@ public class DBLon0 {
     }
 
     public void store00(String dc, AbstractDcLon dc0) {
-        System.out.println("Hacer store " + dc0.toString());
+        
         final IServiceLon s = dcMapForServices.getServiceFor(dc);
         final String sql_ = s.getSqlIdByPkey();
-        System.out.println("s.getSqlIdByPkey() " + sql_ + " " + dc0.getPkey());
+        
         client.preparedQuery(sql_).execute(Tuple.of(dc0.getPkey()), (AsyncResult<RowSet<Row>> event0) -> {
-            if (event0.failed()) {
-                System.out.println("No se ejecuto query [\n" + sql_ + "\n]\n" + event0.cause().getMessage());
-                System.out.println("");
+            if (event0.failed()) {                
+                log.error("No se ejecuto query [\n" + sql_ + "\n]\n" + event0.cause().getMessage());                
                 return;
             }
-            
+
             final RowSet<Row> result = event0.result();
             Long id0 = null;
             String sql0 = null;
             final Tuple tuple = Tuple.tuple();
             if (result.size() == 1) {
                 id0 = result.iterator().next().getLong(0);
-                
+
             }
             if (id0 == null) {
                 s.fillTupleInsert(dc0, tuple);
@@ -60,11 +63,10 @@ public class DBLon0 {
             final Long id00 = id0;
             client.preparedQuery(sql00).execute(tuple, (AsyncResult<RowSet<Row>> event1) -> {
                 if (event1.failed()) {
-                    System.out.println("No se ejecuto query [\n" + sql00 + "\n]\n" + event1.cause().getMessage());
-                    System.out.println("");
+                    log.error("No se ejecuto query [\n" + sql00 + "\n]\n" + event1.cause().getMessage());                    
                     return;
                 }
-                
+
                 final RowSet<Row> result1 = event1.result();
                 if (result1.size() == 1) {
                     final Long aLong = result1.iterator().next().getLong(0);
@@ -77,7 +79,4 @@ public class DBLon0 {
 
     }
 
-    
-    
-    
 }

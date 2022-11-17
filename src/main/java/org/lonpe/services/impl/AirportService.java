@@ -17,6 +17,9 @@ import org.lonpe.services.AbstractServiceLon;
 import org.lonpe.services.ConditionInfo;
 import org.lonpe.lonvx.sqlbuilders.SqlLonConditionsBuilder;
 import org.apache.poi.xssf.usermodel.XSSFRow;
+import static org.lonpe.lonvx.ctes.CteLon.*;
+
+
 
 
 
@@ -26,7 +29,6 @@ import org.apache.poi.xssf.usermodel.XSSFRow;
  *   AirportService 
  * 
  */
-   
   
 public class AirportService extends AbstractServiceLon<Airport>{
 
@@ -41,9 +43,15 @@ public class AirportService extends AbstractServiceLon<Airport>{
     private static final String SQLDELETE = "DELETE FROM airport WHERE id = $1 returning id";
     private static final String TABLENAME ="airport";
     
+
+    public AirportService() {
+        init0();
+    }
+
     
+
     @Override
-    public  String getTableName(){
+    public String getTableName(){
         return TABLENAME;
     }
 
@@ -57,14 +65,12 @@ public class AirportService extends AbstractServiceLon<Airport>{
         return SQLLKEYIN;
     }
 
-/**
-    
+/**    
     private static String sql00 = "SELECT airport.id as airport_id,
 airport.pkey as airport_pkey,
 airport.pname as airport_pname 
   FROM 
-  airport ; 
-"
+  airport "
 */
 
     @Override
@@ -84,28 +90,21 @@ airport.pname as airport_pname
     /**
      * sql select property alias field names
      */
-     
-    private static final LinkedHashSet<String> names;
+    private final LinkedHashSet<String> names =  new LinkedHashSet<>();;
     
     /**
      * Map field insert/update to property 
      */
-    private static final HashMap<String,String> insertMapFields; 
+    private final HashMap<String,String> insertMapFields = new HashMap<>(); 
     
     /**
     * Map property to field order 
     */
-    private static final HashMap<String, String> sortMapFields;
+    private final HashMap<String, String> sortMapFields = new  HashMap<>();
 
-    private static final JsonObject dcModel;
+    private final JsonObject dcModel  = new JsonObject();
     
-    static{
-        names = new LinkedHashSet<>();
-        insertMapFields = new HashMap<>();
-        sortMapFields= new  HashMap<>();
-
-        dcModel = new JsonObject();
-
+    private void init0(){
         
     dcModel.put("dc", "airport");
 
@@ -117,30 +116,24 @@ airport.pname as airport_pname
     final JsonArray ps = new JsonArray();   
  
 //pkey
-    names.add("pkey");
-    insertMapFields.put("airport.pkey","pkey");  
-
-//Create property pkey       
-    final JsonObject pkey = ps00a("pkey", "String",true);
+    doFieldSort("pkey","pkey","airport");               
    
 //Used to map error on index to source property because IS Unique
     insertMapFields.put("airport.airport_uidx_pkey","pkey");  
 
+//Create property pkey       
+    final JsonObject pkey = psString("pkey",true);
+
 // IS Unique     
     pkey.put("uq",true);                    
-
-    sortMapFields.put("pkey", "airport_pkey");                   
  
     ps.add(pkey);
  
 //pname
-    names.add("pname");
-    insertMapFields.put("airport.pname","pname");  
+    doFieldSort("pname","pname","airport");               
 
 //Create property pname       
-    final JsonObject pname = ps00a("pname", "String",true);
-
-    sortMapFields.put("pname", "airport_pname");                   
+    final JsonObject pname = psString("pname",true);
   
 //PC
     dcModel.put("pc","pname");  
@@ -175,9 +168,7 @@ airport.pname as airport_pname
 /** OTM 2  ON MODEL**/
         dcModel.put("otm2",otm2);
         
-
         
-
     }        
     @Override
     public LinkedHashSet<String> getNames() {
@@ -202,45 +193,42 @@ airport.pname as airport_pname
     @Override
     public JsonArray toJsonArray(final Row r){
         final JsonArray jsa = new JsonArray();
-        jsa.add(r.getLong("airport_id") );
-        jsa.add(r.getString("airport_pkey") );
+        jsa.add(r.getLong("airport_id") );       
+        jsa.add(r.getString("airport_pkey") );       
         jsa.add(r.getString("airport_pname") );
         return jsa;
     }
 
     @Override
-    public void fillXRow(final Row r, final XSSFRow row, int nc,boolean withIds) {
-        fillXRow0(r, row, nc, withIds);
+    public int fillXRow(final Row r, final XSSFRow row, int nc,boolean withIds) {
+        return fillXRow0(r, row, nc, withIds);
     }
 
     @Override
     public HashMap<String,String> lXRowH(final boolean withIds, final int level) {        
         
-    final  LinkedHashMap<String,String> m_ = new LinkedHashMap<>();
-    if(withIds){
-                m_.put("airport_id","Long");
-            }
-            
-    //pkey       
-            m_.put("airport_pkey","String"); 
-            
-    //pname       
-            m_.put("airport_pname","String"); 
-            
+    final  LinkedHashMap<String,String> m = new LinkedHashMap<>();
     
-    return m_;
+    if(withIds){
+        m.put("airport_id",LONG);
+    }        
+//pkey    
+    m.put("airport_pkey",STRING);              
+//pname    
+    m.put("airport_pname",STRING);          
+    
+    return m;
     
     }
     
-    private void fillXRow0(final Row r, final XSSFRow row,int nc, boolean withIds){
-        if(withIds){
-        lToCell(r, row,"airport_id", nc++); 
-        }
+    private int fillXRow0(final Row r, final XSSFRow row,int nc, final boolean withIds){
         
-    //pkey       
-            sToCell(r, row,"airport_pkey", nc++); 
-    //pname       
+    if(withIds){
+        lToCell(r, row,"airport_id", nc++); 
+    }            //pkey       
+            sToCell(r, row,"airport_pkey", nc++);     //pname       
             sToCell(r, row,"airport_pname", nc++); 
+        return nc;
     }
 
     @Override
@@ -260,15 +248,16 @@ airport.pname as airport_pname
 
     @Override
     public void fillTupleInsert(final Airport dc0, final Tuple t){
-                t.addString(dc0.getPkey());
-        t.addString(dc0.getPname());
+                
+    t.addString(dc0.getPkey());        
+    t.addString(dc0.getPname());
     }
 
     @Override
     public void fillTupleUpdate(final Airport dc0, final Tuple t){
-                t.addString(dc0.getPname());
-
-        t.addLong(dc0.getId());
+        
+    t.addString(dc0.getPname());
+    t.addLong(dc0.getId());
             
     }    
 
@@ -289,7 +278,6 @@ airport.pname as airport_pname
     public void fillTupleInsert(final JsonObject js,final Tuple t){       
         
     fTString("pkey", js, t);
-
     fTString("pname", js, t);       
     }
 
@@ -311,11 +299,9 @@ fTLong("id",js,t);
     @Override
     public Airport doFrom(final Row r){
         final Airport airport = new Airport();
-         airport.setId(r.getLong("airport_id"));
-         
-                airport.setPkey(  r.getString("airport_pkey"));
-         
-                airport.setPname(  r.getString("airport_pname"));  
+         airport.setId(r.getLong("airport_id"));         
+                airport.setPkey(  r.getString("airport_pkey"));                       
+                airport.setPname(  r.getString("airport_pname"));                
         return airport;
     }
     
@@ -324,8 +310,9 @@ fTLong("id",js,t);
         Airport airport = new Airport();
         airport.setId(js.getLong("id"));
         
-                airport.setPkey(js.getString("pkey"));
-        airport.setPname(js.getString("pname"));
+                
+                airport.setPkey(js.getString("pkey"));        
+                airport.setPname(js.getString("pname"));
         return airport;
     }
 

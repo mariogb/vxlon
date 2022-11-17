@@ -17,6 +17,9 @@ import org.lonpe.services.AbstractServiceLon;
 import org.lonpe.services.ConditionInfo;
 import org.lonpe.lonvx.sqlbuilders.SqlLonConditionsBuilder;
 import org.apache.poi.xssf.usermodel.XSSFRow;
+import static org.lonpe.lonvx.ctes.CteLon.*;
+
+
 
 
 
@@ -26,7 +29,6 @@ import org.apache.poi.xssf.usermodel.XSSFRow;
  *   ComercialDocumentTypeOutService 
  * 
  */
-   
   
 public class ComercialDocumentTypeOutService extends AbstractServiceLon<ComercialDocumentTypeOut>{
 
@@ -41,9 +43,15 @@ public class ComercialDocumentTypeOutService extends AbstractServiceLon<Comercia
     private static final String SQLDELETE = "DELETE FROM comercial_document_type_out WHERE id = $1 returning id";
     private static final String TABLENAME ="comercial_document_type_out";
     
+
+    public ComercialDocumentTypeOutService() {
+        init0();
+    }
+
     
+
     @Override
-    public  String getTableName(){
+    public String getTableName(){
         return TABLENAME;
     }
 
@@ -57,15 +65,13 @@ public class ComercialDocumentTypeOutService extends AbstractServiceLon<Comercia
         return SQLLKEYIN;
     }
 
-/**
-    
+/**    
     private static String sql00 = "SELECT comercial_document_type_out.id as comercial_document_type_out_id,
 comercial_document_type_out.pkey as comercial_document_type_out_pkey,
 comercial_document_type_out.afect_stock as comercial_document_type_out_afect_stock,
 comercial_document_type_out.pname as comercial_document_type_out_pname 
   FROM 
-  comercial_document_type_out ; 
-"
+  comercial_document_type_out "
 */
 
     @Override
@@ -85,28 +91,21 @@ comercial_document_type_out.pname as comercial_document_type_out_pname
     /**
      * sql select property alias field names
      */
-     
-    private static final LinkedHashSet<String> names;
+    private final LinkedHashSet<String> names =  new LinkedHashSet<>();;
     
     /**
      * Map field insert/update to property 
      */
-    private static final HashMap<String,String> insertMapFields; 
+    private final HashMap<String,String> insertMapFields = new HashMap<>(); 
     
     /**
     * Map property to field order 
     */
-    private static final HashMap<String, String> sortMapFields;
+    private final HashMap<String, String> sortMapFields = new  HashMap<>();
 
-    private static final JsonObject dcModel;
+    private final JsonObject dcModel  = new JsonObject();
     
-    static{
-        names = new LinkedHashSet<>();
-        insertMapFields = new HashMap<>();
-        sortMapFields= new  HashMap<>();
-
-        dcModel = new JsonObject();
-
+    private void init0(){
         
     dcModel.put("dc", "comercialDocumentTypeOut");
 
@@ -118,30 +117,24 @@ comercial_document_type_out.pname as comercial_document_type_out_pname
     final JsonArray ps = new JsonArray();   
  
 //pkey
-    names.add("pkey");
-    insertMapFields.put("comercial_document_type_out.pkey","pkey");  
-
-//Create property pkey       
-    final JsonObject pkey = ps00a("pkey", "String",true);
+    doFieldSort("pkey","pkey","comercial_document_type_out");               
    
 //Used to map error on index to source property because IS Unique
     insertMapFields.put("comercial_document_type_out.comercial_document_type_out_uidx_pkey","pkey");  
 
+//Create property pkey       
+    final JsonObject pkey = psString("pkey",true);
+
 // IS Unique     
     pkey.put("uq",true);                    
-
-    sortMapFields.put("pkey", "comercial_document_type_out_pkey");                   
  
     ps.add(pkey);
  
 //afectStock
-    names.add("afectStock");
-    insertMapFields.put("comercial_document_type_out.afect_stock","afectStock");  
+    doFieldSort("afectStock","afect_stock","comercial_document_type_out");               
 
 //Create property afectStock       
-    final JsonObject afectStock = ps00a("afectStock", "String",true);
-
-    sortMapFields.put("afectStock", "comercial_document_type_out_afect_stock");                   
+    final JsonObject afectStock = psString("afectStock",true);
 
     final JsonArray afectStockInList = new JsonArray();
                 afectStockInList.add("NO"); 
@@ -152,13 +145,10 @@ afectStockInList.add("YES");
     ps.add(afectStock);
  
 //pname
-    names.add("pname");
-    insertMapFields.put("comercial_document_type_out.pname","pname");  
+    doFieldSort("pname","pname","comercial_document_type_out");               
 
 //Create property pname       
-    final JsonObject pname = ps00a("pname", "String",true);
-
-    sortMapFields.put("pname", "comercial_document_type_out_pname");                   
+    final JsonObject pname = psString("pname",true);
   
 //PC
     dcModel.put("pc","pname");  
@@ -189,9 +179,7 @@ afectStockInList.add("YES");
 /** OTM 2  ON MODEL**/
         dcModel.put("otm2",otm2);
         
-
         
-
     }        
     @Override
     public LinkedHashSet<String> getNames() {
@@ -216,51 +204,46 @@ afectStockInList.add("YES");
     @Override
     public JsonArray toJsonArray(final Row r){
         final JsonArray jsa = new JsonArray();
-        jsa.add(r.getLong("comercial_document_type_out_id") );
-        jsa.add(r.getString("comercial_document_type_out_pkey") );
-        jsa.add(r.getString("comercial_document_type_out_afect_stock") );
+        jsa.add(r.getLong("comercial_document_type_out_id") );       
+        jsa.add(r.getString("comercial_document_type_out_pkey") );       
+        jsa.add(r.getString("comercial_document_type_out_afect_stock") );       
         jsa.add(r.getString("comercial_document_type_out_pname") );
         return jsa;
     }
 
     @Override
-    public void fillXRow(final Row r, final XSSFRow row, int nc,boolean withIds) {
-        fillXRow0(r, row, nc, withIds);
+    public int fillXRow(final Row r, final XSSFRow row, int nc,boolean withIds) {
+        return fillXRow0(r, row, nc, withIds);
     }
 
     @Override
     public HashMap<String,String> lXRowH(final boolean withIds, final int level) {        
         
-    final  LinkedHashMap<String,String> m_ = new LinkedHashMap<>();
-    if(withIds){
-                m_.put("comercialDocumentTypeOut_id","Long");
-            }
-            
-    //pkey       
-            m_.put("comercialDocumentTypeOut_pkey","String"); 
-            
-    //afectStock       
-            m_.put("comercialDocumentTypeOut_afectStock","String"); 
-            
-    //pname       
-            m_.put("comercialDocumentTypeOut_pname","String"); 
-            
+    final  LinkedHashMap<String,String> m = new LinkedHashMap<>();
     
-    return m_;
+    if(withIds){
+        m.put("comercialDocumentTypeOut_id",LONG);
+    }        
+//pkey    
+    m.put("comercialDocumentTypeOut_pkey",STRING);              
+//afectStock    
+    m.put("comercialDocumentTypeOut_afectStock",STRING);              
+//pname    
+    m.put("comercialDocumentTypeOut_pname",STRING);          
+    
+    return m;
     
     }
     
-    private void fillXRow0(final Row r, final XSSFRow row,int nc, boolean withIds){
-        if(withIds){
-        lToCell(r, row,"comercial_document_type_out_id", nc++); 
-        }
+    private int fillXRow0(final Row r, final XSSFRow row,int nc, final boolean withIds){
         
-    //pkey       
-            sToCell(r, row,"comercial_document_type_out_pkey", nc++); 
-    //afectStock       
-            sToCell(r, row,"comercial_document_type_out_afect_stock", nc++); 
-    //pname       
+    if(withIds){
+        lToCell(r, row,"comercial_document_type_out_id", nc++); 
+    }            //pkey       
+            sToCell(r, row,"comercial_document_type_out_pkey", nc++);     //afectStock       
+            sToCell(r, row,"comercial_document_type_out_afect_stock", nc++);     //pname       
             sToCell(r, row,"comercial_document_type_out_pname", nc++); 
+        return nc;
     }
 
     @Override
@@ -280,17 +263,18 @@ afectStockInList.add("YES");
 
     @Override
     public void fillTupleInsert(final ComercialDocumentTypeOut dc0, final Tuple t){
-                t.addString(dc0.getPkey());
-        t.addString(dc0.getAfectStock());
-        t.addString(dc0.getPname());
+                
+    t.addString(dc0.getPkey());        
+    t.addString(dc0.getAfectStock());        
+    t.addString(dc0.getPname());
     }
 
     @Override
     public void fillTupleUpdate(final ComercialDocumentTypeOut dc0, final Tuple t){
-                t.addString(dc0.getAfectStock());
-        t.addString(dc0.getPname());
-
-        t.addLong(dc0.getId());
+        
+    t.addString(dc0.getAfectStock());
+    t.addString(dc0.getPname());
+    t.addLong(dc0.getId());
             
     }    
 
@@ -313,9 +297,7 @@ afectStockInList.add("YES");
     public void fillTupleInsert(final JsonObject js,final Tuple t){       
         
     fTString("pkey", js, t);
-
     fTString("afectStock", js, t);
-
     fTString("pname", js, t);       
     }
 
@@ -338,13 +320,10 @@ fTLong("id",js,t);
     @Override
     public ComercialDocumentTypeOut doFrom(final Row r){
         final ComercialDocumentTypeOut comercialDocumentTypeOut = new ComercialDocumentTypeOut();
-         comercialDocumentTypeOut.setId(r.getLong("comercial_document_type_out_id"));
-         
-                comercialDocumentTypeOut.setPkey(  r.getString("comercial_document_type_out_pkey"));
-         
-                comercialDocumentTypeOut.setAfectStock(  r.getString("comercial_document_type_out_afect_stock"));
-         
-                comercialDocumentTypeOut.setPname(  r.getString("comercial_document_type_out_pname"));  
+         comercialDocumentTypeOut.setId(r.getLong("comercial_document_type_out_id"));         
+                comercialDocumentTypeOut.setPkey(  r.getString("comercial_document_type_out_pkey"));                       
+                comercialDocumentTypeOut.setAfectStock(  r.getString("comercial_document_type_out_afect_stock"));                       
+                comercialDocumentTypeOut.setPname(  r.getString("comercial_document_type_out_pname"));                
         return comercialDocumentTypeOut;
     }
     
@@ -353,9 +332,10 @@ fTLong("id",js,t);
         ComercialDocumentTypeOut comercialDocumentTypeOut = new ComercialDocumentTypeOut();
         comercialDocumentTypeOut.setId(js.getLong("id"));
         
-                comercialDocumentTypeOut.setPkey(js.getString("pkey"));
-        comercialDocumentTypeOut.setAfectStock(js.getString("afectStock"));
-        comercialDocumentTypeOut.setPname(js.getString("pname"));
+                
+                comercialDocumentTypeOut.setPkey(js.getString("pkey"));        
+                comercialDocumentTypeOut.setAfectStock(js.getString("afectStock"));        
+                comercialDocumentTypeOut.setPname(js.getString("pname"));
         return comercialDocumentTypeOut;
     }
 

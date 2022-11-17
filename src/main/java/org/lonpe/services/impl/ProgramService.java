@@ -17,6 +17,9 @@ import org.lonpe.services.AbstractServiceLon;
 import org.lonpe.services.ConditionInfo;
 import org.lonpe.lonvx.sqlbuilders.SqlLonConditionsBuilder;
 import org.apache.poi.xssf.usermodel.XSSFRow;
+import static org.lonpe.lonvx.ctes.CteLon.*;
+
+
 
 
 
@@ -26,7 +29,6 @@ import org.apache.poi.xssf.usermodel.XSSFRow;
  *   ProgramService 
  * 
  */
-   
   
 public class ProgramService extends AbstractServiceLon<Program>{
 
@@ -41,9 +43,15 @@ public class ProgramService extends AbstractServiceLon<Program>{
     private static final String SQLDELETE = "DELETE FROM program WHERE id = $1 returning id";
     private static final String TABLENAME ="program";
     
+
+    public ProgramService() {
+        init0();
+    }
+
     
+
     @Override
-    public  String getTableName(){
+    public String getTableName(){
         return TABLENAME;
     }
 
@@ -57,16 +65,14 @@ public class ProgramService extends AbstractServiceLon<Program>{
         return SQLLKEYIN;
     }
 
-/**
-    
+/**    
     private static String sql00 = "SELECT program.id as program_id,
 program.pkey as program_pkey,
 program.description as program_description,
 program.fast_key as program_fast_key,
 program.pname as program_pname 
   FROM 
-  program ; 
-"
+  program "
 */
 
     @Override
@@ -86,28 +92,21 @@ program.pname as program_pname
     /**
      * sql select property alias field names
      */
-     
-    private static final LinkedHashSet<String> names;
+    private final LinkedHashSet<String> names =  new LinkedHashSet<>();;
     
     /**
      * Map field insert/update to property 
      */
-    private static final HashMap<String,String> insertMapFields; 
+    private final HashMap<String,String> insertMapFields = new HashMap<>(); 
     
     /**
     * Map property to field order 
     */
-    private static final HashMap<String, String> sortMapFields;
+    private final HashMap<String, String> sortMapFields = new  HashMap<>();
 
-    private static final JsonObject dcModel;
+    private final JsonObject dcModel  = new JsonObject();
     
-    static{
-        names = new LinkedHashSet<>();
-        insertMapFields = new HashMap<>();
-        sortMapFields= new  HashMap<>();
-
-        dcModel = new JsonObject();
-
+    private void init0(){
         
     dcModel.put("dc", "program");
 
@@ -119,37 +118,32 @@ program.pname as program_pname
     final JsonArray ps = new JsonArray();   
  
 //pkey
-    names.add("pkey");
-    insertMapFields.put("program.pkey","pkey");  
-
-//Create property pkey       
-    final JsonObject pkey = ps00a("pkey", "String",true);
+    doFieldSort("pkey","pkey","program");               
    
 //Used to map error on index to source property because IS Unique
     insertMapFields.put("program.program_uidx_pkey","pkey");  
 
+//Create property pkey       
+    final JsonObject pkey = psString("pkey",true);
+
 // IS Unique     
     pkey.put("uq",true);                    
-
-    sortMapFields.put("pkey", "program_pkey");                   
  
     ps.add(pkey);
  
 //description
-    names.add("description");
-    insertMapFields.put("program.description","description");  
+    doField("description","description","program");               
 
 //Create property description       
-    final JsonObject description = ps00a("description", "String",false);
+    final JsonObject description = psString("description",false);
  
     ps.add(description);
  
 //fastKey
-    names.add("fastKey");
-    insertMapFields.put("program.fast_key","fastKey");  
+    doField("fastKey","fast_key","program");               
 
 //Create property fastKey       
-    final JsonObject fastKey = ps00a("fastKey", "String",false);
+    final JsonObject fastKey = psString("fastKey",false);
 
 // hasIndex 
     fastKey.put("withIndex",true);  
@@ -157,19 +151,16 @@ program.pname as program_pname
     ps.add(fastKey);
  
 //pname
-    names.add("pname");
-    insertMapFields.put("program.pname","pname");  
-
-//Create property pname       
-    final JsonObject pname = ps00a("pname", "String",true);
+    doFieldSort("pname","pname","program");               
    
 //Used to map error on index to source property because IS Unique
     insertMapFields.put("program.program_uidx_pname","pname");  
 
+//Create property pname       
+    final JsonObject pname = psString("pname",true);
+
 // IS Unique     
     pname.put("uq",true);                    
-
-    sortMapFields.put("pname", "program_pname");                   
   
 //PC
     dcModel.put("pc","pname");  
@@ -209,9 +200,7 @@ program.pname as program_pname
 /** OTM 3  ON MODEL**/
         dcModel.put("otm3",otm3);
         
-
         
-
     }        
     @Override
     public LinkedHashSet<String> getNames() {
@@ -236,57 +225,50 @@ program.pname as program_pname
     @Override
     public JsonArray toJsonArray(final Row r){
         final JsonArray jsa = new JsonArray();
-        jsa.add(r.getLong("program_id") );
-        jsa.add(r.getString("program_pkey") );
-        jsa.add(r.getString("program_description") );
-        jsa.add(r.getString("program_fast_key") );
+        jsa.add(r.getLong("program_id") );       
+        jsa.add(r.getString("program_pkey") );       
+        jsa.add(r.getString("program_description") );       
+        jsa.add(r.getString("program_fast_key") );       
         jsa.add(r.getString("program_pname") );
         return jsa;
     }
 
     @Override
-    public void fillXRow(final Row r, final XSSFRow row, int nc,boolean withIds) {
-        fillXRow0(r, row, nc, withIds);
+    public int fillXRow(final Row r, final XSSFRow row, int nc,boolean withIds) {
+        return fillXRow0(r, row, nc, withIds);
     }
 
     @Override
     public HashMap<String,String> lXRowH(final boolean withIds, final int level) {        
         
-    final  LinkedHashMap<String,String> m_ = new LinkedHashMap<>();
-    if(withIds){
-                m_.put("program_id","Long");
-            }
-            
-    //pkey       
-            m_.put("program_pkey","String"); 
-            
-    //description       
-            m_.put("program_description","String"); 
-            
-    //fastKey       
-            m_.put("program_fastKey","String"); 
-            
-    //pname       
-            m_.put("program_pname","String"); 
-            
+    final  LinkedHashMap<String,String> m = new LinkedHashMap<>();
     
-    return m_;
+    if(withIds){
+        m.put("program_id",LONG);
+    }        
+//pkey    
+    m.put("program_pkey",STRING);              
+//description    
+    m.put("program_description",STRING);              
+//fastKey    
+    m.put("program_fastKey",STRING);              
+//pname    
+    m.put("program_pname",STRING);          
+    
+    return m;
     
     }
     
-    private void fillXRow0(final Row r, final XSSFRow row,int nc, boolean withIds){
-        if(withIds){
-        lToCell(r, row,"program_id", nc++); 
-        }
+    private int fillXRow0(final Row r, final XSSFRow row,int nc, final boolean withIds){
         
-    //pkey       
-            sToCell(r, row,"program_pkey", nc++); 
-    //description       
-            sToCell(r, row,"program_description", nc++); 
-    //fastKey       
-            sToCell(r, row,"program_fast_key", nc++); 
-    //pname       
+    if(withIds){
+        lToCell(r, row,"program_id", nc++); 
+    }            //pkey       
+            sToCell(r, row,"program_pkey", nc++);     //description       
+            sToCell(r, row,"program_description", nc++);     //fastKey       
+            sToCell(r, row,"program_fast_key", nc++);     //pname       
             sToCell(r, row,"program_pname", nc++); 
+        return nc;
     }
 
     @Override
@@ -306,19 +288,20 @@ program.pname as program_pname
 
     @Override
     public void fillTupleInsert(final Program dc0, final Tuple t){
-                t.addString(dc0.getPkey());
-        t.addString(dc0.getDescription());
-        t.addString(dc0.getFastKey());
-        t.addString(dc0.getPname());
+                
+    t.addString(dc0.getPkey());        
+    t.addString(dc0.getDescription());        
+    t.addString(dc0.getFastKey());        
+    t.addString(dc0.getPname());
     }
 
     @Override
     public void fillTupleUpdate(final Program dc0, final Tuple t){
-                t.addString(dc0.getDescription());
-        t.addString(dc0.getFastKey());
-        t.addString(dc0.getPname());
-
-        t.addLong(dc0.getId());
+        
+    t.addString(dc0.getDescription());
+    t.addString(dc0.getFastKey());
+    t.addString(dc0.getPname());
+    t.addLong(dc0.getId());
             
     }    
 
@@ -343,11 +326,8 @@ program.pname as program_pname
     public void fillTupleInsert(final JsonObject js,final Tuple t){       
         
     fTString("pkey", js, t);
-
     fTString("description", js, t);
-
     fTString("fastKey", js, t);
-
     fTString("pname", js, t);       
     }
 
@@ -371,15 +351,11 @@ fTLong("id",js,t);
     @Override
     public Program doFrom(final Row r){
         final Program program = new Program();
-         program.setId(r.getLong("program_id"));
-         
-                program.setPkey(  r.getString("program_pkey"));
-         
-                program.setDescription(  r.getString("program_description"));
-         
-                program.setFastKey(  r.getString("program_fast_key"));
-         
-                program.setPname(  r.getString("program_pname"));  
+         program.setId(r.getLong("program_id"));         
+                program.setPkey(  r.getString("program_pkey"));                       
+                program.setDescription(  r.getString("program_description"));                       
+                program.setFastKey(  r.getString("program_fast_key"));                       
+                program.setPname(  r.getString("program_pname"));                
         return program;
     }
     
@@ -388,10 +364,11 @@ fTLong("id",js,t);
         Program program = new Program();
         program.setId(js.getLong("id"));
         
-                program.setPkey(js.getString("pkey"));
-        program.setDescription(js.getString("description"));
-        program.setFastKey(js.getString("fastKey"));
-        program.setPname(js.getString("pname"));
+                
+                program.setPkey(js.getString("pkey"));        
+                program.setDescription(js.getString("description"));        
+                program.setFastKey(js.getString("fastKey"));        
+                program.setPname(js.getString("pname"));
         return program;
     }
 

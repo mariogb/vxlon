@@ -1,4 +1,3 @@
-
 package org.lonpe.lonvx.handlers;
 
 import com.hazelcast.core.HazelcastInstance;
@@ -45,7 +44,7 @@ public abstract class AbstractGenericSave implements Handler<RoutingContext> {
     protected static final String DETAIL = "detail";
     protected final DcMapForServices dcMapForServices;
     protected final BCryptPasswordEncoder b = new BCryptPasswordEncoder();
-   
+
     protected final HazelcastInstance h;
     protected final DBLon1 dBLon1;
     protected Map<String, AtomicLong> atomicos = new HashMap<>();

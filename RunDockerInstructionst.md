@@ -32,5 +32,4 @@ bash
 ```
 docker-compose up --scale vxlon=2
 
-
 ```

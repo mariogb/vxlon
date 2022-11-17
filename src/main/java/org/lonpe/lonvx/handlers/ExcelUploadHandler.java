@@ -31,7 +31,7 @@ import org.lonpe.services.impl.DcMapForServices;
 
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
-import io.reactivex.rxjava3.disposables.Disposable;
+
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
@@ -41,6 +41,7 @@ import io.vertx.pgclient.PgException;
 import io.vertx.rxjava3.sqlclient.RowIterator;
 import io.vertx.rxjava3.sqlclient.RowSet;
 import io.vertx.rxjava3.sqlclient.Tuple;
+
 import org.lonpe.model.IDcLon;
 import org.lonpe.services.IServiceLon;
 
@@ -103,7 +104,7 @@ public class ExcelUploadHandler implements Handler<RoutingContext> {
             final List<Map<String, Object>> datos = (List<Map<String, Object>>) data.get("datos");
             final Single<Map<String, Map<String, Long>>> mapParents = doMapParents(serviceLon, parentsKey);
 
-            Disposable subscribe = mapParents.flatMap((final Map<String, Map<String, Long>> mp2) -> {
+            mapParents.flatMap((final Map<String, Map<String, Long>> mp2) -> {
 
                 final Iterator<Map<String, Object>> iterator = datos.iterator();
                 final List<Tuple> batch = new ArrayList<>();
@@ -117,25 +118,26 @@ public class ExcelUploadHandler implements Handler<RoutingContext> {
                 }
                 return dBLon1.doBatch(serviceLon.getSqlInsert(), batch);
             }).flatMap((RowSet<io.vertx.rxjava3.sqlclient.Row> onBB) -> {
-                Map<String, Object> ee = new HashMap();
+                Map<String, String> ee = new HashMap<>();
                 final RowIterator<io.vertx.rxjava3.sqlclient.Row> iterator = onBB.iterator();
                 while (iterator.hasNext()) {
                     final io.vertx.rxjava3.sqlclient.Row row00 = iterator.next();
-                    ee.put("t", row00.getLong(0));
+                    ee.put(row00.getLong(0).toString(), row00.getString(1));
                 }
                 return Single.just(ee);
-            }).doOnError((Throwable t) -> {
+            }).subscribe((Map<String, String> o2) -> {
+                final JsonObject r = new JsonObject().put("r", o2);
+                rc.response().putHeader("content-type", "application/json").end(r.toBuffer());
+            }, (Throwable t) -> {
+
                 if (t instanceof PgException) {
-                    UtilFns.doError(serviceLon, rc.response(), t.getMessage());
+                    UtilFns.doError(serviceLon, rc.response(), (PgException) t);
                     return;
                 }
                 handleTheErr(rc, t);
-            }).subscribe((Map<String, Object> t) -> {
-                final JsonObject r = new JsonObject().put("r", t);
-                rc.response().putHeader("content-type", "application/json").end(r.toBuffer());
             });
-            subscribe.dispose();
         } catch (IOException | ExcelImportException ex) {
+
             handleTheErr(rc, ex);
         }
 
@@ -164,12 +166,13 @@ public class ExcelUploadHandler implements Handler<RoutingContext> {
             final IServiceLon<IDcLon> serviceLonParent = dcMapForServices.getServiceFor(jsMto.getString("t"));
             final String sql0 = "SELECT id,pkey from " + serviceLonParent.getTableName() + " WHERE pkey IN ";
             final var toObservable = doMPKID22(parentsKey, jsMto.getString("n"), sql0).toObservable();
+
             listObserbables.add(toObservable);
         }
 
         final Observable<Map<String, Long>> concat = Observable.concat(listObserbables);
 
-        return concat.toList().map((final         var ldM) -> {
+        return concat.toList().map((final       var ldM) -> {
             final Map<String, Map<String, Long>> mapParents2 = new HashMap<>();
             for (int i = 0; i < nmto; i++) {
                 final JsonObject jsMto = mto.getJsonObject(i);
@@ -183,6 +186,7 @@ public class ExcelUploadHandler implements Handler<RoutingContext> {
 
     protected Single<Map<String, Long>> doMPKID22(final Map<String, HashSet<String>> parentsKey, final String pn, final String sql) {
         final HashSet<String> parentDc1 = parentsKey.get(pn);
+        System.out.println("doMPKID22 " + pn);
         final String sql2 = sql + "(" + parentDc1.stream().map(t -> "'" + t + "'").collect(Collectors.joining(",")) + ")";
         return dBLon1.doKV(sql2, Tuple.tuple());
     }
@@ -268,7 +272,7 @@ public class ExcelUploadHandler implements Handler<RoutingContext> {
 
             for (final Row row : sheet) {
                 final int i = row.getRowNum();
-                if (i> 10_000 || (i > 0 && !processRow2(row))) {
+                if (i > 10_000 || (i > 0 && !processRow2(row))) {
                     break;
                 }
             }
@@ -332,6 +336,27 @@ public class ExcelUploadHandler implements Handler<RoutingContext> {
             return true;
         }
 
+        private void chPUnique(final String cval, final String n, final JsonObject p) throws ExcelUploadHandler.ExcelUploadFormatException {
+            if (Boolean.TRUE.equals(p.getBoolean("uq"))) {
+                final Set<String> losVals = mustBeUniqueValueMap.get(n);
+                if (losVals.contains(cval)) {
+                    throw new ExcelUploadFormatException("REPITING VALUE {" + cval + "} FOR {" + n + "}");
+                }
+                losVals.add(cval);
+            }
+        }
+
+        private void chPRequired(final String cval, final String n, final JsonObject p) throws ExcelUploadHandler.ExcelUploadFormatException {
+            if (Boolean.TRUE.equals(p.getBoolean("rq"))) {
+                if (cval == null) {
+                    throw new ExcelUploadHandler.ExcelUploadFormatException("NULL VALUE {" + cval + "} FOR {" + n + "}");
+                }
+                if (cval.trim().length() < 2) {
+                    throw new ExcelUploadHandler.ExcelUploadFormatException("TOO LITTLE VALUE {" + cval + "} FOR {" + n + "}");
+                }
+            }
+        }
+
         private void ps02(final JsonObject p, final Cell cell, final Map<String, Object> objeto) throws Exception {
 
             final String t = p.getString("t");
@@ -339,23 +364,26 @@ public class ExcelUploadHandler implements Handler<RoutingContext> {
             if (t.equals("String")) {
 
                 final String cval = asText(cell);
-                //TODO No empty
-                if (Boolean.TRUE.equals(p.getBoolean("rq"))) {
-                    if (cval == null) {
-                        throw new ExcelUploadFormatException("NULL VALUE {" + cval + "} FOR {" + n + "}");
-                    }
-                    if (cval.trim().length() < 2) {
-                        throw new ExcelUploadFormatException("TOO LITTLE VALUE {" + cval + "} FOR {" + n + "}");
-                    }
-                }
+                chPRequired(cval, n, p);
 
-                if (Boolean.TRUE.equals(p.getBoolean("uq"))) {
-                    final Set<String> losVals = mustBeUniqueValueMap.get(n);
-                    if (losVals.contains(cval)) {
-                        throw new ExcelUploadFormatException("REPITING VALUE {" + cval + "} FOR {" + n + "}");
-                    }
-                    losVals.add(cval);
-                }
+                chPUnique(cval, n, p);
+
+                //TODO No empty
+//                if (Boolean.TRUE.equals(p.getBoolean("rq"))) {
+//                    if (cval == null) {
+//                        throw new ExcelUploadFormatException("NULL VALUE {" + cval + "} FOR {" + n + "}");
+//                    }
+//                    if (cval.trim().length() < 2) {
+//                        throw new ExcelUploadFormatException("TOO LITTLE VALUE {" + cval + "} FOR {" + n + "}");
+//                    }
+//                }
+//                if (Boolean.TRUE.equals(p.getBoolean("uq"))) {
+//                    final Set<String> losVals = mustBeUniqueValueMap.get(n);
+//                    if (losVals.contains(cval)) {
+//                        throw new ExcelUploadFormatException("REPITING VALUE {" + cval + "} FOR {" + n + "}");
+//                    }
+//                    losVals.add(cval);
+//                }
                 final JsonArray inList = p.getJsonArray("inList");
                 if (inList != null) {
 

@@ -14,8 +14,7 @@ public class ConditionInfo {
 
     private LinkedHashSet<String> condiciones;
     private Integer numParam;
-    
-    
+
     private Integer max;
     private Integer offset;
     private boolean withCount;
@@ -33,10 +32,7 @@ public class ConditionInfo {
     public String getOrden() {
         return orden;
     }
-    
 
-    
-    
     public LinkedHashSet<String> getCondiciones() {
         return condiciones;
     }
@@ -66,14 +62,4 @@ public class ConditionInfo {
         return withCount;
     }
 
-
-
-  
-    
-   
-    
-
-    
-    
-    
 }

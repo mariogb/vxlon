@@ -17,16 +17,18 @@ import org.lonpe.services.AbstractServiceLon;
 import org.lonpe.services.ConditionInfo;
 import org.lonpe.lonvx.sqlbuilders.SqlLonConditionsBuilder;
 import org.apache.poi.xssf.usermodel.XSSFRow;
+import static org.lonpe.lonvx.ctes.CteLon.*;
 
 
 
 import org.lonpe.lonvx.sqlbuilders.ZtatUnitInfoLon;
+import org.lonpe.lonvx.sqlbuilders.ZtatUnitInfoLon2;
+import org.lonpe.lonvx.sqlbuilders.ZtatUnitInfoLon3;
 
 /**
  *   ContractInService 
  * 
  */
-   
   
 public class ContractInService extends AbstractServiceLon<ContractIn>{
 
@@ -41,26 +43,18 @@ public class ContractInService extends AbstractServiceLon<ContractIn>{
     private static final String SQLDELETE = "DELETE FROM contract_in WHERE id = $1 returning id";
     private static final String TABLENAME ="contract_in";
     
-//1
-    private static final ZtatUnitInfoLon zProgramBaseTimePeriod;
 
-//1
-    private static final ZtatUnitInfoLon zThirdPerson;
+    public ContractInService() {
+        init0();
+    }
 
-//2
-    private static final ZtatUnitInfoLon zBaseTimePeriod;
-
-//2
-    private static final ZtatUnitInfoLon zProgram;
-
-//3
-    private static final ZtatUnitInfoLon zBase;
-
-//3
-    private static final ZtatUnitInfoLon zTimePeriod;
     
+    private static final Map<String, ZtatUnitInfoLon> mz1 = new HashMap<>(6);                       
+    private static final Map<String, ZtatUnitInfoLon2> mz2 = new HashMap<>(6);                       
+    private static final Map<String, ZtatUnitInfoLon3> mz3 = new HashMap<>(6);                       
+
     @Override
-    public  String getTableName(){
+    public String getTableName(){
         return TABLENAME;
     }
 
@@ -74,33 +68,31 @@ public class ContractInService extends AbstractServiceLon<ContractIn>{
         return SQLLKEYIN;
     }
 
-/**
-    
+/**    
     private static String sql00 = "SELECT contract_in.id as contract_in_id,
 contract_in.pkey as contract_in_pkey,
 contract_in.pname as contract_in_pname,
 program_base_time_period.id as program_base_time_period_id,program_base_time_period.pkey as program_base_time_period_pkey,
-third_person.id as third_person_id,third_person.pkey as third_person_pkey,third_person.pname as third_person_pname,
 base_time_period.id as base_time_period_id, base_time_period.pkey as base_time_period_pkey,
-program.id as program_id, program.pkey as program_pkey,program.pname as program_pname,
 base.id as base_id, base.pkey as base_pkey,base.pname as base_pname,
-time_period.id as time_period_id, time_period.pkey as time_period_pkey,time_period.pname as time_period_pname 
+time_period.id as time_period_id, time_period.pkey as time_period_pkey,time_period.pname as time_period_pname,
+program.id as program_id, program.pkey as program_pkey,program.pname as program_pname,
+third_person.id as third_person_id,third_person.pkey as third_person_pkey,third_person.pname as third_person_pname 
   FROM 
   contract_in,
   program_base_time_period as program_base_time_period,
-  third_person as third_person,
   base_time_period as base_time_period,
-  program as program,
   base as base,
-  time_period as time_period  
+  time_period as time_period,
+  program as program,
+  third_person as third_person  
  WHERE 
  contract_in.program_base_time_period_id = program_base_time_period.id
- AND contract_in.third_person_id = third_person.id
  AND program_base_time_period.base_time_period_id = base_time_period.id
- AND program_base_time_period.program_id = program.id
  AND base_time_period.base_id = base.id
- AND base_time_period.time_period_id = time_period.id; 
-"
+ AND base_time_period.time_period_id = time_period.id
+ AND program_base_time_period.program_id = program.id
+ AND contract_in.third_person_id = third_person.id"
 */
 
     @Override
@@ -120,28 +112,21 @@ time_period.id as time_period_id, time_period.pkey as time_period_pkey,time_peri
     /**
      * sql select property alias field names
      */
-     
-    private static final LinkedHashSet<String> names;
+    private final LinkedHashSet<String> names =  new LinkedHashSet<>();;
     
     /**
      * Map field insert/update to property 
      */
-    private static final HashMap<String,String> insertMapFields; 
+    private final HashMap<String,String> insertMapFields = new HashMap<>(); 
     
     /**
     * Map property to field order 
     */
-    private static final HashMap<String, String> sortMapFields;
+    private final HashMap<String, String> sortMapFields = new  HashMap<>();
 
-    private static final JsonObject dcModel;
+    private final JsonObject dcModel  = new JsonObject();
     
-    static{
-        names = new LinkedHashSet<>();
-        insertMapFields = new HashMap<>();
-        sortMapFields= new  HashMap<>();
-
-        dcModel = new JsonObject();
-
+    private void init0(){
         
     dcModel.put("dc", "contractIn");
 
@@ -153,30 +138,24 @@ time_period.id as time_period_id, time_period.pkey as time_period_pkey,time_peri
     final JsonArray ps = new JsonArray();   
  
 //pkey
-    names.add("pkey");
-    insertMapFields.put("contract_in.pkey","pkey");  
-
-//Create property pkey       
-    final JsonObject pkey = ps00a("pkey", "String",true);
+    doFieldSort("pkey","pkey","contract_in");               
    
 //Used to map error on index to source property because IS Unique
     insertMapFields.put("contract_in.contract_in_uidx_pkey","pkey");  
 
+//Create property pkey       
+    final JsonObject pkey = psString("pkey",true);
+
 // IS Unique     
     pkey.put("uq",true);                    
-
-    sortMapFields.put("pkey", "contract_in_pkey");                   
  
     ps.add(pkey);
  
 //pname
-    names.add("pname");
-    insertMapFields.put("contract_in.pname","pname");  
+    doFieldSort("pname","pname","contract_in");               
 
 //Create property pname       
-    final JsonObject pname = ps00a("pname", "String",true);
-
-    sortMapFields.put("pname", "contract_in_pname");                   
+    final JsonObject pname = psString("pname",true);
   
 //PC
     dcModel.put("pc","pname");  
@@ -188,89 +167,99 @@ time_period.id as time_period_id, time_period.pkey as time_period_pkey,time_peri
 
     final JsonArray mto = new JsonArray();      
 
-//(1)  programBaseTimePeriod --------------------
-    names.add("programBaseTimePeriod_id");      
-    insertMapFields.put("contract_in.program_base_time_period_id","programBaseTimePeriod_id");    
-       
-    names.add("programBaseTimePeriod_pkey");        
-    sortMapFields.put( "programBaseTimePeriod_pkey", "program_base_time_period_pkey");        
+//(1)  programBaseTimePeriod
+    doFieldMT0("contract_in","programBaseTimePeriod", "program_base_time_period");  
 
     final JsonObject programBaseTimePeriod =  doMto("programBaseTimePeriod","programBaseTimePeriod");        
 
     mto.add(programBaseTimePeriod);
         
 
-//(1)  thirdPerson --------------------
-    names.add("thirdPerson_id");      
-    insertMapFields.put("contract_in.third_person_id","thirdPerson_id");    
-       
-    names.add("thirdPerson_pkey");        
-    sortMapFields.put( "thirdPerson_pkey", "third_person_pkey");        
+    //1  program_base_time_period  -- program_base_time_period_id
+    final ZtatUnitInfoLon zProgramBaseTimePeriod = new ZtatUnitInfoLon("program_base_time_period_id", "programBaseTimePeriod",  "program_base_time_period","null","program_base_time_period");
+    mz1.put("zProgramBaseTimePeriod", zProgramBaseTimePeriod);    
+
+//(1)  thirdPerson
+    doFieldMT0("contract_in","thirdPerson", "third_person");  
 
     final JsonObject thirdPerson =  doMto("thirdPerson","thirdPerson");        
    
     names.add("thirdPerson_pname");
-    sortMapFields.put( "thirdPerson_pname", "third_person_pname");         
-
+    sortMapFields.put( "thirdPerson_pname", "third_person_pname");                
     thirdPerson.put("pc","pname");          
 
     mto.add(thirdPerson);
         
 
+    //1  third_person  -- third_person_id
+    final ZtatUnitInfoLon zThirdPerson = new ZtatUnitInfoLon("third_person_id", "thirdPerson",  "third_person","pname","third_person");
+    mz1.put("zThirdPerson", zThirdPerson);    
+
     dcModel.put("mto",mto);     
 
     final JsonArray mto2 = new JsonArray();        
-//(2)   baseTimePeriod 
-        
+
+//(2)  baseTimePeriod   baseTimePeriod  
     names.add("baseTimePeriod_id");          
     names.add("baseTimePeriod_pkey");
 
-    final JsonObject baseTimePeriod =   doMto2("baseTimePeriod","baseTimePeriod","programBaseTimePeriod");        
+    final JsonObject baseTimePeriodFromProgramBaseTimePeriod =   doMto2("baseTimePeriod","baseTimePeriod","programBaseTimePeriod");        
          
-    mto2.add(baseTimePeriod);        
-//(2)   program 
-        
+    mto2.add(baseTimePeriodFromProgramBaseTimePeriod);        
+
+    final ZtatUnitInfoLon2 zBaseTimePeriodFromProgramBaseTimePeriod = new ZtatUnitInfoLon2(zProgramBaseTimePeriod, "base_time_period_id", "baseTimePeriod",  "base_time_period","null","base_time_period");
+    mz2.put("zBaseTimePeriodFromProgramBaseTimePeriod",zBaseTimePeriodFromProgramBaseTimePeriod);
+
+//(2)  program   program  
     names.add("program_id");          
     names.add("program_pkey");
 
-    final JsonObject program =   doMto2("program","program","programBaseTimePeriod");        
+    final JsonObject programFromProgramBaseTimePeriod =   doMto2("program","program","programBaseTimePeriod");        
    
-    names.add("program_pname");  
-    program.put("pc","pname");             
-   
-    sortMapFields.put( "program_pname", "program_pname");            
+    names.add("program_pname");           
+    sortMapFields.put( "program_pname", "program_pname");  
+    programFromProgramBaseTimePeriod.put("pc","pname");    
          
-    mto2.add(program);        
+    mto2.add(programFromProgramBaseTimePeriod);        
+
+    final ZtatUnitInfoLon2 zProgramFromProgramBaseTimePeriod = new ZtatUnitInfoLon2(zProgramBaseTimePeriod, "program_id", "program",  "program","pname","program");
+    mz2.put("zProgramFromProgramBaseTimePeriod",zProgramFromProgramBaseTimePeriod);
 
     dcModel.put("mto2",mto2);    
 
     final JsonArray mto3 = new JsonArray();           
-//(3)   base 
-        
+
+//(3)   base   
     names.add("base_id");          
     names.add("base_pkey");
 
-    final JsonObject base =   doMto2("base","base","baseTimePeriod");        
+    final JsonObject baseFromBaseTimePeriodFromProgramBaseTimePeriod =   doMto2("base","base","baseTimePeriod");        
    
-    names.add("base_pname");  
-    base.put("pc","pname");             
-   
-    sortMapFields.put( "base_pname", "base_pname");            
+    names.add("base_pname");            
+    sortMapFields.put( "base_pname", "base_pname"); 
+    baseFromBaseTimePeriodFromProgramBaseTimePeriod.put("pc","pname");     
          
-    mto3.add(base);        
-//(3)   timePeriod 
-        
+    mto3.add(baseFromBaseTimePeriodFromProgramBaseTimePeriod);        
+
+     
+    final ZtatUnitInfoLon3 zBaseFromBaseTimePeriodFromProgramBaseTimePeriod = new ZtatUnitInfoLon3(zBaseTimePeriodFromProgramBaseTimePeriod, "base_id", "base",  "base","pname","base");
+    mz3.put("zBaseFromBaseTimePeriodFromProgramBaseTimePeriod",zBaseFromBaseTimePeriodFromProgramBaseTimePeriod);    
+
+//(3)   timePeriod   
     names.add("timePeriod_id");          
     names.add("timePeriod_pkey");
 
-    final JsonObject timePeriod =   doMto2("timePeriod","timePeriod","baseTimePeriod");        
+    final JsonObject timePeriodFromBaseTimePeriodFromProgramBaseTimePeriod =   doMto2("timePeriod","timePeriod","baseTimePeriod");        
    
-    names.add("timePeriod_pname");  
-    timePeriod.put("pc","pname");             
-   
-    sortMapFields.put( "timePeriod_pname", "time_period_pname");            
+    names.add("timePeriod_pname");            
+    sortMapFields.put( "timePeriod_pname", "time_period_pname"); 
+    timePeriodFromBaseTimePeriodFromProgramBaseTimePeriod.put("pc","pname");     
          
-    mto3.add(timePeriod);        
+    mto3.add(timePeriodFromBaseTimePeriodFromProgramBaseTimePeriod);        
+
+     
+    final ZtatUnitInfoLon3 zTimePeriodFromBaseTimePeriodFromProgramBaseTimePeriod = new ZtatUnitInfoLon3(zBaseTimePeriodFromProgramBaseTimePeriod, "time_period_id", "timePeriod",  "time_period","pname","time_period");
+    mz3.put("zTimePeriodFromBaseTimePeriodFromProgramBaseTimePeriod",zTimePeriodFromBaseTimePeriodFromProgramBaseTimePeriod);    
 
     dcModel.put("mto3",mto3);       
         
@@ -295,26 +284,7 @@ time_period.id as time_period_id, time_period.pkey as time_period_pkey,time_peri
 /** OTM 2  ON MODEL**/
         dcModel.put("otm2",otm2);
         
-
         
-//1  program_base_time_period  -- program_base_time_period_id
-    zProgramBaseTimePeriod = new ZtatUnitInfoLon("program_base_time_period_id", "programBaseTimePeriod",  "program_base_time_period","null","program_base_time_period");
-
-//1  third_person  -- third_person_id
-    zThirdPerson = new ZtatUnitInfoLon("third_person_id", "thirdPerson",  "third_person","pname","third_person");
-
-//2    
-    zBaseTimePeriod = new ZtatUnitInfoLon("base_time_period_id", "baseTimePeriod",  "base_time_period","null","base_time_period");
-
-//2    
-    zProgram = new ZtatUnitInfoLon("program_id", "program",  "program","pname","program");
-
-//3
-    zBase = new ZtatUnitInfoLon("base_id", "base",  "base","pname","base");
-
-//3
-    zTimePeriod = new ZtatUnitInfoLon("time_period_id", "timePeriod",  "time_period","pname","time_period");
-
     }        
     @Override
     public LinkedHashSet<String> getNames() {
@@ -339,164 +309,153 @@ time_period.id as time_period_id, time_period.pkey as time_period_pkey,time_peri
     @Override
     public JsonArray toJsonArray(final Row r){
         final JsonArray jsa = new JsonArray();
-        jsa.add(r.getLong("contract_in_id") );
-        jsa.add(r.getString("contract_in_pkey") );
+        jsa.add(r.getLong("contract_in_id") );       
+        jsa.add(r.getString("contract_in_pkey") );       
         jsa.add(r.getString("contract_in_pname") );
-        jsa.add(r.getLong("program_base_time_period_id"));
-        jsa.add(r.getString("program_base_time_period_pkey"));
-        jsa.add(r.getLong("third_person_id"));
-        jsa.add(r.getString("third_person_pkey"));
-        jsa.add(r.getString("third_person_pname"));
-        jsa.add(r.getLong("base_time_period_id"));
-        jsa.add(r.getString("base_time_period_pkey"));
-        jsa.add(r.getLong("program_id"));
-        jsa.add(r.getString("program_pkey"));
-        jsa.add(r.getString("program_pname"));
-        jsa.add(r.getLong("base_id"));
-        jsa.add(r.getString("base_pkey"));
-        jsa.add(r.getString("base_pname"));
-        jsa.add(r.getLong("time_period_id"));
-        jsa.add(r.getString("time_period_pkey"));
-        jsa.add(r.getString("time_period_pname"));
+    jsa.add(r.getLong("program_base_time_period_id"));
+    jsa.add(r.getString("program_base_time_period_pkey"));   
+    
+    jsa.add(r.getLong("third_person_id"));
+    jsa.add(r.getString("third_person_pkey"));   
+    
+        
+    jsa.add(r.getString("third_person_pname"));
+    jsa.add(r.getLong("base_time_period_id"));
+    jsa.add(r.getString("base_time_period_pkey"));
+    
+    jsa.add(r.getLong("program_id"));
+    jsa.add(r.getString("program_pkey"));
+    
+
+    jsa.add(r.getString("program_pname"));
+    
+    jsa.add(r.getLong("base_id"));
+    jsa.add(r.getString("base_pkey"));
+    
+
+    jsa.add(r.getString("base_pname"));
+    
+    jsa.add(r.getLong("time_period_id"));
+    jsa.add(r.getString("time_period_pkey"));
+    
+
+    jsa.add(r.getString("time_period_pname"));
+    
         return jsa;
     }
 
     @Override
-    public void fillXRow(final Row r, final XSSFRow row, int nc,boolean withIds) {
-        fillXRow0(r, row, nc, withIds);
+    public int fillXRow(final Row r, final XSSFRow row, int nc,boolean withIds) {
+        return fillXRow0(r, row, nc, withIds);
     }
 
     @Override
     public HashMap<String,String> lXRowH(final boolean withIds, final int level) {        
         
-    final  LinkedHashMap<String,String> m_ = new LinkedHashMap<>();
-    if(withIds){
-                m_.put("contractIn_id","Long");
-            }
-            
-    //pkey       
-            m_.put("contractIn_pkey","String"); 
-            
-    //pname       
-            m_.put("contractIn_pname","String"); 
-            
-if(level<1){
-                return m_;    
-            }
-            
- // programBaseTimePeriod
-if(withIds){
-            m_.put("programBaseTimePeriod_id","Long");   
-                    
-            }
-
-        m_.put("programBaseTimePeriod_pkey","String");   
-        
- // thirdPerson
-if(withIds){
-            m_.put("thirdPerson_id","Long");   
-                    
-            }
-
-        m_.put("thirdPerson_pkey","String");   
-        
-
-            m_.put("thirdPerson_pname","String");   
-            
-//[2] baseTimePeriod  
-
-        if(level>1){
-            if(withIds){
-               m_.put("baseTimePeriod_id","Long");              
-            }      
-        
-        m_.put("baseTimePeriod_pkey","String");  
- 
-                      }             
-//[2] program  
-
-        if(level>1){
-            if(withIds){
-               m_.put("program_id","Long");              
-            }      
-        
-        m_.put("program_pkey","String");  
-
-            m_.put("program_pname","String");    
- 
-                      }             
-//[3] base  
-
-        if(level>2){
-            if(withIds){
-               m_.put("base_id","Long");              
-            }      
-        
-        m_.put("base_pkey","String");  
-
-            m_.put("base_pname","String");    
- 
-                      }             
-//[3] timePeriod  
-
-        if(level>2){
-            if(withIds){
-               m_.put("timePeriod_id","Long");              
-            }      
-        
-        m_.put("timePeriod_pkey","String");  
-
-            m_.put("timePeriod_pname","String");    
- 
-                      }             
+    final  LinkedHashMap<String,String> m = new LinkedHashMap<>();
     
-    return m_;
+    if(withIds){
+        m.put("contractIn_id",LONG);
+    }        
+//pkey    
+    m.put("contractIn_pkey",STRING);              
+//pname    
+    m.put("contractIn_pname",STRING);          
+    if(level<1){
+        return m;    
+    }       
+// programBaseTimePeriod   programBaseTimePeriod
+    if(withIds){
+        m.put("programBaseTimePeriod_id",LONG);                       
+    }
+    m.put("programBaseTimePeriod_pkey",STRING);      
+// thirdPerson   thirdPerson
+    if(withIds){
+        m.put("thirdPerson_id",LONG);                       
+    }
+    m.put("thirdPerson_pkey",STRING);     
+    m.put("thirdPerson_pname",STRING);  
+//[2] baseTimePeriod --   baseTimePeriod
+    if(withIds){
+        m.put("baseTimePeriod_id",LONG);              
+    }              
+    m.put("baseTimePeriod_pkey",STRING);  
+        
+//[2] program --   program
+    if(withIds){
+        m.put("program_id",LONG);              
+    }              
+    m.put("program_pkey",STRING);  
+        
+    m.put("program_pname",STRING);  
+//[3] base --   base
+    if(withIds){
+        m.put("base_id",LONG);              
+    }              
+    m.put("base_pkey",STRING);  
+        
+    m.put("base_pname",STRING);  
+//[3] timePeriod --   timePeriod
+    if(withIds){
+        m.put("timePeriod_id",LONG);              
+    }              
+    m.put("timePeriod_pkey",STRING);  
+        
+    m.put("timePeriod_pname",STRING);  
+    
+    return m;
     
     }
     
-    private void fillXRow0(final Row r, final XSSFRow row,int nc, boolean withIds){
-        if(withIds){
-        lToCell(r, row,"contract_in_id", nc++); 
-        }
+    private int fillXRow0(final Row r, final XSSFRow row,int nc, final boolean withIds){
         
-    //pkey       
-            sToCell(r, row,"contract_in_pkey", nc++); 
-    //pname       
+    if(withIds){
+        lToCell(r, row,"contract_in_id", nc++); 
+    }            //pkey       
+            sToCell(r, row,"contract_in_pkey", nc++);     //pname       
             sToCell(r, row,"contract_in_pname", nc++); 
- // programBaseTimePeriod
-if(withIds){
-                    lToCell(r, row,"program_base_time_period_id", nc++);
-                 }
-sToCell(r, row,"program_base_time_period_pkey", nc++);
- // thirdPerson
-if(withIds){
-                    lToCell(r, row,"third_person_id", nc++);
-                 }
-sToCell(r, row,"third_person_pkey", nc++);
-sToCell(r, row,"third_person_pname", nc++);
-// baseTimePeriod
-if(withIds){
-            lToCell(r, row,"base_time_period_id", nc++);
-        }
-sToCell(r, row,"base_time_period_pkey", nc++);
-// program
-if(withIds){
-            lToCell(r, row,"program_id", nc++);
-        }
-sToCell(r, row,"program_pkey", nc++);
-sToCell(r, row,"program_pname", nc++);
-// base
-if(withIds){
-            lToCell(r, row,"base_id", nc++);
-        }
-sToCell(r, row,"base_pkey", nc++);
-sToCell(r, row,"base_pname", nc++);
-// timePeriod
-if(withIds){
-            lToCell(r, row,"time_period_id", nc++);
-        }
-sToCell(r, row,"time_period_pkey", nc++);
-sToCell(r, row,"time_period_pname", nc++);
+//programBaseTimePeriod   program_base_time_period        
+    if(withIds){
+        lToCell(r, row,"program_base_time_period_id", nc++);
+    }
+    sToCell(r, row,"program_base_time_period_pkey", nc++);
+//thirdPerson   third_person        
+    if(withIds){
+        lToCell(r, row,"third_person_id", nc++);
+    }
+    sToCell(r, row,"third_person_pkey", nc++);
+    sToCell(r, row,"third_person_pname", nc++);
+// baseTimePeriod  base_time_period
+    if(withIds){
+       lToCell(r, row,"base_time_period_id", nc++);
+    }
+
+    sToCell(r, row,"base_time_period_pkey", nc++);
+// program  program
+    if(withIds){
+       lToCell(r, row,"program_id", nc++);
+    }
+
+    sToCell(r, row,"program_pkey", nc++);
+
+    sToCell(r, row,"program_pname", nc++);
+// base  base
+    if(withIds){
+       lToCell(r, row,"base_id", nc++);
+    }
+
+    sToCell(r, row,"base_pkey", nc++);
+
+    sToCell(r, row,"base_pname", nc++);
+// timePeriod  time_period
+    if(withIds){
+       lToCell(r, row,"time_period_id", nc++);
+    }
+
+    sToCell(r, row,"time_period_pkey", nc++);
+
+    sToCell(r, row,"time_period_pname", nc++);
+        return nc;
     }
 
     @Override
@@ -516,31 +475,28 @@ sToCell(r, row,"time_period_pname", nc++);
 
     @Override
     public void fillTupleInsert(final ContractIn dc0, final Tuple t){
-                t.addString(dc0.getPkey());
-        t.addString(dc0.getPname());
-   
-            if(dc0.getProgramBaseTimePeriod()!=null){
-               t.addLong(dc0.getProgramBaseTimePeriod().getId());
-            }
-   
-            if(dc0.getThirdPerson()!=null){
-               t.addLong(dc0.getThirdPerson().getId());
-            }
+                
+    t.addString(dc0.getPkey());        
+    t.addString(dc0.getPname());   
+    if(dc0.getProgramBaseTimePeriod()!=null){
+       t.addLong(dc0.getProgramBaseTimePeriod().getId());
+    }   
+    if(dc0.getThirdPerson()!=null){
+       t.addLong(dc0.getThirdPerson().getId());
+    }
     }
 
     @Override
     public void fillTupleUpdate(final ContractIn dc0, final Tuple t){
-                t.addString(dc0.getPname());
-   
+        
+    t.addString(dc0.getPname());   
 //      if(dc0.getProgramBaseTimePeriod()!=null){
 //            t.addLong(dc0.getProgramBaseTimePeriod().getId());
-//      }
-   
+//      }   
 //      if(dc0.getThirdPerson()!=null){
 //            t.addLong(dc0.getThirdPerson().getId());
 //      }
-
-        t.addLong(dc0.getId());
+    t.addLong(dc0.getId());
             
     }    
 
@@ -572,11 +528,8 @@ sToCell(r, row,"time_period_pname", nc++);
     public void fillTupleInsert(final JsonObject js,final Tuple t){       
         
     fTString("pkey", js, t);
-
-    fTString("pname", js, t);
-     
-    fTLong("programBaseTimePeriod_id",js,t);
-     
+    fTString("pname", js, t);     
+    fTLong("programBaseTimePeriod_id",js,t);     
     fTLong("thirdPerson_id",js,t);       
     }
 
@@ -602,36 +555,33 @@ fTLong("id",js,t);
     @Override
     public ContractIn doFrom(final Row r){
         final ContractIn contractIn = new ContractIn();
-         contractIn.setId(r.getLong("contract_in_id"));
-         
-                contractIn.setPkey(  r.getString("contract_in_pkey"));
-         
-                contractIn.setPname(  r.getString("contract_in_pname"));
-
+         contractIn.setId(r.getLong("contract_in_id"));         
+                contractIn.setPkey(  r.getString("contract_in_pkey"));                       
+                contractIn.setPname(  r.getString("contract_in_pname"));              
         final ProgramBaseTimePeriod programBaseTimePeriod = new ProgramBaseTimePeriod();
         programBaseTimePeriod.setId(r.getLong("program_base_time_period_id"));
         programBaseTimePeriod.setPkey(r.getString("program_base_time_period_pkey"));
         
         contractIn.setProgramBaseTimePeriod(programBaseTimePeriod);
         
-
         final ThirdPerson thirdPerson = new ThirdPerson();
         thirdPerson.setId(r.getLong("third_person_id"));
         thirdPerson.setPkey(r.getString("third_person_pkey"));
+        
         thirdPerson.setPname(r.getString("third_person_pname"));
         contractIn.setThirdPerson(thirdPerson);
         
-
         final BaseTimePeriod baseTimePeriod = new BaseTimePeriod();
         baseTimePeriod.setId(r.getLong("base_time_period_id"));
         baseTimePeriod.setPkey(r.getString("base_time_period_pkey"));
-         programBaseTimePeriod.setBaseTimePeriod(baseTimePeriod); 
-
+         
+        programBaseTimePeriod.setBaseTimePeriod(baseTimePeriod); 
         final Program program = new Program();
         program.setId(r.getLong("program_id"));
         program.setPkey(r.getString("program_pkey"));
         program.setPname(r.getString("program_pname"));
- programBaseTimePeriod.setProgram(program);   
+ 
+        programBaseTimePeriod.setProgram(program);   
         return contractIn;
     }
     
@@ -640,10 +590,11 @@ fTLong("id",js,t);
         ContractIn contractIn = new ContractIn();
         contractIn.setId(js.getLong("id"));
         
-                contractIn.setPkey(js.getString("pkey"));
-        contractIn.setPname(js.getString("pname"));
-        contractIn.setId(js.getLong("programBaseTimePeriod_id"));
-        contractIn.setId(js.getLong("thirdPerson_id"));
+                
+                contractIn.setPkey(js.getString("pkey"));        
+                contractIn.setPname(js.getString("pname"));        
+            contractIn.setId(js.getLong("programBaseTimePeriod_id"));        
+            contractIn.setId(js.getLong("thirdPerson_id"));
         return contractIn;
     }
 
@@ -687,26 +638,27 @@ fTLong("id",js,t);
         slcb.doIlPSimple2( "programBaseTimePeriod_pkey", "program_base_time_period_pkey");
         slcb.doEQPSimple2( "programBaseTimePeriod_pkey", "program_base_time_period_pkey");
         slcb.doInLongCondition("programBaseTimePeriod_id", "program_base_time_period_id");  
-//ProgramBaseTimePeriod undefined        
+//ProgramBaseTimePeriod undefined        --
         slcb.doIlPSimple2( "thirdPerson_pkey", "third_person_pkey");
         slcb.doEQPSimple2( "thirdPerson_pkey", "third_person_pkey");
         slcb.doInLongCondition("thirdPerson_id", "third_person_id");  
-//ThirdPerson 1        
+//ThirdPerson 1        --
         slcb.doIlPSimple2( "thirdPerson_pname", "third_person_pname");    
-
+        
         slcb.doIlPSimple2( "baseTimePeriod_pkey", "base_time_period_pkey");
         slcb.doEQPSimple2( "baseTimePeriod_pkey", "base_time_period_pkey");
-        slcb.doInLongCondition("baseTimePeriod_id", "base_time_period_id");//BaseTimePeriod undefined
+        slcb.doInLongCondition("baseTimePeriod_id", "base_time_period_id");
+//BaseTimePeriod undefined
         slcb.doIlPSimple2( "base_pkey", "base_pkey");
         slcb.doEQPSimple2( "base_pkey", "base_pkey");
         slcb.doInLongCondition("base_id", "base_id"); 
         slcb.doIlPSimple2( "timePeriod_pkey", "time_period_pkey");
         slcb.doEQPSimple2( "timePeriod_pkey", "time_period_pkey");
         slcb.doInLongCondition("timePeriod_id", "time_period_id"); 
-
         slcb.doIlPSimple2( "program_pkey", "program_pkey");
         slcb.doEQPSimple2( "program_pkey", "program_pkey");
-        slcb.doInLongCondition("program_id", "program_id");//Program 3
+        slcb.doInLongCondition("program_id", "program_id");
+//Program 3
         slcb.doIlPSimple2( "program_pname", "program_pname"); 
 
         slcb.doSQLORDEN(sortMapFields);
@@ -725,16 +677,14 @@ fTLong("id",js,t);
         
 //level 1
              
-    sz0.applyG1(zProgramBaseTimePeriod);               
-    sz0.applyG1(zThirdPerson);      
-    //level 2
-    
-    sz0.applyG2(zProgramBaseTimePeriod,zBaseTimePeriod);                           
-    sz0.applyG2(zProgramBaseTimePeriod,zProgram);                           
-    //level 3
-    
-        sz0.applyG3(zProgramBaseTimePeriod,zBaseTimePeriod,zBase);               
-        sz0.applyG3(zProgramBaseTimePeriod,zBaseTimePeriod,zTimePeriod);               
+    sz0.applyG1(mz1.get("zProgramBaseTimePeriod"))   ;               
+    sz0.applyG1(mz1.get("zThirdPerson"))   ;      
+//level 2    
+    sz0.applyG2(mz2.get("zBaseTimePeriodFromProgramBaseTimePeriod"));                           
+    sz0.applyG2(mz2.get("zProgramFromProgramBaseTimePeriod"));                           
+//level 3    
+        sz0.applyG3(mz3.get("zBaseFromBaseTimePeriodFromProgramBaseTimePeriod"));               
+        sz0.applyG3(mz3.get("zTimePeriodFromBaseTimePeriodFromProgramBaseTimePeriod"));               
         return sz0;
     }
 }

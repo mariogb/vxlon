@@ -17,6 +17,9 @@ import org.lonpe.services.AbstractServiceLon;
 import org.lonpe.services.ConditionInfo;
 import org.lonpe.lonvx.sqlbuilders.SqlLonConditionsBuilder;
 import org.apache.poi.xssf.usermodel.XSSFRow;
+import static org.lonpe.lonvx.ctes.CteLon.*;
+
+
 
 
 
@@ -26,7 +29,6 @@ import org.apache.poi.xssf.usermodel.XSSFRow;
  *   RoleService 
  * 
  */
-   
   
 public class RoleService extends AbstractServiceLon<Role>{
 
@@ -41,9 +43,15 @@ public class RoleService extends AbstractServiceLon<Role>{
     private static final String SQLDELETE = "DELETE FROM role WHERE id = $1 returning id";
     private static final String TABLENAME ="role";
     
+
+    public RoleService() {
+        init0();
+    }
+
     
+
     @Override
-    public  String getTableName(){
+    public String getTableName(){
         return TABLENAME;
     }
 
@@ -57,14 +65,12 @@ public class RoleService extends AbstractServiceLon<Role>{
         return SQLLKEYIN;
     }
 
-/**
-    
+/**    
     private static String sql00 = "SELECT role.id as role_id,
 role.pkey as role_pkey,
 role.pname as role_pname 
   FROM 
-  role ; 
-"
+  role "
 */
 
     @Override
@@ -84,28 +90,21 @@ role.pname as role_pname
     /**
      * sql select property alias field names
      */
-     
-    private static final LinkedHashSet<String> names;
+    private final LinkedHashSet<String> names =  new LinkedHashSet<>();;
     
     /**
      * Map field insert/update to property 
      */
-    private static final HashMap<String,String> insertMapFields; 
+    private final HashMap<String,String> insertMapFields = new HashMap<>(); 
     
     /**
     * Map property to field order 
     */
-    private static final HashMap<String, String> sortMapFields;
+    private final HashMap<String, String> sortMapFields = new  HashMap<>();
 
-    private static final JsonObject dcModel;
+    private final JsonObject dcModel  = new JsonObject();
     
-    static{
-        names = new LinkedHashSet<>();
-        insertMapFields = new HashMap<>();
-        sortMapFields= new  HashMap<>();
-
-        dcModel = new JsonObject();
-
+    private void init0(){
         
     dcModel.put("dc", "role");
 
@@ -117,30 +116,24 @@ role.pname as role_pname
     final JsonArray ps = new JsonArray();   
  
 //pkey
-    names.add("pkey");
-    insertMapFields.put("role.pkey","pkey");  
-
-//Create property pkey       
-    final JsonObject pkey = ps00a("pkey", "String",true);
+    doFieldSort("pkey","pkey","role");               
    
 //Used to map error on index to source property because IS Unique
     insertMapFields.put("role.role_uidx_pkey","pkey");  
 
+//Create property pkey       
+    final JsonObject pkey = psString("pkey",true);
+
 // IS Unique     
     pkey.put("uq",true);                    
-
-    sortMapFields.put("pkey", "role_pkey");                   
  
     ps.add(pkey);
  
 //pname
-    names.add("pname");
-    insertMapFields.put("role.pname","pname");  
+    doFieldSort("pname","pname","role");               
 
 //Create property pname       
-    final JsonObject pname = ps00a("pname", "String",true);
-
-    sortMapFields.put("pname", "role_pname");                   
+    final JsonObject pname = psString("pname",true);
   
 //PC
     dcModel.put("pc","pname");  
@@ -160,9 +153,7 @@ role.pname as role_pname
 
 /** OTM ON MODEL  **/
         dcModel.put("otm",otm);  
-
         
-
     }        
     @Override
     public LinkedHashSet<String> getNames() {
@@ -187,45 +178,42 @@ role.pname as role_pname
     @Override
     public JsonArray toJsonArray(final Row r){
         final JsonArray jsa = new JsonArray();
-        jsa.add(r.getLong("role_id") );
-        jsa.add(r.getString("role_pkey") );
+        jsa.add(r.getLong("role_id") );       
+        jsa.add(r.getString("role_pkey") );       
         jsa.add(r.getString("role_pname") );
         return jsa;
     }
 
     @Override
-    public void fillXRow(final Row r, final XSSFRow row, int nc,boolean withIds) {
-        fillXRow0(r, row, nc, withIds);
+    public int fillXRow(final Row r, final XSSFRow row, int nc,boolean withIds) {
+        return fillXRow0(r, row, nc, withIds);
     }
 
     @Override
     public HashMap<String,String> lXRowH(final boolean withIds, final int level) {        
         
-    final  LinkedHashMap<String,String> m_ = new LinkedHashMap<>();
-    if(withIds){
-                m_.put("role_id","Long");
-            }
-            
-    //pkey       
-            m_.put("role_pkey","String"); 
-            
-    //pname       
-            m_.put("role_pname","String"); 
-            
+    final  LinkedHashMap<String,String> m = new LinkedHashMap<>();
     
-    return m_;
+    if(withIds){
+        m.put("role_id",LONG);
+    }        
+//pkey    
+    m.put("role_pkey",STRING);              
+//pname    
+    m.put("role_pname",STRING);          
+    
+    return m;
     
     }
     
-    private void fillXRow0(final Row r, final XSSFRow row,int nc, boolean withIds){
-        if(withIds){
-        lToCell(r, row,"role_id", nc++); 
-        }
+    private int fillXRow0(final Row r, final XSSFRow row,int nc, final boolean withIds){
         
-    //pkey       
-            sToCell(r, row,"role_pkey", nc++); 
-    //pname       
+    if(withIds){
+        lToCell(r, row,"role_id", nc++); 
+    }            //pkey       
+            sToCell(r, row,"role_pkey", nc++);     //pname       
             sToCell(r, row,"role_pname", nc++); 
+        return nc;
     }
 
     @Override
@@ -245,15 +233,16 @@ role.pname as role_pname
 
     @Override
     public void fillTupleInsert(final Role dc0, final Tuple t){
-                t.addString(dc0.getPkey());
-        t.addString(dc0.getPname());
+                
+    t.addString(dc0.getPkey());        
+    t.addString(dc0.getPname());
     }
 
     @Override
     public void fillTupleUpdate(final Role dc0, final Tuple t){
-                t.addString(dc0.getPname());
-
-        t.addLong(dc0.getId());
+        
+    t.addString(dc0.getPname());
+    t.addLong(dc0.getId());
             
     }    
 
@@ -274,7 +263,6 @@ role.pname as role_pname
     public void fillTupleInsert(final JsonObject js,final Tuple t){       
         
     fTString("pkey", js, t);
-
     fTString("pname", js, t);       
     }
 
@@ -296,11 +284,9 @@ fTLong("id",js,t);
     @Override
     public Role doFrom(final Row r){
         final Role role = new Role();
-         role.setId(r.getLong("role_id"));
-         
-                role.setPkey(  r.getString("role_pkey"));
-         
-                role.setPname(  r.getString("role_pname"));  
+         role.setId(r.getLong("role_id"));         
+                role.setPkey(  r.getString("role_pkey"));                       
+                role.setPname(  r.getString("role_pname"));                
         return role;
     }
     
@@ -309,8 +295,9 @@ fTLong("id",js,t);
         Role role = new Role();
         role.setId(js.getLong("id"));
         
-                role.setPkey(js.getString("pkey"));
-        role.setPname(js.getString("pname"));
+                
+                role.setPkey(js.getString("pkey"));        
+                role.setPname(js.getString("pname"));
         return role;
     }
 

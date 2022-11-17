@@ -51,9 +51,8 @@ public abstract class AbstractGenericList {
     /**
      *
      */
-     AbstractGenericList(HazelcastInstance h, DcMapForServices dcMapForServices) {
+    AbstractGenericList(HazelcastInstance h, DcMapForServices dcMapForServices) {
 
-       
         this.h = h;
         this.dcMapForServices = dcMapForServices;
         this.eu = new ExcelUtilLon(h);
@@ -81,7 +80,6 @@ public abstract class AbstractGenericList {
         });
     }
 
-
     protected JsonArray getNames(final IServiceLon<IDcLon> serviceLon) {
         final String clzz = serviceLon.getClass().getName();
         final JsonArray jsa = mapNames.get(clzz);
@@ -100,7 +98,7 @@ public abstract class AbstractGenericList {
             ww.write(baos);
             ww.close();
             Buffer buff = Buffer.buffer(baos.toByteArray());
-            rctx.attachment("sss").end(buff);
+            rctx.attachment("excelTemplate").end(buff);
         } catch (IOException ex) {
             log.error(ex.getMessage());
             rctx.response().setStatusCode(500).end(new JsonObject().put("ERROR", ex.getMessage()).toBuffer());
@@ -127,7 +125,7 @@ public abstract class AbstractGenericList {
     }
 
     protected void applyFiltersToMemeberships(final String dc, final RoutingContext rctx) {
-        final MultiMap params = rctx.queryParams(); 
+        final MultiMap params = rctx.queryParams();
         final JsonObject u0 = rctx.get("u0");
         final String typeLon = u0.getString("typeLon");
         if (!"ADM".equals(typeLon)) {
@@ -165,5 +163,4 @@ public abstract class AbstractGenericList {
         return sqlEx + (" " + the_order + " offset " + ci.getOffset() + " limit " + ci.getMax());
     }
 
-   
 }

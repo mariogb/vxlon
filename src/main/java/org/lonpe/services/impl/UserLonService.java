@@ -17,6 +17,9 @@ import org.lonpe.services.AbstractServiceLon;
 import org.lonpe.services.ConditionInfo;
 import org.lonpe.lonvx.sqlbuilders.SqlLonConditionsBuilder;
 import org.apache.poi.xssf.usermodel.XSSFRow;
+import static org.lonpe.lonvx.ctes.CteLon.*;
+
+
 
 
 
@@ -26,7 +29,6 @@ import org.apache.poi.xssf.usermodel.XSSFRow;
  *   UserLonService 
  * 
  */
-   
   
 public class UserLonService extends AbstractServiceLon<UserLon>{
 
@@ -41,9 +43,15 @@ public class UserLonService extends AbstractServiceLon<UserLon>{
     private static final String SQLDELETE = "DELETE FROM user_lon WHERE id = $1 returning id";
     private static final String TABLENAME ="user_lon";
     
+
+    public UserLonService() {
+        init0();
+    }
+
     
+
     @Override
-    public  String getTableName(){
+    public String getTableName(){
         return TABLENAME;
     }
 
@@ -57,8 +65,7 @@ public class UserLonService extends AbstractServiceLon<UserLon>{
         return SQLLKEYIN;
     }
 
-/**
-    
+/**    
     private static String sql00 = "SELECT user_lon.id as user_lon_id,
 user_lon.pkey as user_lon_pkey,
 user_lon.email as user_lon_email,
@@ -67,8 +74,7 @@ user_lon.pname as user_lon_pname,
 user_lon.type_lon as user_lon_type_lon,
 user_lon.username as user_lon_username 
   FROM 
-  user_lon ; 
-"
+  user_lon "
 */
 
     @Override
@@ -88,28 +94,21 @@ user_lon.username as user_lon_username
     /**
      * sql select property alias field names
      */
-     
-    private static final LinkedHashSet<String> names;
+    private final LinkedHashSet<String> names =  new LinkedHashSet<>();;
     
     /**
      * Map field insert/update to property 
      */
-    private static final HashMap<String,String> insertMapFields; 
+    private final HashMap<String,String> insertMapFields = new HashMap<>(); 
     
     /**
     * Map property to field order 
     */
-    private static final HashMap<String, String> sortMapFields;
+    private final HashMap<String, String> sortMapFields = new  HashMap<>();
 
-    private static final JsonObject dcModel;
+    private final JsonObject dcModel  = new JsonObject();
     
-    static{
-        names = new LinkedHashSet<>();
-        insertMapFields = new HashMap<>();
-        sortMapFields= new  HashMap<>();
-
-        dcModel = new JsonObject();
-
+    private void init0(){
         
     dcModel.put("dc", "userLon");
 
@@ -121,30 +120,24 @@ user_lon.username as user_lon_username
     final JsonArray ps = new JsonArray();   
  
 //pkey
-    names.add("pkey");
-    insertMapFields.put("user_lon.pkey","pkey");  
-
-//Create property pkey       
-    final JsonObject pkey = ps00a("pkey", "String",true);
+    doFieldSort("pkey","pkey","user_lon");               
    
 //Used to map error on index to source property because IS Unique
     insertMapFields.put("user_lon.user_lon_uidx_pkey","pkey");  
 
+//Create property pkey       
+    final JsonObject pkey = psString("pkey",true);
+
 // IS Unique     
     pkey.put("uq",true);                    
-
-    sortMapFields.put("pkey", "user_lon_pkey");                   
  
     ps.add(pkey);
  
 //email
-    names.add("email");
-    insertMapFields.put("user_lon.email","email");  
+    doFieldSort("email","email","user_lon");               
 
 //Create property email       
-    final JsonObject email = ps00a("email", "String",true);
-
-    sortMapFields.put("email", "user_lon_email");                   
+    final JsonObject email = psString("email",true);
 
 // hasIndex 
     email.put("withIndex",true);  
@@ -152,24 +145,18 @@ user_lon.username as user_lon_username
     ps.add(email);
  
 //enabled
-    names.add("enabled");
-    insertMapFields.put("user_lon.enabled","enabled");  
+    doFieldSort("enabled","enabled","user_lon");               
 
 //Create property enabled       
-    final JsonObject enabled = ps00a("enabled", "Boolean",true);
-
-    sortMapFields.put("enabled", "user_lon_enabled");               
+    final JsonObject enabled = psBoolean("enabled",true);
  
     ps.add(enabled);
  
 //pname
-    names.add("pname");
-    insertMapFields.put("user_lon.pname","pname");  
+    doFieldSort("pname","pname","user_lon");               
 
 //Create property pname       
-    final JsonObject pname = ps00a("pname", "String",true);
-
-    sortMapFields.put("pname", "user_lon_pname");                   
+    final JsonObject pname = psString("pname",true);
   
 //PC
     dcModel.put("pc","pname");  
@@ -177,13 +164,10 @@ user_lon.username as user_lon_username
     ps.add(pname);
  
 //typeLon
-    names.add("typeLon");
-    insertMapFields.put("user_lon.type_lon","typeLon");  
+    doFieldSort("typeLon","type_lon","user_lon");               
 
 //Create property typeLon       
-    final JsonObject typeLon = ps00a("typeLon", "String",true);
-
-    sortMapFields.put("typeLon", "user_lon_type_lon");                   
+    final JsonObject typeLon = psString("typeLon",true);
 
     final JsonArray typeLonInList = new JsonArray();
                 typeLonInList.add("ADM"); 
@@ -195,13 +179,10 @@ typeLonInList.add("THIRD");
     ps.add(typeLon);
  
 //username
-    names.add("username");
-    insertMapFields.put("user_lon.username","username");  
+    doFieldSort("username","username","user_lon");               
 
 //Create property username       
-    final JsonObject username = ps00a("username", "String",true);
-
-    sortMapFields.put("username", "user_lon_username");                   
+    final JsonObject username = psString("username",true);
 
 // hasIndex 
     username.put("withIndex",true);  
@@ -262,9 +243,7 @@ typeLonInList.add("THIRD");
 /** OTM 2  ON MODEL**/
         dcModel.put("otm2",otm2);
         
-
         
-
     }        
     @Override
     public LinkedHashSet<String> getNames() {
@@ -289,69 +268,58 @@ typeLonInList.add("THIRD");
     @Override
     public JsonArray toJsonArray(final Row r){
         final JsonArray jsa = new JsonArray();
-        jsa.add(r.getLong("user_lon_id") );
-        jsa.add(r.getString("user_lon_pkey") );
-        jsa.add(r.getString("user_lon_email") );
-        jsa.add(r.getBoolean("user_lon_enabled") );
-        jsa.add(r.getString("user_lon_pname") );
-        jsa.add(r.getString("user_lon_type_lon") );
+        jsa.add(r.getLong("user_lon_id") );       
+        jsa.add(r.getString("user_lon_pkey") );       
+        jsa.add(r.getString("user_lon_email") );       
+        jsa.add(r.getBoolean("user_lon_enabled") );       
+        jsa.add(r.getString("user_lon_pname") );       
+        jsa.add(r.getString("user_lon_type_lon") );       
         jsa.add(r.getString("user_lon_username") );
         return jsa;
     }
 
     @Override
-    public void fillXRow(final Row r, final XSSFRow row, int nc,boolean withIds) {
-        fillXRow0(r, row, nc, withIds);
+    public int fillXRow(final Row r, final XSSFRow row, int nc,boolean withIds) {
+        return fillXRow0(r, row, nc, withIds);
     }
 
     @Override
     public HashMap<String,String> lXRowH(final boolean withIds, final int level) {        
         
-    final  LinkedHashMap<String,String> m_ = new LinkedHashMap<>();
-    if(withIds){
-                m_.put("userLon_id","Long");
-            }
-            
-    //pkey       
-            m_.put("userLon_pkey","String"); 
-            
-    //email       
-            m_.put("userLon_email","String"); 
-            
-    //enabled       
-            m_.put("userLon_enabled","Boolean"); 
-            
-    //pname       
-            m_.put("userLon_pname","String"); 
-            
-    //typeLon       
-            m_.put("userLon_typeLon","String"); 
-            
-    //username       
-            m_.put("userLon_username","String"); 
-            
+    final  LinkedHashMap<String,String> m = new LinkedHashMap<>();
     
-    return m_;
+    if(withIds){
+        m.put("userLon_id",LONG);
+    }        
+//pkey    
+    m.put("userLon_pkey",STRING);              
+//email    
+    m.put("userLon_email",STRING);              
+//enabled    
+    m.put("userLon_enabled",BOOLEAN);              
+//pname    
+    m.put("userLon_pname",STRING);              
+//typeLon    
+    m.put("userLon_typeLon",STRING);              
+//username    
+    m.put("userLon_username",STRING);          
+    
+    return m;
     
     }
     
-    private void fillXRow0(final Row r, final XSSFRow row,int nc, boolean withIds){
-        if(withIds){
-        lToCell(r, row,"user_lon_id", nc++); 
-        }
+    private int fillXRow0(final Row r, final XSSFRow row,int nc, final boolean withIds){
         
-    //pkey       
-            sToCell(r, row,"user_lon_pkey", nc++); 
-    //email       
-            sToCell(r, row,"user_lon_email", nc++); 
-    //enabled     
-                bToCell(r, row,"user_lon_enabled", nc++); 
-    //pname       
-            sToCell(r, row,"user_lon_pname", nc++); 
-    //typeLon       
-            sToCell(r, row,"user_lon_type_lon", nc++); 
-    //username       
+    if(withIds){
+        lToCell(r, row,"user_lon_id", nc++); 
+    }            //pkey       
+            sToCell(r, row,"user_lon_pkey", nc++);     //email       
+            sToCell(r, row,"user_lon_email", nc++);     //enabled     
+                bToCell(r, row,"user_lon_enabled", nc++);     //pname       
+            sToCell(r, row,"user_lon_pname", nc++);     //typeLon       
+            sToCell(r, row,"user_lon_type_lon", nc++);     //username       
             sToCell(r, row,"user_lon_username", nc++); 
+        return nc;
     }
 
     @Override
@@ -371,25 +339,26 @@ typeLonInList.add("THIRD");
 
     @Override
     public void fillTupleInsert(final UserLon dc0, final Tuple t){
-                t.addString(dc0.getPkey());
-        t.addString(dc0.getEmail());
-        t.addBoolean(dc0.getEnabled());
-        t.addString(dc0.getPassword());
-        t.addString(dc0.getPname());
-        t.addString(dc0.getTypeLon());
-        t.addString(dc0.getUsername());
+                
+    t.addString(dc0.getPkey());        
+    t.addString(dc0.getEmail());        
+    t.addBoolean(dc0.getEnabled());        
+    t.addString(dc0.getPassword());        
+    t.addString(dc0.getPname());        
+    t.addString(dc0.getTypeLon());        
+    t.addString(dc0.getUsername());
     }
 
     @Override
     public void fillTupleUpdate(final UserLon dc0, final Tuple t){
-                t.addString(dc0.getEmail());
-        t.addBoolean(dc0.getEnabled());
-        t.addString(dc0.getPassword());
-        t.addString(dc0.getPname());
-        t.addString(dc0.getTypeLon());
-        t.addString(dc0.getUsername());
-
-        t.addLong(dc0.getId());
+        
+    t.addString(dc0.getEmail());
+    t.addBoolean(dc0.getEnabled());
+    t.addString(dc0.getPassword());
+    t.addString(dc0.getPname());
+    t.addString(dc0.getTypeLon());
+    t.addString(dc0.getUsername());
+    t.addLong(dc0.getId());
             
     }    
 
@@ -420,17 +389,11 @@ typeLonInList.add("THIRD");
     public void fillTupleInsert(final JsonObject js,final Tuple t){       
         
     fTString("pkey", js, t);
-
     fTString("email", js, t);
-
     fTBoolean("enabled", js, t);
-
     fTString("password", js, t);
-
     fTString("pname", js, t);
-
     fTString("typeLon", js, t);
-
     fTString("username", js, t);       
     }
 
@@ -457,21 +420,14 @@ fTLong("id",js,t);
     @Override
     public UserLon doFrom(final Row r){
         final UserLon userLon = new UserLon();
-         userLon.setId(r.getLong("user_lon_id"));
-         
-                userLon.setPkey(  r.getString("user_lon_pkey"));
-         
-                userLon.setEmail(  r.getString("user_lon_email"));
-         
-                userLon.setEnabled(  r.getBoolean("user_lon_enabled"));
-         
-                userLon.setPassword(  r.getString("user_lon_password"));
-         
-                userLon.setPname(  r.getString("user_lon_pname"));
-         
-                userLon.setTypeLon(  r.getString("user_lon_type_lon"));
-         
-                userLon.setUsername(  r.getString("user_lon_username"));  
+         userLon.setId(r.getLong("user_lon_id"));         
+                userLon.setPkey(  r.getString("user_lon_pkey"));                       
+                userLon.setEmail(  r.getString("user_lon_email"));                       
+                userLon.setEnabled(  r.getBoolean("user_lon_enabled"));                       
+                userLon.setPassword(  r.getString("user_lon_password"));                       
+                userLon.setPname(  r.getString("user_lon_pname"));                       
+                userLon.setTypeLon(  r.getString("user_lon_type_lon"));                       
+                userLon.setUsername(  r.getString("user_lon_username"));                
         return userLon;
     }
     
@@ -480,13 +436,14 @@ fTLong("id",js,t);
         UserLon userLon = new UserLon();
         userLon.setId(js.getLong("id"));
         
-                userLon.setPkey(js.getString("pkey"));
-        userLon.setEmail(js.getString("email"));
-        userLon.setEnabled(js.getBoolean("enabled"));
-        userLon.setPassword(js.getString("password"));
-        userLon.setPname(js.getString("pname"));
-        userLon.setTypeLon(js.getString("typeLon"));
-        userLon.setUsername(js.getString("username"));
+                
+                userLon.setPkey(js.getString("pkey"));        
+                userLon.setEmail(js.getString("email"));        
+                userLon.setEnabled(js.getBoolean("enabled"));        
+                userLon.setPassword(js.getString("password"));        
+                userLon.setPname(js.getString("pname"));        
+                userLon.setTypeLon(js.getString("typeLon"));        
+                userLon.setUsername(js.getString("username"));
         return userLon;
     }
 

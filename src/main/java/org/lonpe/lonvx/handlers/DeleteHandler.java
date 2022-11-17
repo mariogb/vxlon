@@ -8,6 +8,7 @@ package org.lonpe.lonvx.handlers;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
+import io.vertx.pgclient.PgException;
 import io.vertx.rxjava3.sqlclient.Row;
 import io.vertx.rxjava3.sqlclient.RowIterator;
 import io.vertx.rxjava3.sqlclient.RowSet;
@@ -52,9 +53,7 @@ public class DeleteHandler implements Handler<RoutingContext> {
         }
 
         final List<Tuple> batch = new ArrayList<>();
-        listIds.stream().filter((String id0) -> {
-            return id0.matches("[0-9]+");
-        }).forEach((String id0) -> {
+        listIds.stream().filter((String id0) -> id0.matches("[0-9]+")).forEach((String id0) -> {
             long id = Long.parseLong(id0);
             batch.add(Tuple.of(id));
         });
@@ -71,9 +70,9 @@ public class DeleteHandler implements Handler<RoutingContext> {
 
                     rc.response().end(r.toBuffer());
                 }, (Throwable t) -> {
-                    if (t instanceof io.vertx.pgclient.PgException) {
+                    if (t instanceof PgException) {
 
-                        UtilFns.doError(serviceFor, rc.response(), t.getMessage());
+                        UtilFns.doError(serviceFor, rc.response(), (PgException) t);
                         return;
                     }
 

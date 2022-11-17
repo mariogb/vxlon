@@ -17,16 +17,18 @@ import org.lonpe.services.AbstractServiceLon;
 import org.lonpe.services.ConditionInfo;
 import org.lonpe.lonvx.sqlbuilders.SqlLonConditionsBuilder;
 import org.apache.poi.xssf.usermodel.XSSFRow;
+import static org.lonpe.lonvx.ctes.CteLon.*;
 
 
 
 import org.lonpe.lonvx.sqlbuilders.ZtatUnitInfoLon;
+import org.lonpe.lonvx.sqlbuilders.ZtatUnitInfoLon2;
+import org.lonpe.lonvx.sqlbuilders.ZtatUnitInfoLon3;
 
 /**
  *   StockRackService 
  * 
  */
-   
   
 public class StockRackService extends AbstractServiceLon<StockRack>{
 
@@ -41,17 +43,18 @@ public class StockRackService extends AbstractServiceLon<StockRack>{
     private static final String SQLDELETE = "DELETE FROM stock_rack WHERE id = $1 returning id";
     private static final String TABLENAME ="stock_rack";
     
-//1
-    private static final ZtatUnitInfoLon zWorkSpace;
 
-//2
-    private static final ZtatUnitInfoLon zWorkSpaceGroup;
+    public StockRackService() {
+        init0();
+    }
 
-//3
-    private static final ZtatUnitInfoLon zBase;
     
+    private static final Map<String, ZtatUnitInfoLon> mz1 = new HashMap<>(6);                       
+    private static final Map<String, ZtatUnitInfoLon2> mz2 = new HashMap<>(6);                       
+    private static final Map<String, ZtatUnitInfoLon3> mz3 = new HashMap<>(6);                       
+
     @Override
-    public  String getTableName(){
+    public String getTableName(){
         return TABLENAME;
     }
 
@@ -65,8 +68,7 @@ public class StockRackService extends AbstractServiceLon<StockRack>{
         return SQLLKEYIN;
     }
 
-/**
-    
+/**    
     private static String sql00 = "SELECT stock_rack.id as stock_rack_id,
 stock_rack.pkey as stock_rack_pkey,
 stock_rack.fast_key as stock_rack_fast_key,
@@ -82,8 +84,7 @@ base.id as base_id, base.pkey as base_pkey,base.pname as base_pname
  WHERE 
  stock_rack.work_space_id = work_space.id
  AND work_space.work_space_group_id = work_space_group.id
- AND work_space_group.base_id = base.id; 
-"
+ AND work_space_group.base_id = base.id"
 */
 
     @Override
@@ -103,28 +104,21 @@ base.id as base_id, base.pkey as base_pkey,base.pname as base_pname
     /**
      * sql select property alias field names
      */
-     
-    private static final LinkedHashSet<String> names;
+    private final LinkedHashSet<String> names =  new LinkedHashSet<>();;
     
     /**
      * Map field insert/update to property 
      */
-    private static final HashMap<String,String> insertMapFields; 
+    private final HashMap<String,String> insertMapFields = new HashMap<>(); 
     
     /**
     * Map property to field order 
     */
-    private static final HashMap<String, String> sortMapFields;
+    private final HashMap<String, String> sortMapFields = new  HashMap<>();
 
-    private static final JsonObject dcModel;
+    private final JsonObject dcModel  = new JsonObject();
     
-    static{
-        names = new LinkedHashSet<>();
-        insertMapFields = new HashMap<>();
-        sortMapFields= new  HashMap<>();
-
-        dcModel = new JsonObject();
-
+    private void init0(){
         
     dcModel.put("dc", "stockRack");
 
@@ -136,28 +130,24 @@ base.id as base_id, base.pkey as base_pkey,base.pname as base_pname
     final JsonArray ps = new JsonArray();   
  
 //pkey
-    names.add("pkey");
-    insertMapFields.put("stock_rack.pkey","pkey");  
-
-//Create property pkey       
-    final JsonObject pkey = ps00a("pkey", "String",true);
+    doFieldSort("pkey","pkey","stock_rack");               
    
 //Used to map error on index to source property because IS Unique
     insertMapFields.put("stock_rack.stock_rack_uidx_pkey","pkey");  
 
+//Create property pkey       
+    final JsonObject pkey = psString("pkey",true);
+
 // IS Unique     
     pkey.put("uq",true);                    
-
-    sortMapFields.put("pkey", "stock_rack_pkey");                   
  
     ps.add(pkey);
  
 //fastKey
-    names.add("fastKey");
-    insertMapFields.put("stock_rack.fast_key","fastKey");  
+    doField("fastKey","fast_key","stock_rack");               
 
 //Create property fastKey       
-    final JsonObject fastKey = ps00a("fastKey", "String",false);
+    final JsonObject fastKey = psString("fastKey",false);
 
 // hasIndex 
     fastKey.put("withIndex",true);  
@@ -165,13 +155,10 @@ base.id as base_id, base.pkey as base_pkey,base.pname as base_pname
     ps.add(fastKey);
  
 //pname
-    names.add("pname");
-    insertMapFields.put("stock_rack.pname","pname");  
+    doFieldSort("pname","pname","stock_rack");               
 
 //Create property pname       
-    final JsonObject pname = ps00a("pname", "String",true);
-
-    sortMapFields.put("pname", "stock_rack_pname");                   
+    final JsonObject pname = psString("pname",true);
   
 //PC
     dcModel.put("pc","pname");  
@@ -183,56 +170,60 @@ base.id as base_id, base.pkey as base_pkey,base.pname as base_pname
 
     final JsonArray mto = new JsonArray();      
 
-//(1)  workSpace --------------------
-    names.add("workSpace_id");      
-    insertMapFields.put("stock_rack.work_space_id","workSpace_id");    
-       
-    names.add("workSpace_pkey");        
-    sortMapFields.put( "workSpace_pkey", "work_space_pkey");        
+//(1)  workSpace
+    doFieldMT0("stock_rack","workSpace", "work_space");  
 
     final JsonObject workSpace =  doMto("workSpace","workSpace");        
    
     names.add("workSpace_pname");
-    sortMapFields.put( "workSpace_pname", "work_space_pname");         
-
+    sortMapFields.put( "workSpace_pname", "work_space_pname");                
     workSpace.put("pc","pname");          
 
     mto.add(workSpace);
         
 
+    //1  work_space  -- work_space_id
+    final ZtatUnitInfoLon zWorkSpace = new ZtatUnitInfoLon("work_space_id", "workSpace",  "work_space","pname","work_space");
+    mz1.put("zWorkSpace", zWorkSpace);    
+
     dcModel.put("mto",mto);     
 
     final JsonArray mto2 = new JsonArray();        
-//(2)   workSpaceGroup 
-        
+
+//(2)  workSpaceGroup   workSpaceGroup  
     names.add("workSpaceGroup_id");          
     names.add("workSpaceGroup_pkey");
 
-    final JsonObject workSpaceGroup =   doMto2("workSpaceGroup","workSpaceGroup","workSpace");        
+    final JsonObject workSpaceGroupFromWorkSpace =   doMto2("workSpaceGroup","workSpaceGroup","workSpace");        
    
-    names.add("workSpaceGroup_pname");  
-    workSpaceGroup.put("pc","pname");             
-   
-    sortMapFields.put( "workSpaceGroup_pname", "work_space_group_pname");            
+    names.add("workSpaceGroup_pname");           
+    sortMapFields.put( "workSpaceGroup_pname", "work_space_group_pname");  
+    workSpaceGroupFromWorkSpace.put("pc","pname");    
          
-    mto2.add(workSpaceGroup);        
+    mto2.add(workSpaceGroupFromWorkSpace);        
+
+    final ZtatUnitInfoLon2 zWorkSpaceGroupFromWorkSpace = new ZtatUnitInfoLon2(zWorkSpace, "work_space_group_id", "workSpaceGroup",  "work_space_group","pname","work_space_group");
+    mz2.put("zWorkSpaceGroupFromWorkSpace",zWorkSpaceGroupFromWorkSpace);
 
     dcModel.put("mto2",mto2);    
 
     final JsonArray mto3 = new JsonArray();           
-//(3)   base 
-        
+
+//(3)   base   
     names.add("base_id");          
     names.add("base_pkey");
 
-    final JsonObject base =   doMto2("base","base","workSpaceGroup");        
+    final JsonObject baseFromWorkSpaceGroupFromWorkSpace =   doMto2("base","base","workSpaceGroup");        
    
-    names.add("base_pname");  
-    base.put("pc","pname");             
-   
-    sortMapFields.put( "base_pname", "base_pname");            
+    names.add("base_pname");            
+    sortMapFields.put( "base_pname", "base_pname"); 
+    baseFromWorkSpaceGroupFromWorkSpace.put("pc","pname");     
          
-    mto3.add(base);        
+    mto3.add(baseFromWorkSpaceGroupFromWorkSpace);        
+
+     
+    final ZtatUnitInfoLon3 zBaseFromWorkSpaceGroupFromWorkSpace = new ZtatUnitInfoLon3(zWorkSpaceGroupFromWorkSpace, "base_id", "base",  "base","pname","base");
+    mz3.put("zBaseFromWorkSpaceGroupFromWorkSpace",zBaseFromWorkSpaceGroupFromWorkSpace);    
 
     dcModel.put("mto3",mto3);       
         
@@ -256,17 +247,7 @@ base.id as base_id, base.pkey as base_pkey,base.pname as base_pname
 /** OTM 2  ON MODEL**/
         dcModel.put("otm2",otm2);
         
-
         
-//1  work_space  -- work_space_id
-    zWorkSpace = new ZtatUnitInfoLon("work_space_id", "workSpace",  "work_space","pname","work_space");
-
-//2    
-    zWorkSpaceGroup = new ZtatUnitInfoLon("work_space_group_id", "workSpaceGroup",  "work_space_group","pname","work_space_group");
-
-//3
-    zBase = new ZtatUnitInfoLon("base_id", "base",  "base","pname","base");
-
     }        
     @Override
     public LinkedHashSet<String> getNames() {
@@ -291,117 +272,108 @@ base.id as base_id, base.pkey as base_pkey,base.pname as base_pname
     @Override
     public JsonArray toJsonArray(final Row r){
         final JsonArray jsa = new JsonArray();
-        jsa.add(r.getLong("stock_rack_id") );
-        jsa.add(r.getString("stock_rack_pkey") );
-        jsa.add(r.getString("stock_rack_fast_key") );
+        jsa.add(r.getLong("stock_rack_id") );       
+        jsa.add(r.getString("stock_rack_pkey") );       
+        jsa.add(r.getString("stock_rack_fast_key") );       
         jsa.add(r.getString("stock_rack_pname") );
-        jsa.add(r.getLong("work_space_id"));
-        jsa.add(r.getString("work_space_pkey"));
-        jsa.add(r.getString("work_space_pname"));
-        jsa.add(r.getLong("work_space_group_id"));
-        jsa.add(r.getString("work_space_group_pkey"));
-        jsa.add(r.getString("work_space_group_pname"));
-        jsa.add(r.getLong("base_id"));
-        jsa.add(r.getString("base_pkey"));
-        jsa.add(r.getString("base_pname"));
+    jsa.add(r.getLong("work_space_id"));
+    jsa.add(r.getString("work_space_pkey"));   
+    
+        
+    jsa.add(r.getString("work_space_pname"));
+    jsa.add(r.getLong("work_space_group_id"));
+    jsa.add(r.getString("work_space_group_pkey"));
+    
+
+    jsa.add(r.getString("work_space_group_pname"));
+    
+    jsa.add(r.getLong("base_id"));
+    jsa.add(r.getString("base_pkey"));
+    
+
+    jsa.add(r.getString("base_pname"));
+    
         return jsa;
     }
 
     @Override
-    public void fillXRow(final Row r, final XSSFRow row, int nc,boolean withIds) {
-        fillXRow0(r, row, nc, withIds);
+    public int fillXRow(final Row r, final XSSFRow row, int nc,boolean withIds) {
+        return fillXRow0(r, row, nc, withIds);
     }
 
     @Override
     public HashMap<String,String> lXRowH(final boolean withIds, final int level) {        
         
-    final  LinkedHashMap<String,String> m_ = new LinkedHashMap<>();
-    if(withIds){
-                m_.put("stockRack_id","Long");
-            }
-            
-    //pkey       
-            m_.put("stockRack_pkey","String"); 
-            
-    //fastKey       
-            m_.put("stockRack_fastKey","String"); 
-            
-    //pname       
-            m_.put("stockRack_pname","String"); 
-            
-if(level<1){
-                return m_;    
-            }
-            
- // workSpace
-if(withIds){
-            m_.put("workSpace_id","Long");   
-                    
-            }
-
-        m_.put("workSpace_pkey","String");   
-        
-
-            m_.put("workSpace_pname","String");   
-            
-//[2] workSpaceGroup  
-
-        if(level>1){
-            if(withIds){
-               m_.put("workSpaceGroup_id","Long");              
-            }      
-        
-        m_.put("workSpaceGroup_pkey","String");  
-
-            m_.put("workSpaceGroup_pname","String");    
- 
-                      }             
-//[3] base  
-
-        if(level>2){
-            if(withIds){
-               m_.put("base_id","Long");              
-            }      
-        
-        m_.put("base_pkey","String");  
-
-            m_.put("base_pname","String");    
- 
-                      }             
+    final  LinkedHashMap<String,String> m = new LinkedHashMap<>();
     
-    return m_;
+    if(withIds){
+        m.put("stockRack_id",LONG);
+    }        
+//pkey    
+    m.put("stockRack_pkey",STRING);              
+//fastKey    
+    m.put("stockRack_fastKey",STRING);              
+//pname    
+    m.put("stockRack_pname",STRING);          
+    if(level<1){
+        return m;    
+    }       
+// workSpace   workSpace
+    if(withIds){
+        m.put("workSpace_id",LONG);                       
+    }
+    m.put("workSpace_pkey",STRING);     
+    m.put("workSpace_pname",STRING);  
+//[2] workSpaceGroup --   workSpaceGroup
+    if(withIds){
+        m.put("workSpaceGroup_id",LONG);              
+    }              
+    m.put("workSpaceGroup_pkey",STRING);  
+        
+    m.put("workSpaceGroup_pname",STRING);  
+//[3] base --   base
+    if(withIds){
+        m.put("base_id",LONG);              
+    }              
+    m.put("base_pkey",STRING);  
+        
+    m.put("base_pname",STRING);  
+    
+    return m;
     
     }
     
-    private void fillXRow0(final Row r, final XSSFRow row,int nc, boolean withIds){
-        if(withIds){
-        lToCell(r, row,"stock_rack_id", nc++); 
-        }
+    private int fillXRow0(final Row r, final XSSFRow row,int nc, final boolean withIds){
         
-    //pkey       
-            sToCell(r, row,"stock_rack_pkey", nc++); 
-    //fastKey       
-            sToCell(r, row,"stock_rack_fast_key", nc++); 
-    //pname       
+    if(withIds){
+        lToCell(r, row,"stock_rack_id", nc++); 
+    }            //pkey       
+            sToCell(r, row,"stock_rack_pkey", nc++);     //fastKey       
+            sToCell(r, row,"stock_rack_fast_key", nc++);     //pname       
             sToCell(r, row,"stock_rack_pname", nc++); 
- // workSpace
-if(withIds){
-                    lToCell(r, row,"work_space_id", nc++);
-                 }
-sToCell(r, row,"work_space_pkey", nc++);
-sToCell(r, row,"work_space_pname", nc++);
-// workSpaceGroup
-if(withIds){
-            lToCell(r, row,"work_space_group_id", nc++);
-        }
-sToCell(r, row,"work_space_group_pkey", nc++);
-sToCell(r, row,"work_space_group_pname", nc++);
-// base
-if(withIds){
-            lToCell(r, row,"base_id", nc++);
-        }
-sToCell(r, row,"base_pkey", nc++);
-sToCell(r, row,"base_pname", nc++);
+//workSpace   work_space        
+    if(withIds){
+        lToCell(r, row,"work_space_id", nc++);
+    }
+    sToCell(r, row,"work_space_pkey", nc++);
+    sToCell(r, row,"work_space_pname", nc++);
+// workSpaceGroup  work_space_group
+    if(withIds){
+       lToCell(r, row,"work_space_group_id", nc++);
+    }
+
+    sToCell(r, row,"work_space_group_pkey", nc++);
+
+    sToCell(r, row,"work_space_group_pname", nc++);
+// base  base
+    if(withIds){
+       lToCell(r, row,"base_id", nc++);
+    }
+
+    sToCell(r, row,"base_pkey", nc++);
+
+    sToCell(r, row,"base_pname", nc++);
+        return nc;
     }
 
     @Override
@@ -421,25 +393,24 @@ sToCell(r, row,"base_pname", nc++);
 
     @Override
     public void fillTupleInsert(final StockRack dc0, final Tuple t){
-                t.addString(dc0.getPkey());
-        t.addString(dc0.getFastKey());
-        t.addString(dc0.getPname());
-   
-            if(dc0.getWorkSpace()!=null){
-               t.addLong(dc0.getWorkSpace().getId());
-            }
+                
+    t.addString(dc0.getPkey());        
+    t.addString(dc0.getFastKey());        
+    t.addString(dc0.getPname());   
+    if(dc0.getWorkSpace()!=null){
+       t.addLong(dc0.getWorkSpace().getId());
+    }
     }
 
     @Override
     public void fillTupleUpdate(final StockRack dc0, final Tuple t){
-                t.addString(dc0.getFastKey());
-        t.addString(dc0.getPname());
-   
+        
+    t.addString(dc0.getFastKey());
+    t.addString(dc0.getPname());   
 //      if(dc0.getWorkSpace()!=null){
 //            t.addLong(dc0.getWorkSpace().getId());
 //      }
-
-        t.addLong(dc0.getId());
+    t.addLong(dc0.getId());
             
     }    
 
@@ -467,11 +438,8 @@ sToCell(r, row,"base_pname", nc++);
     public void fillTupleInsert(final JsonObject js,final Tuple t){       
         
     fTString("pkey", js, t);
-
     fTString("fastKey", js, t);
-
-    fTString("pname", js, t);
-     
+    fTString("pname", js, t);     
     fTLong("workSpace_id",js,t);       
     }
 
@@ -496,26 +464,23 @@ fTLong("id",js,t);
     @Override
     public StockRack doFrom(final Row r){
         final StockRack stockRack = new StockRack();
-         stockRack.setId(r.getLong("stock_rack_id"));
-         
-                stockRack.setPkey(  r.getString("stock_rack_pkey"));
-         
-                stockRack.setFastKey(  r.getString("stock_rack_fast_key"));
-         
-                stockRack.setPname(  r.getString("stock_rack_pname"));
-
+         stockRack.setId(r.getLong("stock_rack_id"));         
+                stockRack.setPkey(  r.getString("stock_rack_pkey"));                       
+                stockRack.setFastKey(  r.getString("stock_rack_fast_key"));                       
+                stockRack.setPname(  r.getString("stock_rack_pname"));              
         final WorkSpace workSpace = new WorkSpace();
         workSpace.setId(r.getLong("work_space_id"));
         workSpace.setPkey(r.getString("work_space_pkey"));
+        
         workSpace.setPname(r.getString("work_space_pname"));
         stockRack.setWorkSpace(workSpace);
         
-
         final WorkSpaceGroup workSpaceGroup = new WorkSpaceGroup();
         workSpaceGroup.setId(r.getLong("work_space_group_id"));
         workSpaceGroup.setPkey(r.getString("work_space_group_pkey"));
         workSpaceGroup.setPname(r.getString("work_space_group_pname"));
- workSpace.setWorkSpaceGroup(workSpaceGroup);   
+ 
+        workSpace.setWorkSpaceGroup(workSpaceGroup);   
         return stockRack;
     }
     
@@ -524,10 +489,11 @@ fTLong("id",js,t);
         StockRack stockRack = new StockRack();
         stockRack.setId(js.getLong("id"));
         
-                stockRack.setPkey(js.getString("pkey"));
-        stockRack.setFastKey(js.getString("fastKey"));
-        stockRack.setPname(js.getString("pname"));
-        stockRack.setId(js.getLong("workSpace_id"));
+                
+                stockRack.setPkey(js.getString("pkey"));        
+                stockRack.setFastKey(js.getString("fastKey"));        
+                stockRack.setPname(js.getString("pname"));        
+            stockRack.setId(js.getLong("workSpace_id"));
         return stockRack;
     }
 
@@ -568,12 +534,13 @@ fTLong("id",js,t);
         slcb.doIlPSimple2( "workSpace_pkey", "work_space_pkey");
         slcb.doEQPSimple2( "workSpace_pkey", "work_space_pkey");
         slcb.doInLongCondition("workSpace_id", "work_space_id");  
-//WorkSpace 2        
+//WorkSpace 2        --
         slcb.doIlPSimple2( "workSpace_pname", "work_space_pname");    
-
+        
         slcb.doIlPSimple2( "workSpaceGroup_pkey", "work_space_group_pkey");
         slcb.doEQPSimple2( "workSpaceGroup_pkey", "work_space_group_pkey");
-        slcb.doInLongCondition("workSpaceGroup_id", "work_space_group_id");//WorkSpaceGroup 1
+        slcb.doInLongCondition("workSpaceGroup_id", "work_space_group_id");
+//WorkSpaceGroup 1
         slcb.doIlPSimple2( "workSpaceGroup_pname", "work_space_group_pname"); 
         slcb.doIlPSimple2( "base_pkey", "base_pkey");
         slcb.doEQPSimple2( "base_pkey", "base_pkey");
@@ -595,13 +562,11 @@ fTLong("id",js,t);
         
 //level 1
              
-    sz0.applyG1(zWorkSpace);      
-    //level 2
-    
-    sz0.applyG2(zWorkSpace,zWorkSpaceGroup);                           
-    //level 3
-    
-        sz0.applyG3(zWorkSpace,zWorkSpaceGroup,zBase);               
+    sz0.applyG1(mz1.get("zWorkSpace"))   ;      
+//level 2    
+    sz0.applyG2(mz2.get("zWorkSpaceGroupFromWorkSpace"));                           
+//level 3    
+        sz0.applyG3(mz3.get("zBaseFromWorkSpaceGroupFromWorkSpace"));               
         return sz0;
     }
 }

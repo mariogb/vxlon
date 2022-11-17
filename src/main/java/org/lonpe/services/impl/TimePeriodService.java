@@ -17,7 +17,10 @@ import org.lonpe.services.AbstractServiceLon;
 import org.lonpe.services.ConditionInfo;
 import org.lonpe.lonvx.sqlbuilders.SqlLonConditionsBuilder;
 import org.apache.poi.xssf.usermodel.XSSFRow;
+import static org.lonpe.lonvx.ctes.CteLon.*;
 import java.time.LocalDate;
+
+
 
 
 
@@ -26,7 +29,6 @@ import java.time.LocalDate;
  *   TimePeriodService 
  * 
  */
-   
   
 public class TimePeriodService extends AbstractServiceLon<TimePeriod>{
 
@@ -41,9 +43,15 @@ public class TimePeriodService extends AbstractServiceLon<TimePeriod>{
     private static final String SQLDELETE = "DELETE FROM time_period WHERE id = $1 returning id";
     private static final String TABLENAME ="time_period";
     
+
+    public TimePeriodService() {
+        init0();
+    }
+
     
+
     @Override
-    public  String getTableName(){
+    public String getTableName(){
         return TABLENAME;
     }
 
@@ -57,8 +65,7 @@ public class TimePeriodService extends AbstractServiceLon<TimePeriod>{
         return SQLLKEYIN;
     }
 
-/**
-    
+/**    
     private static String sql00 = "SELECT time_period.id as time_period_id,
 time_period.pkey as time_period_pkey,
 time_period.begin_date as time_period_begin_date,
@@ -66,8 +73,7 @@ time_period.end_date as time_period_end_date,
 time_period.pname as time_period_pname,
 time_period.type_lon as time_period_type_lon 
   FROM 
-  time_period ; 
-"
+  time_period "
 */
 
     @Override
@@ -87,28 +93,21 @@ time_period.type_lon as time_period_type_lon
     /**
      * sql select property alias field names
      */
-     
-    private static final LinkedHashSet<String> names;
+    private final LinkedHashSet<String> names =  new LinkedHashSet<>();;
     
     /**
      * Map field insert/update to property 
      */
-    private static final HashMap<String,String> insertMapFields; 
+    private final HashMap<String,String> insertMapFields = new HashMap<>(); 
     
     /**
     * Map property to field order 
     */
-    private static final HashMap<String, String> sortMapFields;
+    private final HashMap<String, String> sortMapFields = new  HashMap<>();
 
-    private static final JsonObject dcModel;
+    private final JsonObject dcModel  = new JsonObject();
     
-    static{
-        names = new LinkedHashSet<>();
-        insertMapFields = new HashMap<>();
-        sortMapFields= new  HashMap<>();
-
-        dcModel = new JsonObject();
-
+    private void init0(){
         
     dcModel.put("dc", "timePeriod");
 
@@ -120,52 +119,40 @@ time_period.type_lon as time_period_type_lon
     final JsonArray ps = new JsonArray();   
  
 //pkey
-    names.add("pkey");
-    insertMapFields.put("time_period.pkey","pkey");  
-
-//Create property pkey       
-    final JsonObject pkey = ps00a("pkey", "String",true);
+    doFieldSort("pkey","pkey","time_period");               
    
 //Used to map error on index to source property because IS Unique
     insertMapFields.put("time_period.time_period_uidx_pkey","pkey");  
 
+//Create property pkey       
+    final JsonObject pkey = psString("pkey",true);
+
 // IS Unique     
     pkey.put("uq",true);                    
-
-    sortMapFields.put("pkey", "time_period_pkey");                   
  
     ps.add(pkey);
  
 //beginDate
-    names.add("beginDate");
-    insertMapFields.put("time_period.begin_date","beginDate");  
+    doFieldSort("beginDate","begin_date","time_period");               
 
 //Create property beginDate       
-    final JsonObject beginDate = ps00a("beginDate", "LocalDate",true);
-
-    sortMapFields.put("beginDate", "time_period_begin_date");               
+    final JsonObject beginDate = psLocalDate("beginDate",true);
  
     ps.add(beginDate);
  
 //endDate
-    names.add("endDate");
-    insertMapFields.put("time_period.end_date","endDate");  
+    doFieldSort("endDate","end_date","time_period");               
 
 //Create property endDate       
-    final JsonObject endDate = ps00a("endDate", "LocalDate",true);
-
-    sortMapFields.put("endDate", "time_period_end_date");               
+    final JsonObject endDate = psLocalDate("endDate",true);
  
     ps.add(endDate);
  
 //pname
-    names.add("pname");
-    insertMapFields.put("time_period.pname","pname");  
+    doFieldSort("pname","pname","time_period");               
 
 //Create property pname       
-    final JsonObject pname = ps00a("pname", "String",true);
-
-    sortMapFields.put("pname", "time_period_pname");                   
+    final JsonObject pname = psString("pname",true);
   
 //PC
     dcModel.put("pc","pname");  
@@ -173,13 +160,10 @@ time_period.type_lon as time_period_type_lon
     ps.add(pname);
  
 //typeLon
-    names.add("typeLon");
-    insertMapFields.put("time_period.type_lon","typeLon");  
+    doFieldSort("typeLon","type_lon","time_period");               
 
 //Create property typeLon       
-    final JsonObject typeLon = ps00a("typeLon", "String",true);
-
-    sortMapFields.put("typeLon", "time_period_type_lon");                   
+    final JsonObject typeLon = psString("typeLon",true);
 
     final JsonArray typeLonInList = new JsonArray();
                 typeLonInList.add("CONFIG"); 
@@ -228,9 +212,7 @@ typeLonInList.add("FINISH");
 /** OTM 3  ON MODEL**/
         dcModel.put("otm3",otm3);
         
-
         
-
     }        
     @Override
     public LinkedHashSet<String> getNames() {
@@ -255,63 +237,54 @@ typeLonInList.add("FINISH");
     @Override
     public JsonArray toJsonArray(final Row r){
         final JsonArray jsa = new JsonArray();
-        jsa.add(r.getLong("time_period_id") );
+        jsa.add(r.getLong("time_period_id") );       
         jsa.add(r.getString("time_period_pkey") );
         jsa.add(r.getLocalDate("time_period_begin_date").toString() ); // undefined
-        jsa.add(r.getLocalDate("time_period_end_date").toString() ); // undefined
-        jsa.add(r.getString("time_period_pname") );
+        jsa.add(r.getLocalDate("time_period_end_date").toString() ); // undefined       
+        jsa.add(r.getString("time_period_pname") );       
         jsa.add(r.getString("time_period_type_lon") );
         return jsa;
     }
 
     @Override
-    public void fillXRow(final Row r, final XSSFRow row, int nc,boolean withIds) {
-        fillXRow0(r, row, nc, withIds);
+    public int fillXRow(final Row r, final XSSFRow row, int nc,boolean withIds) {
+        return fillXRow0(r, row, nc, withIds);
     }
 
     @Override
     public HashMap<String,String> lXRowH(final boolean withIds, final int level) {        
         
-    final  LinkedHashMap<String,String> m_ = new LinkedHashMap<>();
-    if(withIds){
-                m_.put("timePeriod_id","Long");
-            }
-            
-    //pkey       
-            m_.put("timePeriod_pkey","String"); 
-            
-    //beginDate       
-            m_.put("timePeriod_beginDate","LocalDate"); 
-            
-    //endDate       
-            m_.put("timePeriod_endDate","LocalDate"); 
-            
-    //pname       
-            m_.put("timePeriod_pname","String"); 
-            
-    //typeLon       
-            m_.put("timePeriod_typeLon","String"); 
-            
+    final  LinkedHashMap<String,String> m = new LinkedHashMap<>();
     
-    return m_;
+    if(withIds){
+        m.put("timePeriod_id",LONG);
+    }        
+//pkey    
+    m.put("timePeriod_pkey",STRING);              
+//beginDate    
+    m.put("timePeriod_beginDate",LOCALDATE);              
+//endDate    
+    m.put("timePeriod_endDate",LOCALDATE);              
+//pname    
+    m.put("timePeriod_pname",STRING);              
+//typeLon    
+    m.put("timePeriod_typeLon",STRING);          
+    
+    return m;
     
     }
     
-    private void fillXRow0(final Row r, final XSSFRow row,int nc, boolean withIds){
-        if(withIds){
-        lToCell(r, row,"time_period_id", nc++); 
-        }
+    private int fillXRow0(final Row r, final XSSFRow row,int nc, final boolean withIds){
         
-    //pkey       
-            sToCell(r, row,"time_period_pkey", nc++); 
-    //beginDate            
-            ldToCell(r, row,"time_period_begin_date", nc++); 
-    //endDate            
-            ldToCell(r, row,"time_period_end_date", nc++); 
-    //pname       
-            sToCell(r, row,"time_period_pname", nc++); 
-    //typeLon       
+    if(withIds){
+        lToCell(r, row,"time_period_id", nc++); 
+    }            //pkey       
+            sToCell(r, row,"time_period_pkey", nc++);     //beginDate            
+            ldToCell(r, row,"time_period_begin_date", nc++);     //endDate            
+            ldToCell(r, row,"time_period_end_date", nc++);     //pname       
+            sToCell(r, row,"time_period_pname", nc++);     //typeLon       
             sToCell(r, row,"time_period_type_lon", nc++); 
+        return nc;
     }
 
     @Override
@@ -331,21 +304,22 @@ typeLonInList.add("FINISH");
 
     @Override
     public void fillTupleInsert(final TimePeriod dc0, final Tuple t){
-                t.addString(dc0.getPkey());
-        t.addLocalDate( dc0.getBeginDate()  );
-        t.addLocalDate( dc0.getEndDate()  );
-        t.addString(dc0.getPname());
-        t.addString(dc0.getTypeLon());
+                
+    t.addString(dc0.getPkey());
+    t.addLocalDate( dc0.getBeginDate()  );
+    t.addLocalDate( dc0.getEndDate()  );        
+    t.addString(dc0.getPname());        
+    t.addString(dc0.getTypeLon());
     }
 
     @Override
     public void fillTupleUpdate(final TimePeriod dc0, final Tuple t){
-                t.addLocalDate( dc0.getBeginDate()  );
-        t.addLocalDate( dc0.getEndDate()  );
-        t.addString(dc0.getPname());
-        t.addString(dc0.getTypeLon());
-
-        t.addLong(dc0.getId());
+                
+    t.addLocalDate( dc0.getBeginDate()  );        
+    t.addLocalDate( dc0.getEndDate()  );
+    t.addString(dc0.getPname());
+    t.addString(dc0.getTypeLon());
+    t.addLong(dc0.getId());
             
     }    
 
@@ -372,13 +346,9 @@ typeLonInList.add("FINISH");
     public void fillTupleInsert(final JsonObject js,final Tuple t){       
         
     fTString("pkey", js, t);
-
     t.addLocalDate(LocalDate.parse(js.getString("beginDate")));
-
     t.addLocalDate(LocalDate.parse(js.getString("endDate")));
-
     fTString("pname", js, t);
-
     fTString("typeLon", js, t);       
     }
 
@@ -403,17 +373,12 @@ fTLong("id",js,t);
     @Override
     public TimePeriod doFrom(final Row r){
         final TimePeriod timePeriod = new TimePeriod();
-         timePeriod.setId(r.getLong("time_period_id"));
-         
-                timePeriod.setPkey(  r.getString("time_period_pkey"));
-         
-                timePeriod.setBeginDate(r.getLocalDate("begin_date"));
-         
-                timePeriod.setEndDate(r.getLocalDate("end_date"));
-         
-                timePeriod.setPname(  r.getString("time_period_pname"));
-         
-                timePeriod.setTypeLon(  r.getString("time_period_type_lon"));  
+         timePeriod.setId(r.getLong("time_period_id"));         
+                timePeriod.setPkey(  r.getString("time_period_pkey"));                       
+                timePeriod.setBeginDate(r.getLocalDate("begin_date"));                       
+                timePeriod.setEndDate(r.getLocalDate("end_date"));                       
+                timePeriod.setPname(  r.getString("time_period_pname"));                       
+                timePeriod.setTypeLon(  r.getString("time_period_type_lon"));                
         return timePeriod;
     }
     
@@ -422,11 +387,12 @@ fTLong("id",js,t);
         TimePeriod timePeriod = new TimePeriod();
         timePeriod.setId(js.getLong("id"));
         
-                timePeriod.setPkey(js.getString("pkey"));
-        timePeriod.setBeginDate(LocalDate.parse(js.getString("beginDate")));
-        timePeriod.setEndDate(LocalDate.parse(js.getString("endDate")));
-        timePeriod.setPname(js.getString("pname"));
-        timePeriod.setTypeLon(js.getString("typeLon"));
+                
+                timePeriod.setPkey(js.getString("pkey"));        
+                timePeriod.setBeginDate(LocalDate.parse(js.getString("beginDate")));        
+                timePeriod.setEndDate(LocalDate.parse(js.getString("endDate")));        
+                timePeriod.setPname(js.getString("pname"));        
+                timePeriod.setTypeLon(js.getString("typeLon"));
         return timePeriod;
     }
 

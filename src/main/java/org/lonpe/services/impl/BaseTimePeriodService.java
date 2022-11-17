@@ -17,16 +17,18 @@ import org.lonpe.services.AbstractServiceLon;
 import org.lonpe.services.ConditionInfo;
 import org.lonpe.lonvx.sqlbuilders.SqlLonConditionsBuilder;
 import org.apache.poi.xssf.usermodel.XSSFRow;
+import static org.lonpe.lonvx.ctes.CteLon.*;
 
 
 
 import org.lonpe.lonvx.sqlbuilders.ZtatUnitInfoLon;
+import org.lonpe.lonvx.sqlbuilders.ZtatUnitInfoLon2;
+import org.lonpe.lonvx.sqlbuilders.ZtatUnitInfoLon3;
 
 /**
  *   BaseTimePeriodService 
  * 
  */
-   
   
 public class BaseTimePeriodService extends AbstractServiceLon<BaseTimePeriod>{
 
@@ -41,14 +43,16 @@ public class BaseTimePeriodService extends AbstractServiceLon<BaseTimePeriod>{
     private static final String SQLDELETE = "DELETE FROM base_time_period WHERE id = $1 returning id";
     private static final String TABLENAME ="base_time_period";
     
-//1
-    private static final ZtatUnitInfoLon zBase;
 
-//1
-    private static final ZtatUnitInfoLon zTimePeriod;
+    public BaseTimePeriodService() {
+        init0();
+    }
+
     
+    private static final Map<String, ZtatUnitInfoLon> mz1 = new HashMap<>(6);                       
+
     @Override
-    public  String getTableName(){
+    public String getTableName(){
         return TABLENAME;
     }
 
@@ -62,8 +66,7 @@ public class BaseTimePeriodService extends AbstractServiceLon<BaseTimePeriod>{
         return SQLLKEYIN;
     }
 
-/**
-    
+/**    
     private static String sql00 = "SELECT base_time_period.id as base_time_period_id,
 base_time_period.pkey as base_time_period_pkey,
 base.id as base_id,base.pkey as base_pkey,base.pname as base_pname,
@@ -74,8 +77,7 @@ time_period.id as time_period_id,time_period.pkey as time_period_pkey,time_perio
   time_period as time_period  
  WHERE 
  base_time_period.base_id = base.id
- AND base_time_period.time_period_id = time_period.id; 
-"
+ AND base_time_period.time_period_id = time_period.id"
 */
 
     @Override
@@ -95,28 +97,21 @@ time_period.id as time_period_id,time_period.pkey as time_period_pkey,time_perio
     /**
      * sql select property alias field names
      */
-     
-    private static final LinkedHashSet<String> names;
+    private final LinkedHashSet<String> names =  new LinkedHashSet<>();;
     
     /**
      * Map field insert/update to property 
      */
-    private static final HashMap<String,String> insertMapFields; 
+    private final HashMap<String,String> insertMapFields = new HashMap<>(); 
     
     /**
     * Map property to field order 
     */
-    private static final HashMap<String, String> sortMapFields;
+    private final HashMap<String, String> sortMapFields = new  HashMap<>();
 
-    private static final JsonObject dcModel;
+    private final JsonObject dcModel  = new JsonObject();
     
-    static{
-        names = new LinkedHashSet<>();
-        insertMapFields = new HashMap<>();
-        sortMapFields= new  HashMap<>();
-
-        dcModel = new JsonObject();
-
+    private void init0(){
         
     dcModel.put("dc", "baseTimePeriod");
 
@@ -128,19 +123,16 @@ time_period.id as time_period_id,time_period.pkey as time_period_pkey,time_perio
     final JsonArray ps = new JsonArray();   
  
 //pkey
-    names.add("pkey");
-    insertMapFields.put("base_time_period.pkey","pkey");  
-
-//Create property pkey       
-    final JsonObject pkey = ps00a("pkey", "String",true);
+    doFieldSort("pkey","pkey","base_time_period");               
    
 //Used to map error on index to source property because IS Unique
     insertMapFields.put("base_time_period.base_time_period_uidx_pkey","pkey");  
 
+//Create property pkey       
+    final JsonObject pkey = psString("pkey",true);
+
 // IS Unique     
     pkey.put("uq",true);                    
-
-    sortMapFields.put("pkey", "base_time_period_pkey");                   
  
     ps.add(pkey);
 
@@ -149,39 +141,37 @@ time_period.id as time_period_id,time_period.pkey as time_period_pkey,time_perio
 
     final JsonArray mto = new JsonArray();      
 
-//(1)  base --------------------
-    names.add("base_id");      
-    insertMapFields.put("base_time_period.base_id","base_id");    
-       
-    names.add("base_pkey");        
-    sortMapFields.put( "base_pkey", "base_pkey");        
+//(1)  base
+    doFieldMT0("base_time_period","base", "base");  
 
     final JsonObject base =  doMto("base","base");        
    
     names.add("base_pname");
-    sortMapFields.put( "base_pname", "base_pname");         
-
+    sortMapFields.put( "base_pname", "base_pname");                
     base.put("pc","pname");          
 
     mto.add(base);
         
 
-//(1)  timePeriod --------------------
-    names.add("timePeriod_id");      
-    insertMapFields.put("base_time_period.time_period_id","timePeriod_id");    
-       
-    names.add("timePeriod_pkey");        
-    sortMapFields.put( "timePeriod_pkey", "time_period_pkey");        
+    //1  base  -- base_id
+    final ZtatUnitInfoLon zBase = new ZtatUnitInfoLon("base_id", "base",  "base","pname","base");
+    mz1.put("zBase", zBase);    
+
+//(1)  timePeriod
+    doFieldMT0("base_time_period","timePeriod", "time_period");  
 
     final JsonObject timePeriod =  doMto("timePeriod","timePeriod");        
    
     names.add("timePeriod_pname");
-    sortMapFields.put( "timePeriod_pname", "time_period_pname");         
-
+    sortMapFields.put( "timePeriod_pname", "time_period_pname");                
     timePeriod.put("pc","pname");          
 
     mto.add(timePeriod);
         
+
+    //1  time_period  -- time_period_id
+    final ZtatUnitInfoLon zTimePeriod = new ZtatUnitInfoLon("time_period_id", "timePeriod",  "time_period","pname","time_period");
+    mz1.put("zTimePeriod", zTimePeriod);    
 
     dcModel.put("mto",mto);     
         
@@ -230,14 +220,7 @@ time_period.id as time_period_id,time_period.pkey as time_period_pkey,time_perio
 /** OTM 3  ON MODEL**/
         dcModel.put("otm3",otm3);
         
-
         
-//1  base  -- base_id
-    zBase = new ZtatUnitInfoLon("base_id", "base",  "base","pname","base");
-
-//1  time_period  -- time_period_id
-    zTimePeriod = new ZtatUnitInfoLon("time_period_id", "timePeriod",  "time_period","pname","time_period");
-
     }        
     @Override
     public LinkedHashSet<String> getNames() {
@@ -262,83 +245,75 @@ time_period.id as time_period_id,time_period.pkey as time_period_pkey,time_perio
     @Override
     public JsonArray toJsonArray(final Row r){
         final JsonArray jsa = new JsonArray();
-        jsa.add(r.getLong("base_time_period_id") );
+        jsa.add(r.getLong("base_time_period_id") );       
         jsa.add(r.getString("base_time_period_pkey") );
-        jsa.add(r.getLong("base_id"));
-        jsa.add(r.getString("base_pkey"));
-        jsa.add(r.getString("base_pname"));
-        jsa.add(r.getLong("time_period_id"));
-        jsa.add(r.getString("time_period_pkey"));
-        jsa.add(r.getString("time_period_pname"));
+    jsa.add(r.getLong("base_id"));
+    jsa.add(r.getString("base_pkey"));   
+    
+        
+    jsa.add(r.getString("base_pname"));
+    jsa.add(r.getLong("time_period_id"));
+    jsa.add(r.getString("time_period_pkey"));   
+    
+        
+    jsa.add(r.getString("time_period_pname"));
         return jsa;
     }
 
     @Override
-    public void fillXRow(final Row r, final XSSFRow row, int nc,boolean withIds) {
-        fillXRow0(r, row, nc, withIds);
+    public int fillXRow(final Row r, final XSSFRow row, int nc,boolean withIds) {
+        return fillXRow0(r, row, nc, withIds);
     }
 
     @Override
     public HashMap<String,String> lXRowH(final boolean withIds, final int level) {        
         
-    final  LinkedHashMap<String,String> m_ = new LinkedHashMap<>();
-    if(withIds){
-                m_.put("baseTimePeriod_id","Long");
-            }
-            
-    //pkey       
-            m_.put("baseTimePeriod_pkey","String"); 
-            
-if(level<1){
-                return m_;    
-            }
-            
- // base
-if(withIds){
-            m_.put("base_id","Long");   
-                    
-            }
-
-        m_.put("base_pkey","String");   
-        
-
-            m_.put("base_pname","String");   
-            
- // timePeriod
-if(withIds){
-            m_.put("timePeriod_id","Long");   
-                    
-            }
-
-        m_.put("timePeriod_pkey","String");   
-        
-
-            m_.put("timePeriod_pname","String");   
-            
+    final  LinkedHashMap<String,String> m = new LinkedHashMap<>();
     
-    return m_;
+    if(withIds){
+        m.put("baseTimePeriod_id",LONG);
+    }        
+//pkey    
+    m.put("baseTimePeriod_pkey",STRING);          
+    if(level<1){
+        return m;    
+    }       
+// base   base
+    if(withIds){
+        m.put("base_id",LONG);                       
+    }
+    m.put("base_pkey",STRING);     
+    m.put("base_pname",STRING);   
+// timePeriod   timePeriod
+    if(withIds){
+        m.put("timePeriod_id",LONG);                       
+    }
+    m.put("timePeriod_pkey",STRING);     
+    m.put("timePeriod_pname",STRING);  
+    
+    return m;
     
     }
     
-    private void fillXRow0(final Row r, final XSSFRow row,int nc, boolean withIds){
-        if(withIds){
-        lToCell(r, row,"base_time_period_id", nc++); 
-        }
+    private int fillXRow0(final Row r, final XSSFRow row,int nc, final boolean withIds){
         
-    //pkey       
+    if(withIds){
+        lToCell(r, row,"base_time_period_id", nc++); 
+    }            //pkey       
             sToCell(r, row,"base_time_period_pkey", nc++); 
- // base
-if(withIds){
-                    lToCell(r, row,"base_id", nc++);
-                 }
-sToCell(r, row,"base_pkey", nc++);
-sToCell(r, row,"base_pname", nc++);
- // timePeriod
-if(withIds){
-                    lToCell(r, row,"time_period_id", nc++);
-                 }
-sToCell(r, row,"time_period_pkey", nc++);
-sToCell(r, row,"time_period_pname", nc++);
+//base   base        
+    if(withIds){
+        lToCell(r, row,"base_id", nc++);
+    }
+    sToCell(r, row,"base_pkey", nc++);
+    sToCell(r, row,"base_pname", nc++);
+//timePeriod   time_period        
+    if(withIds){
+        lToCell(r, row,"time_period_id", nc++);
+    }
+    sToCell(r, row,"time_period_pkey", nc++);
+    sToCell(r, row,"time_period_pname", nc++);
+        return nc;
     }
 
     @Override
@@ -358,15 +333,14 @@ sToCell(r, row,"time_period_pname", nc++);
 
     @Override
     public void fillTupleInsert(final BaseTimePeriod dc0, final Tuple t){
-                t.addString(dc0.getPkey());
-   
-            if(dc0.getBase()!=null){
-               t.addLong(dc0.getBase().getId());
-            }
-   
-            if(dc0.getTimePeriod()!=null){
-               t.addLong(dc0.getTimePeriod().getId());
-            }
+                
+    t.addString(dc0.getPkey());   
+    if(dc0.getBase()!=null){
+       t.addLong(dc0.getBase().getId());
+    }   
+    if(dc0.getTimePeriod()!=null){
+       t.addLong(dc0.getTimePeriod().getId());
+    }
     }
 
     @Override
@@ -374,13 +348,11 @@ sToCell(r, row,"time_period_pname", nc++);
            
 //      if(dc0.getBase()!=null){
 //            t.addLong(dc0.getBase().getId());
-//      }
-   
+//      }   
 //      if(dc0.getTimePeriod()!=null){
 //            t.addLong(dc0.getTimePeriod().getId());
 //      }
-
-        t.addLong(dc0.getId());
+    t.addLong(dc0.getId());
             
     }    
 
@@ -409,10 +381,8 @@ sToCell(r, row,"time_period_pname", nc++);
     @Override
     public void fillTupleInsert(final JsonObject js,final Tuple t){       
         
-    fTString("pkey", js, t);
-     
-    fTLong("base_id",js,t);
-     
+    fTString("pkey", js, t);     
+    fTLong("base_id",js,t);     
     fTLong("timePeriod_id",js,t);       
     }
 
@@ -437,20 +407,19 @@ fTLong("id",js,t);
     @Override
     public BaseTimePeriod doFrom(final Row r){
         final BaseTimePeriod baseTimePeriod = new BaseTimePeriod();
-         baseTimePeriod.setId(r.getLong("base_time_period_id"));
-         
-                baseTimePeriod.setPkey(  r.getString("base_time_period_pkey"));
-
+         baseTimePeriod.setId(r.getLong("base_time_period_id"));         
+                baseTimePeriod.setPkey(  r.getString("base_time_period_pkey"));              
         final Base base = new Base();
         base.setId(r.getLong("base_id"));
         base.setPkey(r.getString("base_pkey"));
+        
         base.setPname(r.getString("base_pname"));
         baseTimePeriod.setBase(base);
         
-
         final TimePeriod timePeriod = new TimePeriod();
         timePeriod.setId(r.getLong("time_period_id"));
         timePeriod.setPkey(r.getString("time_period_pkey"));
+        
         timePeriod.setPname(r.getString("time_period_pname"));
         baseTimePeriod.setTimePeriod(timePeriod);
           
@@ -462,9 +431,10 @@ fTLong("id",js,t);
         BaseTimePeriod baseTimePeriod = new BaseTimePeriod();
         baseTimePeriod.setId(js.getLong("id"));
         
-                baseTimePeriod.setPkey(js.getString("pkey"));
-        baseTimePeriod.setId(js.getLong("base_id"));
-        baseTimePeriod.setId(js.getLong("timePeriod_id"));
+                
+                baseTimePeriod.setPkey(js.getString("pkey"));        
+            baseTimePeriod.setId(js.getLong("base_id"));        
+            baseTimePeriod.setId(js.getLong("timePeriod_id"));
         return baseTimePeriod;
     }
 
@@ -504,13 +474,15 @@ fTLong("id",js,t);
         slcb.doIlPSimple2( "base_pkey", "base_pkey");
         slcb.doEQPSimple2( "base_pkey", "base_pkey");
         slcb.doInLongCondition("base_id", "base_id");  
-//Base 1        
+//Base 1        --
         slcb.doIlPSimple2( "base_pname", "base_pname");    
+        
         slcb.doIlPSimple2( "timePeriod_pkey", "time_period_pkey");
         slcb.doEQPSimple2( "timePeriod_pkey", "time_period_pkey");
         slcb.doInLongCondition("timePeriod_id", "time_period_id");  
-//TimePeriod 3        
+//TimePeriod 3        --
         slcb.doIlPSimple2( "timePeriod_pname", "time_period_pname");    
+        
 
         slcb.doSQLORDEN(sortMapFields);
 
@@ -528,12 +500,10 @@ fTLong("id",js,t);
         
 //level 1
              
-    sz0.applyG1(zBase);               
-    sz0.applyG1(zTimePeriod);      
-    //level 2
-    
-    //level 3
-    
+    sz0.applyG1(mz1.get("zBase"))   ;               
+    sz0.applyG1(mz1.get("zTimePeriod"))   ;      
+//level 2    
+//level 3    
         return sz0;
     }
 }

@@ -17,6 +17,9 @@ import org.lonpe.services.AbstractServiceLon;
 import org.lonpe.services.ConditionInfo;
 import org.lonpe.lonvx.sqlbuilders.SqlLonConditionsBuilder;
 import org.apache.poi.xssf.usermodel.XSSFRow;
+import static org.lonpe.lonvx.ctes.CteLon.*;
+
+
 
 
 
@@ -26,7 +29,6 @@ import org.apache.poi.xssf.usermodel.XSSFRow;
  *   DepartamentService 
  * 
  */
-   
   
 public class DepartamentService extends AbstractServiceLon<Departament>{
 
@@ -41,9 +43,15 @@ public class DepartamentService extends AbstractServiceLon<Departament>{
     private static final String SQLDELETE = "DELETE FROM departament WHERE id = $1 returning id";
     private static final String TABLENAME ="departament";
     
+
+    public DepartamentService() {
+        init0();
+    }
+
     
+
     @Override
-    public  String getTableName(){
+    public String getTableName(){
         return TABLENAME;
     }
 
@@ -57,16 +65,14 @@ public class DepartamentService extends AbstractServiceLon<Departament>{
         return SQLLKEYIN;
     }
 
-/**
-    
+/**    
     private static String sql00 = "SELECT departament.id as departament_id,
 departament.pkey as departament_pkey,
 departament.description as departament_description,
 departament.fast_key as departament_fast_key,
 departament.pname as departament_pname 
   FROM 
-  departament ; 
-"
+  departament "
 */
 
     @Override
@@ -86,28 +92,21 @@ departament.pname as departament_pname
     /**
      * sql select property alias field names
      */
-     
-    private static final LinkedHashSet<String> names;
+    private final LinkedHashSet<String> names =  new LinkedHashSet<>();;
     
     /**
      * Map field insert/update to property 
      */
-    private static final HashMap<String,String> insertMapFields; 
+    private final HashMap<String,String> insertMapFields = new HashMap<>(); 
     
     /**
     * Map property to field order 
     */
-    private static final HashMap<String, String> sortMapFields;
+    private final HashMap<String, String> sortMapFields = new  HashMap<>();
 
-    private static final JsonObject dcModel;
+    private final JsonObject dcModel  = new JsonObject();
     
-    static{
-        names = new LinkedHashSet<>();
-        insertMapFields = new HashMap<>();
-        sortMapFields= new  HashMap<>();
-
-        dcModel = new JsonObject();
-
+    private void init0(){
         
     dcModel.put("dc", "departament");
 
@@ -119,37 +118,32 @@ departament.pname as departament_pname
     final JsonArray ps = new JsonArray();   
  
 //pkey
-    names.add("pkey");
-    insertMapFields.put("departament.pkey","pkey");  
-
-//Create property pkey       
-    final JsonObject pkey = ps00a("pkey", "String",true);
+    doFieldSort("pkey","pkey","departament");               
    
 //Used to map error on index to source property because IS Unique
     insertMapFields.put("departament.departament_uidx_pkey","pkey");  
 
+//Create property pkey       
+    final JsonObject pkey = psString("pkey",true);
+
 // IS Unique     
     pkey.put("uq",true);                    
-
-    sortMapFields.put("pkey", "departament_pkey");                   
  
     ps.add(pkey);
  
 //description
-    names.add("description");
-    insertMapFields.put("departament.description","description");  
+    doField("description","description","departament");               
 
 //Create property description       
-    final JsonObject description = ps00a("description", "String",false);
+    final JsonObject description = psString("description",false);
  
     ps.add(description);
  
 //fastKey
-    names.add("fastKey");
-    insertMapFields.put("departament.fast_key","fastKey");  
+    doField("fastKey","fast_key","departament");               
 
 //Create property fastKey       
-    final JsonObject fastKey = ps00a("fastKey", "String",false);
+    final JsonObject fastKey = psString("fastKey",false);
 
 // hasIndex 
     fastKey.put("withIndex",true);  
@@ -157,19 +151,16 @@ departament.pname as departament_pname
     ps.add(fastKey);
  
 //pname
-    names.add("pname");
-    insertMapFields.put("departament.pname","pname");  
-
-//Create property pname       
-    final JsonObject pname = ps00a("pname", "String",true);
+    doFieldSort("pname","pname","departament");               
    
 //Used to map error on index to source property because IS Unique
     insertMapFields.put("departament.departament_uidx_pname","pname");  
 
+//Create property pname       
+    final JsonObject pname = psString("pname",true);
+
 // IS Unique     
     pname.put("uq",true);                    
-
-    sortMapFields.put("pname", "departament_pname");                   
   
 //PC
     dcModel.put("pc","pname");  
@@ -230,9 +221,7 @@ departament.pname as departament_pname
 /** OTM 3  ON MODEL**/
         dcModel.put("otm3",otm3);
         
-
         
-
     }        
     @Override
     public LinkedHashSet<String> getNames() {
@@ -257,57 +246,50 @@ departament.pname as departament_pname
     @Override
     public JsonArray toJsonArray(final Row r){
         final JsonArray jsa = new JsonArray();
-        jsa.add(r.getLong("departament_id") );
-        jsa.add(r.getString("departament_pkey") );
-        jsa.add(r.getString("departament_description") );
-        jsa.add(r.getString("departament_fast_key") );
+        jsa.add(r.getLong("departament_id") );       
+        jsa.add(r.getString("departament_pkey") );       
+        jsa.add(r.getString("departament_description") );       
+        jsa.add(r.getString("departament_fast_key") );       
         jsa.add(r.getString("departament_pname") );
         return jsa;
     }
 
     @Override
-    public void fillXRow(final Row r, final XSSFRow row, int nc,boolean withIds) {
-        fillXRow0(r, row, nc, withIds);
+    public int fillXRow(final Row r, final XSSFRow row, int nc,boolean withIds) {
+        return fillXRow0(r, row, nc, withIds);
     }
 
     @Override
     public HashMap<String,String> lXRowH(final boolean withIds, final int level) {        
         
-    final  LinkedHashMap<String,String> m_ = new LinkedHashMap<>();
-    if(withIds){
-                m_.put("departament_id","Long");
-            }
-            
-    //pkey       
-            m_.put("departament_pkey","String"); 
-            
-    //description       
-            m_.put("departament_description","String"); 
-            
-    //fastKey       
-            m_.put("departament_fastKey","String"); 
-            
-    //pname       
-            m_.put("departament_pname","String"); 
-            
+    final  LinkedHashMap<String,String> m = new LinkedHashMap<>();
     
-    return m_;
+    if(withIds){
+        m.put("departament_id",LONG);
+    }        
+//pkey    
+    m.put("departament_pkey",STRING);              
+//description    
+    m.put("departament_description",STRING);              
+//fastKey    
+    m.put("departament_fastKey",STRING);              
+//pname    
+    m.put("departament_pname",STRING);          
+    
+    return m;
     
     }
     
-    private void fillXRow0(final Row r, final XSSFRow row,int nc, boolean withIds){
-        if(withIds){
-        lToCell(r, row,"departament_id", nc++); 
-        }
+    private int fillXRow0(final Row r, final XSSFRow row,int nc, final boolean withIds){
         
-    //pkey       
-            sToCell(r, row,"departament_pkey", nc++); 
-    //description       
-            sToCell(r, row,"departament_description", nc++); 
-    //fastKey       
-            sToCell(r, row,"departament_fast_key", nc++); 
-    //pname       
+    if(withIds){
+        lToCell(r, row,"departament_id", nc++); 
+    }            //pkey       
+            sToCell(r, row,"departament_pkey", nc++);     //description       
+            sToCell(r, row,"departament_description", nc++);     //fastKey       
+            sToCell(r, row,"departament_fast_key", nc++);     //pname       
             sToCell(r, row,"departament_pname", nc++); 
+        return nc;
     }
 
     @Override
@@ -327,19 +309,20 @@ departament.pname as departament_pname
 
     @Override
     public void fillTupleInsert(final Departament dc0, final Tuple t){
-                t.addString(dc0.getPkey());
-        t.addString(dc0.getDescription());
-        t.addString(dc0.getFastKey());
-        t.addString(dc0.getPname());
+                
+    t.addString(dc0.getPkey());        
+    t.addString(dc0.getDescription());        
+    t.addString(dc0.getFastKey());        
+    t.addString(dc0.getPname());
     }
 
     @Override
     public void fillTupleUpdate(final Departament dc0, final Tuple t){
-                t.addString(dc0.getDescription());
-        t.addString(dc0.getFastKey());
-        t.addString(dc0.getPname());
-
-        t.addLong(dc0.getId());
+        
+    t.addString(dc0.getDescription());
+    t.addString(dc0.getFastKey());
+    t.addString(dc0.getPname());
+    t.addLong(dc0.getId());
             
     }    
 
@@ -364,11 +347,8 @@ departament.pname as departament_pname
     public void fillTupleInsert(final JsonObject js,final Tuple t){       
         
     fTString("pkey", js, t);
-
     fTString("description", js, t);
-
     fTString("fastKey", js, t);
-
     fTString("pname", js, t);       
     }
 
@@ -392,15 +372,11 @@ fTLong("id",js,t);
     @Override
     public Departament doFrom(final Row r){
         final Departament departament = new Departament();
-         departament.setId(r.getLong("departament_id"));
-         
-                departament.setPkey(  r.getString("departament_pkey"));
-         
-                departament.setDescription(  r.getString("departament_description"));
-         
-                departament.setFastKey(  r.getString("departament_fast_key"));
-         
-                departament.setPname(  r.getString("departament_pname"));  
+         departament.setId(r.getLong("departament_id"));         
+                departament.setPkey(  r.getString("departament_pkey"));                       
+                departament.setDescription(  r.getString("departament_description"));                       
+                departament.setFastKey(  r.getString("departament_fast_key"));                       
+                departament.setPname(  r.getString("departament_pname"));                
         return departament;
     }
     
@@ -409,10 +385,11 @@ fTLong("id",js,t);
         Departament departament = new Departament();
         departament.setId(js.getLong("id"));
         
-                departament.setPkey(js.getString("pkey"));
-        departament.setDescription(js.getString("description"));
-        departament.setFastKey(js.getString("fastKey"));
-        departament.setPname(js.getString("pname"));
+                
+                departament.setPkey(js.getString("pkey"));        
+                departament.setDescription(js.getString("description"));        
+                departament.setFastKey(js.getString("fastKey"));        
+                departament.setPname(js.getString("pname"));
         return departament;
     }
 

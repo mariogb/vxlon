@@ -39,47 +39,47 @@ public interface IServiceLon<IDcLon> {
 
     public String getSqlIUpdatePkey();
 
-    public  String getSqlView();
+    public String getSqlView();
 
-    public  String getSqlKeys();
+    public String getSqlKeys();
 
-    public  String getSqlCount();
-    
-    public  String getTableName();
+    public String getSqlCount();
 
-    public  Set<String> getNames();
+    public String getTableName();
 
-    public  String getSqlByKey();
+    public Set<String> getNames();
 
-    public  void fillTupleInsert(JsonObject js, Tuple t);
+    public String getSqlByKey();
 
-    public  void fillTupleUpdate(JsonObject js, Tuple t);
+    public void fillTupleInsert(JsonObject js, Tuple t);
 
-    public  void fillTupleInsert(IDcLon dc0, Tuple t);
+    public void fillTupleUpdate(JsonObject js, Tuple t);
 
-    public  void fillTupleUpdate(IDcLon dc0, Tuple t);
+    public void fillTupleInsert(IDcLon dc0, Tuple t);
 
-    public  JsonArray toJsonArray(Row r);
+    public void fillTupleUpdate(IDcLon dc0, Tuple t);
 
-    public  IDcLon doFrom(Row r);
+    public JsonArray toJsonArray(Row r);
 
-    public  IDcLon doFromJson(JsonObject js);
+    public IDcLon doFrom(Row r);
 
-    public  JsonObject toJson(IDcLon o);
+    public IDcLon doFromJson(JsonObject js);
 
-    public  JsonObject elModelo();
+    public JsonObject toJson(IDcLon o);
 
-    public  String getSqlIdByPkey();
+    public JsonObject elModelo();
 
-    public  void fillXRow(Row r, XSSFRow row, int nc, boolean withIds);
+    public String getSqlIdByPkey();
 
-    public  Map<String, String> lXRowH(final boolean withIds, final int level);
+    public int fillXRow(Row r, XSSFRow row, int nc, boolean withIds);
 
-    public  Map<String, String> getInsertMapFields();
+    public Map<String, String> lXRowH(final boolean withIds, final int level);
 
-    public  Map<String, String> getSortMapFields();
+    public Map<String, String> getInsertMapFields();
 
-    public  SqlZtatBuilder doZtat(MultiMap params);
+    public Map<String, String> getSortMapFields();
+
+    public SqlZtatBuilder doZtat(MultiMap params);
 
     public abstract String getSqlKeyIn();
 

@@ -14,31 +14,33 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.lonpe.lonvx.ctes;
+package org.lonpe.lonvx.sqlbuilders;
 
 /**
  *
  * @author mgb
  */
-public final class CteLon {
-    
+public class ZtatUnitInfoLon2 extends ZtatUnitInfoLon {
 
-    
+    private ZtatUnitInfoLon ztatUnitInfoLon;
+
+    public ZtatUnitInfoLon2(ZtatUnitInfoLon ztatUnitInfoLon, String foreingTableField, String dc, String table, String dcPc, String alias) {
+        super(foreingTableField, dc, table, dcPc, alias);
+        this.ztatUnitInfoLon = ztatUnitInfoLon;
+    }
+
     /**
-     * Map for messages
+     * @return the ztatUnitInfoLon
      */
-    public static final String MUIMAP = "mapMeUsrInterfacePkey";
+    public ZtatUnitInfoLon getZtatUnitInfoLon() {
+        return ztatUnitInfoLon;
+    }
 
-    public static final String STRING = "String";
-    public static final String LONG = "Long";
-    public static final String INTEGER = "Integer";
-    public static final String BIGDECIMAL = "BigDecimal";
-    public static final String LOCALDATETIME = "LocalDateTime";
-    public static final String LOCALDATE = "LocalDate";
-    public static final String BOOLEAN = "Boolean";
-
-    public static final String ONRELATION = "onRelation";
-    public static final String ONBIRELATION = "onBiRelation";
-    public static final String ONTRIRELATION = "onTriRelation";
+    /**
+     * @param ztatUnitInfoLon the ztatUnitInfoLon to set
+     */
+    public void setZtatUnitInfoLon(ZtatUnitInfoLon ztatUnitInfoLon) {
+        this.ztatUnitInfoLon = ztatUnitInfoLon;
+    }
 
 }

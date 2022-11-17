@@ -20,7 +20,6 @@ public class SqlZtatBuilder {
     private static final String ENDIXID = "_id";
     private static final String COMA = ",";
 
-
     private final Set<String> fields = new LinkedHashSet<>();
     private final Set<String> gFields = new LinkedHashSet<>();
 
@@ -72,7 +71,7 @@ public class SqlZtatBuilder {
             final long count = list0.stream().count();
             if (count > 0 && count < 101) {
                 final String losIds = list0.stream().filter(n -> n.length() > 0 && n.matches("[0-9]+"))
-                        .map(n -> Long.parseLong(n))
+                        .map(Long::parseLong)
                         .map(n -> n.toString())
                         .collect(Collectors.joining(COMA));
                 condiciones.add(pXXSqlName + ".id IN (" + losIds + ")");
@@ -91,7 +90,6 @@ public class SqlZtatBuilder {
             }
         }
     }
-
 
     private void applyFields00(final String pxxxSqlName, final String dcxxx, final String dcxxx_pn) {
         fields.add(pxxxSqlName + ".id as " + pxxxSqlName + ENDIXID);
@@ -119,21 +117,12 @@ public class SqlZtatBuilder {
         tables.add(t3 + " as " + p3SqlName);
         relations.add(p2SqlName + "." + fld2 + SQLEQUAL + p3SqlName + ".id");
     }
-/*
-    public void applyG1__(final String fld1, final String dc2, final String t2, final String dc2_pn,final String t2Alias) {
-        applyG100("xID", fld1, dc2, t2, dc2_pn,t2Alias);
-    }
-  */  
-    public void applyG1(final  ZtatUnitInfoLon z) {
+
+    public void applyG1(final ZtatUnitInfoLon z) {
         applyG100("xID", z.getForeingTableField(), z.getDc(), z.getTable(), z.getAlias(), z.getDcPc());
     }
-    
-/*
-    public void applyG1xEqInPkey__(final String fld1, final String dc2, final String t2, final String t2Alias,final String dc2_pn) {
-        applyG100("xPKEY", fld1, dc2, t2,t2Alias, dc2_pn);
-    }
-*/
-    private void applyG100(final String xEndix, final String fld1, final String dc2, final String t2,final String t2Alias, final String dc2_pn) {
+
+    private void applyG100(final String xEndix, final String fld1, final String dc2, final String t2, final String t2Alias, final String dc2_pn) {
 
         final List<String> gBy0 = params.getAll("gBy_" + dc2);
         final String xEndixFinal = "xID".equals(xEndix) ? ENDIXID : ENDIXPKEY;
@@ -141,8 +130,6 @@ public class SqlZtatBuilder {
         final List<String> list0 = params.getAll(dc2 + xEndixFinal);
 
         if ((gBy0 != null && !gBy0.isEmpty()) || (list0 != null && !list0.isEmpty())) {
-
-            //final String p2SqlName = t2;
 
             applyFirstRelation(fld1, t2, t2Alias);
 
@@ -157,19 +144,35 @@ public class SqlZtatBuilder {
         }
     }
 
-    private void applyG200(final String xEndix, String fld1, String t2, String t2Alias,
-            String fld2, String dc3, String t3, String t3Alias,String dc3Pn) {
+    public void applyG2(final ZtatUnitInfoLon2 z2) {
+        applyG2001("xID", z2);
+    }
+
+    private void applyG2001(final String xEndix, final ZtatUnitInfoLon2 z2) {
+
+        final String dc3 = z2.getDc();
+        
+
         final List<String> gBy0 = params.getAll("gBy_" + dc3);
+        
 
         final String xEndixFinal = "xID".equals(xEndix) ? ENDIXID : ENDIXPKEY;
 
         final List<String> list0 = params.getAll(dc3 + xEndixFinal);
-        if (gBy0 != null || (list0 != null && !list0.isEmpty())) {
+        if (gBy0.size() > 0 || list0.size() > 0) {
 
-           // final String p2SqlName = t2;
+            final ZtatUnitInfoLon z1 = z2.getZtatUnitInfoLon();
+            final String fld1 = z1.getForeingTableField();
+            final String t2 = z1.getTable();
+            final String t2Alias = z1.getAlias();
+
+            final String fld2 = z2.getForeingTableField();
+
+            final String t3 = z2.getTable();
+            final String t3Alias = z2.getAlias();
+            final String dc3Pn = z2.getDcPc();
+
             applyFirstRelation(fld1, t2, t2Alias);
-
-            //final String p3SqlName = t3;
 
             applySecondRelation(fld2, t3, t2Alias, t3Alias);
 
@@ -182,73 +185,56 @@ public class SqlZtatBuilder {
             }
 
         }
-    }
-//
-    
-    //public void applyG2__(String fld1, /*String dc2,*/ String t2,
-      //      String fld2, String dc3, String t3, String dc3Pn) {
-       // applyG200("xID", fld1,/* dc2,*/ t2, fld2, dc3, t3, dc3Pn);
-   // }
-  //  
-    public void applyG2(final ZtatUnitInfoLon z1, final ZtatUnitInfoLon z2) {
-        applyG200("xID",z1.getForeingTableField(), z1.getTable(), z1.getAlias(),
-                z2.getForeingTableField(), z2.getDc(), z2.getTable(),z2.getAlias(), z2.getDcPc());
-    }
-    
 
-//    public void applyG2xEqInPkey(String fld1, String dc2, String t2,
-  //          String fld2, String dc3, String t3, String dc3Pn) {
-    //    applyG200("xPKEY", fld1,/* dc2,*/ t2, fld2, dc3, t3, dc3Pn);
-    //}
+        /*
+        final String xEndix, String fld1, String t2, String t2Alias,
+            String fld2, String dc3, String t3, String t3Alias,String dc3Pn
+        
+         */
+    }
 
-    //G3
-    
-     public void applyG3(final ZtatUnitInfoLon z1, final ZtatUnitInfoLon z2,
-            final ZtatUnitInfoLon z3) {
-         applyG3(z1.getForeingTableField(), z1.getTable(), z1.getAlias(),
-                z2.getForeingTableField(), z2.getDc(), z2.getTable(),z2.getAlias(),
-                z3.getForeingTableField(), z3.getDc(), z3.getTable(), z3.getAlias(), z3.getDcPc()     );
-         
-     }
-    
-    /**
-     *
-     * @param fld1
-     * @param dc2
-     * @param t2
-     * @param fld2
-     * @param dc3
-     * @param t3
-     * @param fld3
-     * @param dc4
-     * @param t4
-     * @param dc4Pn
-     */
-    public void applyG3(String fld1, String t2,String t2Alias,
-            String fld2, String dc3, String t3,String t3Alias,
-            String fld3, String dc4, String t4,String t4Alias, String dc4Pn) {
+    public void applyG3(final ZtatUnitInfoLon3 z3) {
+        applyG3001("xID", z3);
+
+    }
+
+    private void applyG3001(final String xEndix, final ZtatUnitInfoLon3 z3) {
+
+        final String dc4 = z3.getDc();
+
         final List<String> gBy0 = params.getAll("gBy_" + dc4);
         final List<String> list0 = params.getAll(dc4 + ENDIXID);
 
-        if (gBy0 != null || (list0 != null && !list0.isEmpty())) {
+        if (gBy0.size() > 0 || list0.size() > 0) {
 
-           // final String p2SqlName = t2;//
+            final ZtatUnitInfoLon2 z2 = z3.getZtatUnitInfoLon2();
+            final ZtatUnitInfoLon z1 = z2.getZtatUnitInfoLon();
+            final String fld1 = z1.getForeingTableField();
+            final String t2 = z1.getTable();
+            final String t2Alias = z1.getAlias();
+
+            final String fld2 = z2.getForeingTableField();
+
+            final String t3Alias = z2.getAlias();
+
+            final String fld3 = z3.getForeingTableField();
+
+            final String t4 = z3.getTable();
+            final String t4Alias = z3.getAlias();
+            final String dc4Pn = z3.getDcPc();
 
             applyFirstRelation(fld1, t2, t2Alias);
-
-           // final String p3SqlName = t3;
-
-            applySecondRelation(fld2, t3, t2Alias, t3Alias);
-
-         //   final String p4SqlName = dc4;
+            applySecondRelation(fld2, z2.getTable(), t2Alias, t3Alias);
             tables.add(t4 + " as " + t4Alias);
             relations.add(t3Alias + "." + fld3 + SQLEQUAL + t4Alias + ".id");
-
             applyFields00(t4Alias, dc4, dc4Pn);
 
+            if ("xID".equals(xEndix)) {
+                addToConditionsAsForIds(list0, t4Alias);
+            } else {
+                addToConditionsAsForPkeys(list0, t4Alias);
+            }
 
-
-            addToConditionsAsForIds(list0, t4Alias);
         }
     }
 

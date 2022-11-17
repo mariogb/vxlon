@@ -1,4 +1,3 @@
-
 package org.lonpe.lonvx.handlers;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -95,8 +94,6 @@ public class LoginHandler implements Handler<RoutingContext> {
                 .end(respuesta.encode());
     }
 
-
-
     private void processLogin(RoutingContext rctx, String username, String password) {
 
         final HttpServerResponse res = rctx.response();
@@ -105,7 +102,7 @@ public class LoginHandler implements Handler<RoutingContext> {
             @Override
             public void handle(AsyncResult<RowSet<Row>> ar) {
                 if (ar.failed()) {
-                    
+
                     log.error("\n ->> \n --->>> FAIL LOGIN\n\t\t  [ " + ar.cause().getMessage() + " ]\n\n");
                     res.setStatusCode(500).end("CONERR");
                     return;

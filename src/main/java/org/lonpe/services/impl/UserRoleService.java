@@ -17,16 +17,18 @@ import org.lonpe.services.AbstractServiceLon;
 import org.lonpe.services.ConditionInfo;
 import org.lonpe.lonvx.sqlbuilders.SqlLonConditionsBuilder;
 import org.apache.poi.xssf.usermodel.XSSFRow;
+import static org.lonpe.lonvx.ctes.CteLon.*;
 
 
 
 import org.lonpe.lonvx.sqlbuilders.ZtatUnitInfoLon;
+import org.lonpe.lonvx.sqlbuilders.ZtatUnitInfoLon2;
+import org.lonpe.lonvx.sqlbuilders.ZtatUnitInfoLon3;
 
 /**
  *   UserRoleService 
  * 
  */
-   
   
 public class UserRoleService extends AbstractServiceLon<UserRole>{
 
@@ -41,14 +43,16 @@ public class UserRoleService extends AbstractServiceLon<UserRole>{
     private static final String SQLDELETE = "DELETE FROM user_role WHERE id = $1 returning id";
     private static final String TABLENAME ="user_role";
     
-//1
-    private static final ZtatUnitInfoLon zUserLon;
 
-//1
-    private static final ZtatUnitInfoLon zRole;
+    public UserRoleService() {
+        init0();
+    }
+
     
+    private static final Map<String, ZtatUnitInfoLon> mz1 = new HashMap<>(6);                       
+
     @Override
-    public  String getTableName(){
+    public String getTableName(){
         return TABLENAME;
     }
 
@@ -62,8 +66,7 @@ public class UserRoleService extends AbstractServiceLon<UserRole>{
         return SQLLKEYIN;
     }
 
-/**
-    
+/**    
     private static String sql00 = "SELECT user_role.id as user_role_id,
 user_role.pkey as user_role_pkey,
 user_lon.id as user_lon_id,user_lon.pkey as user_lon_pkey,user_lon.pname as user_lon_pname,
@@ -74,8 +77,7 @@ role.id as role_id,role.pkey as role_pkey,role.pname as role_pname
   role as role  
  WHERE 
  user_role.user_lon_id = user_lon.id
- AND user_role.role_id = role.id; 
-"
+ AND user_role.role_id = role.id"
 */
 
     @Override
@@ -95,28 +97,21 @@ role.id as role_id,role.pkey as role_pkey,role.pname as role_pname
     /**
      * sql select property alias field names
      */
-     
-    private static final LinkedHashSet<String> names;
+    private final LinkedHashSet<String> names =  new LinkedHashSet<>();;
     
     /**
      * Map field insert/update to property 
      */
-    private static final HashMap<String,String> insertMapFields; 
+    private final HashMap<String,String> insertMapFields = new HashMap<>(); 
     
     /**
     * Map property to field order 
     */
-    private static final HashMap<String, String> sortMapFields;
+    private final HashMap<String, String> sortMapFields = new  HashMap<>();
 
-    private static final JsonObject dcModel;
+    private final JsonObject dcModel  = new JsonObject();
     
-    static{
-        names = new LinkedHashSet<>();
-        insertMapFields = new HashMap<>();
-        sortMapFields= new  HashMap<>();
-
-        dcModel = new JsonObject();
-
+    private void init0(){
         
     dcModel.put("dc", "userRole");
 
@@ -128,19 +123,16 @@ role.id as role_id,role.pkey as role_pkey,role.pname as role_pname
     final JsonArray ps = new JsonArray();   
  
 //pkey
-    names.add("pkey");
-    insertMapFields.put("user_role.pkey","pkey");  
-
-//Create property pkey       
-    final JsonObject pkey = ps00a("pkey", "String",true);
+    doFieldSort("pkey","pkey","user_role");               
    
 //Used to map error on index to source property because IS Unique
     insertMapFields.put("user_role.user_role_uidx_pkey","pkey");  
 
+//Create property pkey       
+    final JsonObject pkey = psString("pkey",true);
+
 // IS Unique     
     pkey.put("uq",true);                    
-
-    sortMapFields.put("pkey", "user_role_pkey");                   
  
     ps.add(pkey);
 
@@ -149,50 +141,41 @@ role.id as role_id,role.pkey as role_pkey,role.pname as role_pname
 
     final JsonArray mto = new JsonArray();      
 
-//(1)  userLon --------------------
-    names.add("userLon_id");      
-    insertMapFields.put("user_role.user_lon_id","userLon_id");    
-       
-    names.add("userLon_pkey");        
-    sortMapFields.put( "userLon_pkey", "user_lon_pkey");        
+//(1)  userLon
+    doFieldMT0("user_role","userLon", "user_lon");  
 
     final JsonObject userLon =  doMto("userLon","userLon");        
    
     names.add("userLon_pname");
-    sortMapFields.put( "userLon_pname", "user_lon_pname");         
-
+    sortMapFields.put( "userLon_pname", "user_lon_pname");                
     userLon.put("pc","pname");          
 
     mto.add(userLon);
         
 
-//(1)  role --------------------
-    names.add("role_id");      
-    insertMapFields.put("user_role.role_id","role_id");    
-       
-    names.add("role_pkey");        
-    sortMapFields.put( "role_pkey", "role_pkey");        
+    //1  user_lon  -- user_lon_id
+    final ZtatUnitInfoLon zUserLon = new ZtatUnitInfoLon("user_lon_id", "userLon",  "user_lon","pname","user_lon");
+    mz1.put("zUserLon", zUserLon);    
+
+//(1)  role
+    doFieldMT0("user_role","role", "role");  
 
     final JsonObject role =  doMto("role","role");        
    
     names.add("role_pname");
-    sortMapFields.put( "role_pname", "role_pname");         
-
+    sortMapFields.put( "role_pname", "role_pname");                
     role.put("pc","pname");          
 
     mto.add(role);
         
 
+    //1  role  -- role_id
+    final ZtatUnitInfoLon zRole = new ZtatUnitInfoLon("role_id", "role",  "role","pname","role");
+    mz1.put("zRole", zRole);    
+
     dcModel.put("mto",mto);     
         
-
         
-//1  user_lon  -- user_lon_id
-    zUserLon = new ZtatUnitInfoLon("user_lon_id", "userLon",  "user_lon","pname","user_lon");
-
-//1  role  -- role_id
-    zRole = new ZtatUnitInfoLon("role_id", "role",  "role","pname","role");
-
     }        
     @Override
     public LinkedHashSet<String> getNames() {
@@ -217,83 +200,75 @@ role.id as role_id,role.pkey as role_pkey,role.pname as role_pname
     @Override
     public JsonArray toJsonArray(final Row r){
         final JsonArray jsa = new JsonArray();
-        jsa.add(r.getLong("user_role_id") );
+        jsa.add(r.getLong("user_role_id") );       
         jsa.add(r.getString("user_role_pkey") );
-        jsa.add(r.getLong("user_lon_id"));
-        jsa.add(r.getString("user_lon_pkey"));
-        jsa.add(r.getString("user_lon_pname"));
-        jsa.add(r.getLong("role_id"));
-        jsa.add(r.getString("role_pkey"));
-        jsa.add(r.getString("role_pname"));
+    jsa.add(r.getLong("user_lon_id"));
+    jsa.add(r.getString("user_lon_pkey"));   
+    
+        
+    jsa.add(r.getString("user_lon_pname"));
+    jsa.add(r.getLong("role_id"));
+    jsa.add(r.getString("role_pkey"));   
+    
+        
+    jsa.add(r.getString("role_pname"));
         return jsa;
     }
 
     @Override
-    public void fillXRow(final Row r, final XSSFRow row, int nc,boolean withIds) {
-        fillXRow0(r, row, nc, withIds);
+    public int fillXRow(final Row r, final XSSFRow row, int nc,boolean withIds) {
+        return fillXRow0(r, row, nc, withIds);
     }
 
     @Override
     public HashMap<String,String> lXRowH(final boolean withIds, final int level) {        
         
-    final  LinkedHashMap<String,String> m_ = new LinkedHashMap<>();
-    if(withIds){
-                m_.put("userRole_id","Long");
-            }
-            
-    //pkey       
-            m_.put("userRole_pkey","String"); 
-            
-if(level<1){
-                return m_;    
-            }
-            
- // userLon
-if(withIds){
-            m_.put("userLon_id","Long");   
-                    
-            }
-
-        m_.put("userLon_pkey","String");   
-        
-
-            m_.put("userLon_pname","String");   
-            
- // role
-if(withIds){
-            m_.put("role_id","Long");   
-                    
-            }
-
-        m_.put("role_pkey","String");   
-        
-
-            m_.put("role_pname","String");   
-            
+    final  LinkedHashMap<String,String> m = new LinkedHashMap<>();
     
-    return m_;
+    if(withIds){
+        m.put("userRole_id",LONG);
+    }        
+//pkey    
+    m.put("userRole_pkey",STRING);          
+    if(level<1){
+        return m;    
+    }       
+// userLon   userLon
+    if(withIds){
+        m.put("userLon_id",LONG);                       
+    }
+    m.put("userLon_pkey",STRING);     
+    m.put("userLon_pname",STRING);   
+// role   role
+    if(withIds){
+        m.put("role_id",LONG);                       
+    }
+    m.put("role_pkey",STRING);     
+    m.put("role_pname",STRING);  
+    
+    return m;
     
     }
     
-    private void fillXRow0(final Row r, final XSSFRow row,int nc, boolean withIds){
-        if(withIds){
-        lToCell(r, row,"user_role_id", nc++); 
-        }
+    private int fillXRow0(final Row r, final XSSFRow row,int nc, final boolean withIds){
         
-    //pkey       
+    if(withIds){
+        lToCell(r, row,"user_role_id", nc++); 
+    }            //pkey       
             sToCell(r, row,"user_role_pkey", nc++); 
- // userLon
-if(withIds){
-                    lToCell(r, row,"user_lon_id", nc++);
-                 }
-sToCell(r, row,"user_lon_pkey", nc++);
-sToCell(r, row,"user_lon_pname", nc++);
- // role
-if(withIds){
-                    lToCell(r, row,"role_id", nc++);
-                 }
-sToCell(r, row,"role_pkey", nc++);
-sToCell(r, row,"role_pname", nc++);
+//userLon   user_lon        
+    if(withIds){
+        lToCell(r, row,"user_lon_id", nc++);
+    }
+    sToCell(r, row,"user_lon_pkey", nc++);
+    sToCell(r, row,"user_lon_pname", nc++);
+//role   role        
+    if(withIds){
+        lToCell(r, row,"role_id", nc++);
+    }
+    sToCell(r, row,"role_pkey", nc++);
+    sToCell(r, row,"role_pname", nc++);
+        return nc;
     }
 
     @Override
@@ -313,15 +288,14 @@ sToCell(r, row,"role_pname", nc++);
 
     @Override
     public void fillTupleInsert(final UserRole dc0, final Tuple t){
-                t.addString(dc0.getPkey());
-   
-            if(dc0.getUserLon()!=null){
-               t.addLong(dc0.getUserLon().getId());
-            }
-   
-            if(dc0.getRole()!=null){
-               t.addLong(dc0.getRole().getId());
-            }
+                
+    t.addString(dc0.getPkey());   
+    if(dc0.getUserLon()!=null){
+       t.addLong(dc0.getUserLon().getId());
+    }   
+    if(dc0.getRole()!=null){
+       t.addLong(dc0.getRole().getId());
+    }
     }
 
     @Override
@@ -329,13 +303,11 @@ sToCell(r, row,"role_pname", nc++);
            
 //      if(dc0.getUserLon()!=null){
 //            t.addLong(dc0.getUserLon().getId());
-//      }
-   
+//      }   
 //      if(dc0.getRole()!=null){
 //            t.addLong(dc0.getRole().getId());
 //      }
-
-        t.addLong(dc0.getId());
+    t.addLong(dc0.getId());
             
     }    
 
@@ -364,10 +336,8 @@ sToCell(r, row,"role_pname", nc++);
     @Override
     public void fillTupleInsert(final JsonObject js,final Tuple t){       
         
-    fTString("pkey", js, t);
-     
-    fTLong("userLon_id",js,t);
-     
+    fTString("pkey", js, t);     
+    fTLong("userLon_id",js,t);     
     fTLong("role_id",js,t);       
     }
 
@@ -392,20 +362,19 @@ fTLong("id",js,t);
     @Override
     public UserRole doFrom(final Row r){
         final UserRole userRole = new UserRole();
-         userRole.setId(r.getLong("user_role_id"));
-         
-                userRole.setPkey(  r.getString("user_role_pkey"));
-
+         userRole.setId(r.getLong("user_role_id"));         
+                userRole.setPkey(  r.getString("user_role_pkey"));              
         final UserLon userLon = new UserLon();
         userLon.setId(r.getLong("user_lon_id"));
         userLon.setPkey(r.getString("user_lon_pkey"));
+        
         userLon.setPname(r.getString("user_lon_pname"));
         userRole.setUserLon(userLon);
         
-
         final Role role = new Role();
         role.setId(r.getLong("role_id"));
         role.setPkey(r.getString("role_pkey"));
+        
         role.setPname(r.getString("role_pname"));
         userRole.setRole(role);
           
@@ -417,9 +386,10 @@ fTLong("id",js,t);
         UserRole userRole = new UserRole();
         userRole.setId(js.getLong("id"));
         
-                userRole.setPkey(js.getString("pkey"));
-        userRole.setId(js.getLong("userLon_id"));
-        userRole.setId(js.getLong("role_id"));
+                
+                userRole.setPkey(js.getString("pkey"));        
+            userRole.setId(js.getLong("userLon_id"));        
+            userRole.setId(js.getLong("role_id"));
         return userRole;
     }
 
@@ -459,13 +429,15 @@ fTLong("id",js,t);
         slcb.doIlPSimple2( "userLon_pkey", "user_lon_pkey");
         slcb.doEQPSimple2( "userLon_pkey", "user_lon_pkey");
         slcb.doInLongCondition("userLon_id", "user_lon_id");  
-//UserLon 4        
+//UserLon 4        --
         slcb.doIlPSimple2( "userLon_pname", "user_lon_pname");    
+        
         slcb.doIlPSimple2( "role_pkey", "role_pkey");
         slcb.doEQPSimple2( "role_pkey", "role_pkey");
         slcb.doInLongCondition("role_id", "role_id");  
-//Role 1        
+//Role 1        --
         slcb.doIlPSimple2( "role_pname", "role_pname");    
+        
 
         slcb.doSQLORDEN(sortMapFields);
 
@@ -483,12 +455,10 @@ fTLong("id",js,t);
         
 //level 1
              
-    sz0.applyG1(zUserLon);               
-    sz0.applyG1(zRole);      
-    //level 2
-    
-    //level 3
-    
+    sz0.applyG1(mz1.get("zUserLon"))   ;               
+    sz0.applyG1(mz1.get("zRole"))   ;      
+//level 2    
+//level 3    
         return sz0;
     }
 }

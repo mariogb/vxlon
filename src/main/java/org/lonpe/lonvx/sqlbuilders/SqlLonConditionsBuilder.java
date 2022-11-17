@@ -133,6 +133,7 @@ public final class SqlLonConditionsBuilder {
                 .collect(Collectors.joining(","));
     }
 
+    /*
     public void ver00a(final String pndc, final String tbl) {
         final String c_id0 = pndc + "_id";
         if (params.contains(c_id0)) {
@@ -141,7 +142,7 @@ public final class SqlLonConditionsBuilder {
             condiciones.add(t_id0 + " IN (" + losIds + ")");
         }
     }
-
+     */
     public void ver00a2(final String pndc, final String tblAliasFld) {
         if (params.contains(pndc)) {
             final String losIds = doIds(pndc);
@@ -188,8 +189,8 @@ public final class SqlLonConditionsBuilder {
 
     public void doIlPSimple2(final String pn, final String tblAliasFld) {
         final List<String> il_p = params.getAll("il_" + pn);
-        if (il_p==null || il_p.isEmpty()) {
-             return;
+        if (il_p == null || il_p.isEmpty()) {
+            return;
         }
         condiciones.add(tblAliasFld + " ilike $" + numParam);
         tuple.addString(il_p.get(0) + "%");

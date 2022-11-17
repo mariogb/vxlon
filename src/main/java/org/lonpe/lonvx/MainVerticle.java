@@ -65,7 +65,7 @@ import org.lonpe.services.impl.MeUsrInterfaceService;
 
 public class MainVerticle extends AbstractVerticle {
 
-    private static final Logger log = LoggerFactory.getLogger(GenericListHandler.class);
+    private static final Logger log = LoggerFactory.getLogger(MainVerticle.class);
 
     private JsonObject configApp;
 
@@ -183,10 +183,9 @@ public class MainVerticle extends AbstractVerticle {
 
         ml("ON doRouter [REGISTER HANDLER]");
         final IMap<String, MeUsrInterface> mapMUI = h.getMap(CteLon.MUIMAP);
-        
+
         router.get("/init0/l_models").handler(new Handler<RoutingContext>() {
             JsonObject m;
-           
 
             @Override
             public void handle(RoutingContext rctx) {
@@ -245,12 +244,10 @@ public class MainVerticle extends AbstractVerticle {
         ml("ON doRouter [ZtatHandler]");
         router.put("/crud/:dc/s").handler(new GenericSaveHandler(h, dcMapForServices, dBLon1));
         ml("ON doRouter [GenericSaveHandler]");
-        
-        
-        router.put("/crud/:dc/smap").handler(new MeUsrIntHandler(mapMUI,(MeUsrInterfaceService)dcMapForServices.getServiceFor("meUsrInterface")));
+
+        router.put("/crud/:dc/smap").handler(new MeUsrIntHandler(mapMUI, (MeUsrInterfaceService) dcMapForServices.getServiceFor("meUsrInterface")));
         ml("ON doRouter [MeUsrIntHandler]");
-        
-        
+
         router.delete("/crud/:dc/delete").handler(new DeleteHandler(dBLon1, dcMapForServices));
         ml("ON doRouter [DeleteHandler]");
         router.route().handler(BodyHandler.create());
@@ -322,8 +319,10 @@ public class MainVerticle extends AbstractVerticle {
             final Integer port0 = configApp.getInteger("VXPORT");
             final Integer port = port0 != null ? port0 : 8888;
             ml("EL PORT " + port);
+
             final HttpServerOptions httpServerOptions = doHttpServerOptions();
 
+            System.out.println("PUERTO " + port);
             final HttpServer server = vertx.createHttpServer(httpServerOptions)
                     .exceptionHandler(new StartServerErrorHandler());
             server.webSocketHandler(new WebSocketLonHandler(provider, vertx));

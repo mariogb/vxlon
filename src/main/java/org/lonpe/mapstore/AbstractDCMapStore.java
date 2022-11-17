@@ -25,9 +25,6 @@ public abstract class AbstractDCMapStore<T> implements MapStore<String, T> {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-
-
-
     @Override
     public void storeAll(Map<String, T> map) {
         map.entrySet().stream().forEach((entry) -> {
@@ -35,8 +32,5 @@ public abstract class AbstractDCMapStore<T> implements MapStore<String, T> {
         });
 
     }
-    
-    
-
 
 }

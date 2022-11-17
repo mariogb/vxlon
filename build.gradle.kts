@@ -79,7 +79,7 @@ val  hazelcastArgs = "--add-modules java.se --add-exports java.base/jdk.internal
 
 tasks.withType<JavaExec> {
     //args = listOf("run", mainVerticleName, "--redeploy=$watchForChange", "--launcher-class=$launcherClassName", "--on-redeploy=$doOnChange","--java-opts","-agentlib:jdwp=transport=dt_socket,server=y,address=5007")
-    args = listOf("run", mainVerticleName,  "--launcher-class=$launcherClassName",hazelcastArgs)
+   args = listOf("run", mainVerticleName,  "--launcher-class=$launcherClassName",hazelcastArgs)
 }
 
 

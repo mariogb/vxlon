@@ -24,7 +24,7 @@ public class VerifyLon {
     }
 
     public static void preFillGeneric(final JsonObject elModelo, final JsonObject jso, final JsonObject u0) {
-       
+
         final JsonArray listPs = elModelo.getJsonArray("ps");
 
         final JsonArray lMto = elModelo.getJsonArray("mto");

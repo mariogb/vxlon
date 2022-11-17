@@ -17,16 +17,18 @@ import org.lonpe.services.AbstractServiceLon;
 import org.lonpe.services.ConditionInfo;
 import org.lonpe.lonvx.sqlbuilders.SqlLonConditionsBuilder;
 import org.apache.poi.xssf.usermodel.XSSFRow;
+import static org.lonpe.lonvx.ctes.CteLon.*;
 
 
 
 import org.lonpe.lonvx.sqlbuilders.ZtatUnitInfoLon;
+import org.lonpe.lonvx.sqlbuilders.ZtatUnitInfoLon2;
+import org.lonpe.lonvx.sqlbuilders.ZtatUnitInfoLon3;
 
 /**
  *   PlaneService 
  * 
  */
-   
   
 public class PlaneService extends AbstractServiceLon<Plane>{
 
@@ -41,11 +43,16 @@ public class PlaneService extends AbstractServiceLon<Plane>{
     private static final String SQLDELETE = "DELETE FROM plane WHERE id = $1 returning id";
     private static final String TABLENAME ="plane";
     
-//1
-    private static final ZtatUnitInfoLon zLaCompania;
+
+    public PlaneService() {
+        init0();
+    }
+
     
+    private static final Map<String, ZtatUnitInfoLon> mz1 = new HashMap<>(6);                       
+
     @Override
-    public  String getTableName(){
+    public String getTableName(){
         return TABLENAME;
     }
 
@@ -59,8 +66,7 @@ public class PlaneService extends AbstractServiceLon<Plane>{
         return SQLLKEYIN;
     }
 
-/**
-    
+/**    
     private static String sql00 = "SELECT plane.id as plane_id,
 plane.pkey as plane_pkey,
 plane.plate as plane_plate,
@@ -71,8 +77,7 @@ la_compania.id as la_compania_id,la_compania.pkey as la_compania_pkey,la_compani
   plane,
   air_company as la_compania  
  WHERE 
- plane.la_compania_id = la_compania.id; 
-"
+ plane.la_compania_id = la_compania.id"
 */
 
     @Override
@@ -92,28 +97,21 @@ la_compania.id as la_compania_id,la_compania.pkey as la_compania_pkey,la_compani
     /**
      * sql select property alias field names
      */
-     
-    private static final LinkedHashSet<String> names;
+    private final LinkedHashSet<String> names =  new LinkedHashSet<>();;
     
     /**
      * Map field insert/update to property 
      */
-    private static final HashMap<String,String> insertMapFields; 
+    private final HashMap<String,String> insertMapFields = new HashMap<>(); 
     
     /**
     * Map property to field order 
     */
-    private static final HashMap<String, String> sortMapFields;
+    private final HashMap<String, String> sortMapFields = new  HashMap<>();
 
-    private static final JsonObject dcModel;
+    private final JsonObject dcModel  = new JsonObject();
     
-    static{
-        names = new LinkedHashSet<>();
-        insertMapFields = new HashMap<>();
-        sortMapFields= new  HashMap<>();
-
-        dcModel = new JsonObject();
-
+    private void init0(){
         
     dcModel.put("dc", "plane");
 
@@ -125,41 +123,32 @@ la_compania.id as la_compania_id,la_compania.pkey as la_compania_pkey,la_compani
     final JsonArray ps = new JsonArray();   
  
 //pkey
-    names.add("pkey");
-    insertMapFields.put("plane.pkey","pkey");  
-
-//Create property pkey       
-    final JsonObject pkey = ps00a("pkey", "String",true);
+    doFieldSort("pkey","pkey","plane");               
    
 //Used to map error on index to source property because IS Unique
     insertMapFields.put("plane.plane_uidx_pkey","pkey");  
 
+//Create property pkey       
+    final JsonObject pkey = psString("pkey",true);
+
 // IS Unique     
     pkey.put("uq",true);                    
-
-    sortMapFields.put("pkey", "plane_pkey");                   
  
     ps.add(pkey);
  
 //plate
-    names.add("plate");
-    insertMapFields.put("plane.plate","plate");  
+    doFieldSort("plate","plate","plane");               
 
 //Create property plate       
-    final JsonObject plate = ps00a("plate", "String",true);
-
-    sortMapFields.put("plate", "plane_plate");                   
+    final JsonObject plate = psString("plate",true);
  
     ps.add(plate);
  
 //pname
-    names.add("pname");
-    insertMapFields.put("plane.pname","pname");  
+    doFieldSort("pname","pname","plane");               
 
 //Create property pname       
-    final JsonObject pname = ps00a("pname", "String",true);
-
-    sortMapFields.put("pname", "plane_pname");                   
+    final JsonObject pname = psString("pname",true);
   
 //PC
     dcModel.put("pc","pname");  
@@ -167,13 +156,10 @@ la_compania.id as la_compania_id,la_compania.pkey as la_compania_pkey,la_compani
     ps.add(pname);
  
 //seats
-    names.add("seats");
-    insertMapFields.put("plane.seats","seats");  
+    doFieldSort("seats","seats","plane");               
 
 //Create property seats       
-    final JsonObject seats = ps00a("seats", "Integer",true);
-
-    sortMapFields.put("seats", "plane_seats");               
+    final JsonObject seats = psInteger("seats",true);
  
     seats.put("min", 0); 
  
@@ -184,22 +170,21 @@ la_compania.id as la_compania_id,la_compania.pkey as la_compania_pkey,la_compani
 
     final JsonArray mto = new JsonArray();      
 
-//(1)  laCompania --------------------
-    names.add("laCompania_id");      
-    insertMapFields.put("plane.la_compania_id","laCompania_id");    
-       
-    names.add("laCompania_pkey");        
-    sortMapFields.put( "laCompania_pkey", "la_compania_pkey");        
+//(1)  laCompania
+    doFieldMT0("plane","laCompania", "la_compania");  
 
     final JsonObject laCompania =  doMto("laCompania","airCompany");        
    
     names.add("laCompania_pname");
-    sortMapFields.put( "laCompania_pname", "la_compania_pname");         
-
+    sortMapFields.put( "laCompania_pname", "la_compania_pname");                
     laCompania.put("pc","pname");          
 
     mto.add(laCompania);
         
+
+    //1  la_compania  -- la_compania_id
+    final ZtatUnitInfoLon zLaCompania = new ZtatUnitInfoLon("la_compania_id", "laCompania",  "air_company","pname","la_compania");
+    mz1.put("zLaCompania", zLaCompania);    
 
     dcModel.put("mto",mto);     
         
@@ -220,11 +205,7 @@ la_compania.id as la_compania_id,la_compania.pkey as la_compania_pkey,la_compani
 /** OTM 2  ON MODEL**/
         dcModel.put("otm2",otm2);
         
-
         
-//1  la_compania  -- la_compania_id
-    zLaCompania = new ZtatUnitInfoLon("la_compania_id", "laCompania",  "air_company","pname","la_compania");
-
     }        
     @Override
     public LinkedHashSet<String> getNames() {
@@ -249,81 +230,70 @@ la_compania.id as la_compania_id,la_compania.pkey as la_compania_pkey,la_compani
     @Override
     public JsonArray toJsonArray(final Row r){
         final JsonArray jsa = new JsonArray();
-        jsa.add(r.getLong("plane_id") );
-        jsa.add(r.getString("plane_pkey") );
-        jsa.add(r.getString("plane_plate") );
-        jsa.add(r.getString("plane_pname") );
+        jsa.add(r.getLong("plane_id") );       
+        jsa.add(r.getString("plane_pkey") );       
+        jsa.add(r.getString("plane_plate") );       
+        jsa.add(r.getString("plane_pname") );       
         jsa.add(r.getInteger("plane_seats") );
-        jsa.add(r.getLong("la_compania_id"));
-        jsa.add(r.getString("la_compania_pkey"));
-        jsa.add(r.getString("la_compania_pname"));
+    jsa.add(r.getLong("la_compania_id"));
+    jsa.add(r.getString("la_compania_pkey"));   
+    
+        
+    jsa.add(r.getString("la_compania_pname"));
         return jsa;
     }
 
     @Override
-    public void fillXRow(final Row r, final XSSFRow row, int nc,boolean withIds) {
-        fillXRow0(r, row, nc, withIds);
+    public int fillXRow(final Row r, final XSSFRow row, int nc,boolean withIds) {
+        return fillXRow0(r, row, nc, withIds);
     }
 
     @Override
     public HashMap<String,String> lXRowH(final boolean withIds, final int level) {        
         
-    final  LinkedHashMap<String,String> m_ = new LinkedHashMap<>();
-    if(withIds){
-                m_.put("plane_id","Long");
-            }
-            
-    //pkey       
-            m_.put("plane_pkey","String"); 
-            
-    //plate       
-            m_.put("plane_plate","String"); 
-            
-    //pname       
-            m_.put("plane_pname","String"); 
-            
-    //seats       
-            m_.put("plane_seats","Integer"); 
-            
-if(level<1){
-                return m_;    
-            }
-            
- // laCompania
-if(withIds){
-            m_.put("laCompania_id","Long");   
-                    
-            }
-
-        m_.put("laCompania_pkey","String");   
-        
-
-            m_.put("laCompania_pname","String");   
-            
+    final  LinkedHashMap<String,String> m = new LinkedHashMap<>();
     
-    return m_;
+    if(withIds){
+        m.put("plane_id",LONG);
+    }        
+//pkey    
+    m.put("plane_pkey",STRING);              
+//plate    
+    m.put("plane_plate",STRING);              
+//pname    
+    m.put("plane_pname",STRING);              
+//seats    
+    m.put("plane_seats",INTEGER);          
+    if(level<1){
+        return m;    
+    }       
+// laCompania   laCompania
+    if(withIds){
+        m.put("laCompania_id",LONG);                       
+    }
+    m.put("laCompania_pkey",STRING);     
+    m.put("laCompania_pname",STRING);  
+    
+    return m;
     
     }
     
-    private void fillXRow0(final Row r, final XSSFRow row,int nc, boolean withIds){
-        if(withIds){
-        lToCell(r, row,"plane_id", nc++); 
-        }
+    private int fillXRow0(final Row r, final XSSFRow row,int nc, final boolean withIds){
         
-    //pkey       
-            sToCell(r, row,"plane_pkey", nc++); 
-    //plate       
-            sToCell(r, row,"plane_plate", nc++); 
-    //pname       
-            sToCell(r, row,"plane_pname", nc++); 
-    //seats            
+    if(withIds){
+        lToCell(r, row,"plane_id", nc++); 
+    }            //pkey       
+            sToCell(r, row,"plane_pkey", nc++);     //plate       
+            sToCell(r, row,"plane_plate", nc++);     //pname       
+            sToCell(r, row,"plane_pname", nc++);     //seats            
             ldToCell(r, row,"plane_seats", nc++); 
- // laCompania
-if(withIds){
-                    lToCell(r, row,"la_compania_id", nc++);
-                 }
-sToCell(r, row,"la_compania_pkey", nc++);
-sToCell(r, row,"la_compania_pname", nc++);
+//laCompania   la_compania        
+    if(withIds){
+        lToCell(r, row,"la_compania_id", nc++);
+    }
+    sToCell(r, row,"la_compania_pkey", nc++);
+    sToCell(r, row,"la_compania_pname", nc++);
+        return nc;
     }
 
     @Override
@@ -343,27 +313,26 @@ sToCell(r, row,"la_compania_pname", nc++);
 
     @Override
     public void fillTupleInsert(final Plane dc0, final Tuple t){
-                t.addString(dc0.getPkey());
-        t.addString(dc0.getPlate());
-        t.addString(dc0.getPname());
-        t.addInteger(dc0.getSeats());
-   
-            if(dc0.getLaCompania()!=null){
-               t.addLong(dc0.getLaCompania().getId());
-            }
+                
+    t.addString(dc0.getPkey());        
+    t.addString(dc0.getPlate());        
+    t.addString(dc0.getPname());        
+    t.addInteger(dc0.getSeats());   
+    if(dc0.getLaCompania()!=null){
+       t.addLong(dc0.getLaCompania().getId());
+    }
     }
 
     @Override
     public void fillTupleUpdate(final Plane dc0, final Tuple t){
-                t.addString(dc0.getPlate());
-        t.addString(dc0.getPname());
-        t.addInteger(dc0.getSeats());
-   
+        
+    t.addString(dc0.getPlate());
+    t.addString(dc0.getPname());
+    t.addInteger(dc0.getSeats());   
 //      if(dc0.getLaCompania()!=null){
 //            t.addLong(dc0.getLaCompania().getId());
 //      }
-
-        t.addLong(dc0.getId());
+    t.addLong(dc0.getId());
             
     }    
 
@@ -393,13 +362,9 @@ sToCell(r, row,"la_compania_pname", nc++);
     public void fillTupleInsert(final JsonObject js,final Tuple t){       
         
     fTString("pkey", js, t);
-
     fTString("plate", js, t);
-
     fTString("pname", js, t);
-
-    fTInteger("seats", js, t);
-     
+    fTInteger("seats", js, t);     
     fTLong("laCompania_id",js,t);       
     }
 
@@ -425,19 +390,15 @@ fTLong("id",js,t);
     @Override
     public Plane doFrom(final Row r){
         final Plane plane = new Plane();
-         plane.setId(r.getLong("plane_id"));
-         
-                plane.setPkey(  r.getString("plane_pkey"));
-         
-                plane.setPlate(  r.getString("plane_plate"));
-         
-                plane.setPname(  r.getString("plane_pname"));
-         
-                plane.setSeats(  r.getInteger("plane_seats"));
-
+         plane.setId(r.getLong("plane_id"));         
+                plane.setPkey(  r.getString("plane_pkey"));                       
+                plane.setPlate(  r.getString("plane_plate"));                       
+                plane.setPname(  r.getString("plane_pname"));                       
+                plane.setSeats(  r.getInteger("plane_seats"));              
         final AirCompany laCompania = new AirCompany();
         laCompania.setId(r.getLong("la_compania_id"));
         laCompania.setPkey(r.getString("la_compania_pkey"));
+        
         laCompania.setPname(r.getString("la_compania_pname"));
         plane.setLaCompania(laCompania);
           
@@ -449,11 +410,12 @@ fTLong("id",js,t);
         Plane plane = new Plane();
         plane.setId(js.getLong("id"));
         
-                plane.setPkey(js.getString("pkey"));
-        plane.setPlate(js.getString("plate"));
-        plane.setPname(js.getString("pname"));
-        plane.setSeats(js.getInteger("seats"));
-        plane.setId(js.getLong("laCompania_id"));
+                
+                plane.setPkey(js.getString("pkey"));        
+                plane.setPlate(js.getString("plate"));        
+                plane.setPname(js.getString("pname"));        
+                plane.setSeats(js.getInteger("seats"));        
+            plane.setId(js.getLong("laCompania_id"));
         return plane;
     }
 
@@ -494,8 +456,9 @@ fTLong("id",js,t);
         slcb.doIlPSimple2( "laCompania_pkey", "la_compania_pkey");
         slcb.doEQPSimple2( "laCompania_pkey", "la_compania_pkey");
         slcb.doInLongCondition("laCompania_id", "la_compania_id");  
-//AirCompany 1        
+//AirCompany 1        --
         slcb.doIlPSimple2( "laCompania_pname", "la_compania_pname");    
+        
 
         slcb.doSQLORDEN(sortMapFields);
 
@@ -510,16 +473,13 @@ fTLong("id",js,t);
         final SqlZtatBuilder sz0 = new SqlZtatBuilder(params,"plane");
         sz0.addField("COUNT(plane.id) as c_plane_id").addName("count");
         
-    sz0.addField("sum(plane.seats) as sum_plane_seats").addName("sum_seats");
-        
+    sz0.addField("sum(plane.seats) as sum_plane_seats").addName("sum_seats"); 
         
 //level 1
              
-    sz0.applyG1(zLaCompania);      
-    //level 2
-    
-    //level 3
-    
+    sz0.applyG1(mz1.get("zLaCompania"))   ;      
+//level 2    
+//level 3    
         return sz0;
     }
 }

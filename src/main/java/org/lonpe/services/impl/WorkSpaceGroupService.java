@@ -17,16 +17,18 @@ import org.lonpe.services.AbstractServiceLon;
 import org.lonpe.services.ConditionInfo;
 import org.lonpe.lonvx.sqlbuilders.SqlLonConditionsBuilder;
 import org.apache.poi.xssf.usermodel.XSSFRow;
+import static org.lonpe.lonvx.ctes.CteLon.*;
 
 
 
 import org.lonpe.lonvx.sqlbuilders.ZtatUnitInfoLon;
+import org.lonpe.lonvx.sqlbuilders.ZtatUnitInfoLon2;
+import org.lonpe.lonvx.sqlbuilders.ZtatUnitInfoLon3;
 
 /**
  *   WorkSpaceGroupService 
  * 
  */
-   
   
 public class WorkSpaceGroupService extends AbstractServiceLon<WorkSpaceGroup>{
 
@@ -41,11 +43,16 @@ public class WorkSpaceGroupService extends AbstractServiceLon<WorkSpaceGroup>{
     private static final String SQLDELETE = "DELETE FROM work_space_group WHERE id = $1 returning id";
     private static final String TABLENAME ="work_space_group";
     
-//1
-    private static final ZtatUnitInfoLon zBase;
+
+    public WorkSpaceGroupService() {
+        init0();
+    }
+
     
+    private static final Map<String, ZtatUnitInfoLon> mz1 = new HashMap<>(6);                       
+
     @Override
-    public  String getTableName(){
+    public String getTableName(){
         return TABLENAME;
     }
 
@@ -59,8 +66,7 @@ public class WorkSpaceGroupService extends AbstractServiceLon<WorkSpaceGroup>{
         return SQLLKEYIN;
     }
 
-/**
-    
+/**    
     private static String sql00 = "SELECT work_space_group.id as work_space_group_id,
 work_space_group.pkey as work_space_group_pkey,
 work_space_group.pname as work_space_group_pname,
@@ -70,8 +76,7 @@ base.id as base_id,base.pkey as base_pkey,base.pname as base_pname
   work_space_group,
   base as base  
  WHERE 
- work_space_group.base_id = base.id; 
-"
+ work_space_group.base_id = base.id"
 */
 
     @Override
@@ -91,28 +96,21 @@ base.id as base_id,base.pkey as base_pkey,base.pname as base_pname
     /**
      * sql select property alias field names
      */
-     
-    private static final LinkedHashSet<String> names;
+    private final LinkedHashSet<String> names =  new LinkedHashSet<>();;
     
     /**
      * Map field insert/update to property 
      */
-    private static final HashMap<String,String> insertMapFields; 
+    private final HashMap<String,String> insertMapFields = new HashMap<>(); 
     
     /**
     * Map property to field order 
     */
-    private static final HashMap<String, String> sortMapFields;
+    private final HashMap<String, String> sortMapFields = new  HashMap<>();
 
-    private static final JsonObject dcModel;
+    private final JsonObject dcModel  = new JsonObject();
     
-    static{
-        names = new LinkedHashSet<>();
-        insertMapFields = new HashMap<>();
-        sortMapFields= new  HashMap<>();
-
-        dcModel = new JsonObject();
-
+    private void init0(){
         
     dcModel.put("dc", "workSpaceGroup");
 
@@ -124,30 +122,24 @@ base.id as base_id,base.pkey as base_pkey,base.pname as base_pname
     final JsonArray ps = new JsonArray();   
  
 //pkey
-    names.add("pkey");
-    insertMapFields.put("work_space_group.pkey","pkey");  
-
-//Create property pkey       
-    final JsonObject pkey = ps00a("pkey", "String",true);
+    doFieldSort("pkey","pkey","work_space_group");               
    
 //Used to map error on index to source property because IS Unique
     insertMapFields.put("work_space_group.work_space_group_uidx_pkey","pkey");  
 
+//Create property pkey       
+    final JsonObject pkey = psString("pkey",true);
+
 // IS Unique     
     pkey.put("uq",true);                    
-
-    sortMapFields.put("pkey", "work_space_group_pkey");                   
  
     ps.add(pkey);
  
 //pname
-    names.add("pname");
-    insertMapFields.put("work_space_group.pname","pname");  
+    doFieldSort("pname","pname","work_space_group");               
 
 //Create property pname       
-    final JsonObject pname = ps00a("pname", "String",true);
-
-    sortMapFields.put("pname", "work_space_group_pname");                   
+    final JsonObject pname = psString("pname",true);
   
 //PC
     dcModel.put("pc","pname");  
@@ -155,13 +147,10 @@ base.id as base_id,base.pkey as base_pkey,base.pname as base_pname
     ps.add(pname);
  
 //typeLon
-    names.add("typeLon");
-    insertMapFields.put("work_space_group.type_lon","typeLon");  
+    doFieldSort("typeLon","type_lon","work_space_group");               
 
 //Create property typeLon       
-    final JsonObject typeLon = ps00a("typeLon", "String",true);
-
-    sortMapFields.put("typeLon", "work_space_group_type_lon");                   
+    final JsonObject typeLon = psString("typeLon",true);
 
     final JsonArray typeLonInList = new JsonArray();
                 typeLonInList.add("BUILD"); 
@@ -175,22 +164,21 @@ typeLonInList.add("MOVIL");
 
     final JsonArray mto = new JsonArray();      
 
-//(1)  base --------------------
-    names.add("base_id");      
-    insertMapFields.put("work_space_group.base_id","base_id");    
-       
-    names.add("base_pkey");        
-    sortMapFields.put( "base_pkey", "base_pkey");        
+//(1)  base
+    doFieldMT0("work_space_group","base", "base");  
 
     final JsonObject base =  doMto("base","base");        
    
     names.add("base_pname");
-    sortMapFields.put( "base_pname", "base_pname");         
-
+    sortMapFields.put( "base_pname", "base_pname");                
     base.put("pc","pname");          
 
     mto.add(base);
         
+
+    //1  base  -- base_id
+    final ZtatUnitInfoLon zBase = new ZtatUnitInfoLon("base_id", "base",  "base","pname","base");
+    mz1.put("zBase", zBase);    
 
     dcModel.put("mto",mto);     
         
@@ -224,11 +212,7 @@ typeLonInList.add("MOVIL");
 /** OTM 3  ON MODEL**/
         dcModel.put("otm3",otm3);
         
-
         
-//1  base  -- base_id
-    zBase = new ZtatUnitInfoLon("base_id", "base",  "base","pname","base");
-
     }        
     @Override
     public LinkedHashSet<String> getNames() {
@@ -253,75 +237,66 @@ typeLonInList.add("MOVIL");
     @Override
     public JsonArray toJsonArray(final Row r){
         final JsonArray jsa = new JsonArray();
-        jsa.add(r.getLong("work_space_group_id") );
-        jsa.add(r.getString("work_space_group_pkey") );
-        jsa.add(r.getString("work_space_group_pname") );
+        jsa.add(r.getLong("work_space_group_id") );       
+        jsa.add(r.getString("work_space_group_pkey") );       
+        jsa.add(r.getString("work_space_group_pname") );       
         jsa.add(r.getString("work_space_group_type_lon") );
-        jsa.add(r.getLong("base_id"));
-        jsa.add(r.getString("base_pkey"));
-        jsa.add(r.getString("base_pname"));
+    jsa.add(r.getLong("base_id"));
+    jsa.add(r.getString("base_pkey"));   
+    
+        
+    jsa.add(r.getString("base_pname"));
         return jsa;
     }
 
     @Override
-    public void fillXRow(final Row r, final XSSFRow row, int nc,boolean withIds) {
-        fillXRow0(r, row, nc, withIds);
+    public int fillXRow(final Row r, final XSSFRow row, int nc,boolean withIds) {
+        return fillXRow0(r, row, nc, withIds);
     }
 
     @Override
     public HashMap<String,String> lXRowH(final boolean withIds, final int level) {        
         
-    final  LinkedHashMap<String,String> m_ = new LinkedHashMap<>();
-    if(withIds){
-                m_.put("workSpaceGroup_id","Long");
-            }
-            
-    //pkey       
-            m_.put("workSpaceGroup_pkey","String"); 
-            
-    //pname       
-            m_.put("workSpaceGroup_pname","String"); 
-            
-    //typeLon       
-            m_.put("workSpaceGroup_typeLon","String"); 
-            
-if(level<1){
-                return m_;    
-            }
-            
- // base
-if(withIds){
-            m_.put("base_id","Long");   
-                    
-            }
-
-        m_.put("base_pkey","String");   
-        
-
-            m_.put("base_pname","String");   
-            
+    final  LinkedHashMap<String,String> m = new LinkedHashMap<>();
     
-    return m_;
+    if(withIds){
+        m.put("workSpaceGroup_id",LONG);
+    }        
+//pkey    
+    m.put("workSpaceGroup_pkey",STRING);              
+//pname    
+    m.put("workSpaceGroup_pname",STRING);              
+//typeLon    
+    m.put("workSpaceGroup_typeLon",STRING);          
+    if(level<1){
+        return m;    
+    }       
+// base   base
+    if(withIds){
+        m.put("base_id",LONG);                       
+    }
+    m.put("base_pkey",STRING);     
+    m.put("base_pname",STRING);  
+    
+    return m;
     
     }
     
-    private void fillXRow0(final Row r, final XSSFRow row,int nc, boolean withIds){
-        if(withIds){
-        lToCell(r, row,"work_space_group_id", nc++); 
-        }
+    private int fillXRow0(final Row r, final XSSFRow row,int nc, final boolean withIds){
         
-    //pkey       
-            sToCell(r, row,"work_space_group_pkey", nc++); 
-    //pname       
-            sToCell(r, row,"work_space_group_pname", nc++); 
-    //typeLon       
+    if(withIds){
+        lToCell(r, row,"work_space_group_id", nc++); 
+    }            //pkey       
+            sToCell(r, row,"work_space_group_pkey", nc++);     //pname       
+            sToCell(r, row,"work_space_group_pname", nc++);     //typeLon       
             sToCell(r, row,"work_space_group_type_lon", nc++); 
- // base
-if(withIds){
-                    lToCell(r, row,"base_id", nc++);
-                 }
-sToCell(r, row,"base_pkey", nc++);
-sToCell(r, row,"base_pname", nc++);
+//base   base        
+    if(withIds){
+        lToCell(r, row,"base_id", nc++);
+    }
+    sToCell(r, row,"base_pkey", nc++);
+    sToCell(r, row,"base_pname", nc++);
+        return nc;
     }
 
     @Override
@@ -341,25 +316,24 @@ sToCell(r, row,"base_pname", nc++);
 
     @Override
     public void fillTupleInsert(final WorkSpaceGroup dc0, final Tuple t){
-                t.addString(dc0.getPkey());
-        t.addString(dc0.getPname());
-        t.addString(dc0.getTypeLon());
-   
-            if(dc0.getBase()!=null){
-               t.addLong(dc0.getBase().getId());
-            }
+                
+    t.addString(dc0.getPkey());        
+    t.addString(dc0.getPname());        
+    t.addString(dc0.getTypeLon());   
+    if(dc0.getBase()!=null){
+       t.addLong(dc0.getBase().getId());
+    }
     }
 
     @Override
     public void fillTupleUpdate(final WorkSpaceGroup dc0, final Tuple t){
-                t.addString(dc0.getPname());
-        t.addString(dc0.getTypeLon());
-   
+        
+    t.addString(dc0.getPname());
+    t.addString(dc0.getTypeLon());   
 //      if(dc0.getBase()!=null){
 //            t.addLong(dc0.getBase().getId());
 //      }
-
-        t.addLong(dc0.getId());
+    t.addLong(dc0.getId());
             
     }    
 
@@ -387,11 +361,8 @@ sToCell(r, row,"base_pname", nc++);
     public void fillTupleInsert(final JsonObject js,final Tuple t){       
         
     fTString("pkey", js, t);
-
     fTString("pname", js, t);
-
-    fTString("typeLon", js, t);
-     
+    fTString("typeLon", js, t);     
     fTLong("base_id",js,t);       
     }
 
@@ -416,17 +387,14 @@ fTLong("id",js,t);
     @Override
     public WorkSpaceGroup doFrom(final Row r){
         final WorkSpaceGroup workSpaceGroup = new WorkSpaceGroup();
-         workSpaceGroup.setId(r.getLong("work_space_group_id"));
-         
-                workSpaceGroup.setPkey(  r.getString("work_space_group_pkey"));
-         
-                workSpaceGroup.setPname(  r.getString("work_space_group_pname"));
-         
-                workSpaceGroup.setTypeLon(  r.getString("work_space_group_type_lon"));
-
+         workSpaceGroup.setId(r.getLong("work_space_group_id"));         
+                workSpaceGroup.setPkey(  r.getString("work_space_group_pkey"));                       
+                workSpaceGroup.setPname(  r.getString("work_space_group_pname"));                       
+                workSpaceGroup.setTypeLon(  r.getString("work_space_group_type_lon"));              
         final Base base = new Base();
         base.setId(r.getLong("base_id"));
         base.setPkey(r.getString("base_pkey"));
+        
         base.setPname(r.getString("base_pname"));
         workSpaceGroup.setBase(base);
           
@@ -438,10 +406,11 @@ fTLong("id",js,t);
         WorkSpaceGroup workSpaceGroup = new WorkSpaceGroup();
         workSpaceGroup.setId(js.getLong("id"));
         
-                workSpaceGroup.setPkey(js.getString("pkey"));
-        workSpaceGroup.setPname(js.getString("pname"));
-        workSpaceGroup.setTypeLon(js.getString("typeLon"));
-        workSpaceGroup.setId(js.getLong("base_id"));
+                
+                workSpaceGroup.setPkey(js.getString("pkey"));        
+                workSpaceGroup.setPname(js.getString("pname"));        
+                workSpaceGroup.setTypeLon(js.getString("typeLon"));        
+            workSpaceGroup.setId(js.getLong("base_id"));
         return workSpaceGroup;
     }
 
@@ -480,8 +449,9 @@ fTLong("id",js,t);
         slcb.doIlPSimple2( "base_pkey", "base_pkey");
         slcb.doEQPSimple2( "base_pkey", "base_pkey");
         slcb.doInLongCondition("base_id", "base_id");  
-//Base 1        
+//Base 1        --
         slcb.doIlPSimple2( "base_pname", "base_pname");    
+        
 
         slcb.doSQLORDEN(sortMapFields);
 
@@ -499,11 +469,9 @@ fTLong("id",js,t);
         
 //level 1
              
-    sz0.applyG1(zBase);      
-    //level 2
-    
-    //level 3
-    
+    sz0.applyG1(mz1.get("zBase"))   ;      
+//level 2    
+//level 3    
         return sz0;
     }
 }

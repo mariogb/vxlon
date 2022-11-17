@@ -1504,8 +1504,7 @@ user_lon.pname as user_lon_pname,
 user_lon.type_lon as user_lon_type_lon,
 user_lon.username as user_lon_username 
   FROM 
-  user_lon ; 
-
+  user_lon 
 
 
 -- VIEW FOR   Role
@@ -1516,8 +1515,7 @@ SELECT role.id as role_id,
 role.pkey as role_pkey,
 role.pname as role_pname 
   FROM 
-  role ; 
-
+  role 
 
 
 -- VIEW FOR   UserRole
@@ -1534,8 +1532,7 @@ role.id as role_id,role.pkey as role_pkey,role.pname as role_pname
   role as role  
  WHERE 
  user_role.user_lon_id = user_lon.id
- AND user_role.role_id = role.id; 
-
+ AND user_role.role_id = role.id
 
 
 -- VIEW FOR   UserThirdPerson
@@ -1552,8 +1549,7 @@ third_person.id as third_person_id,third_person.pkey as third_person_pkey,third_
   third_person as third_person  
  WHERE 
  user_third_person.user_lon_id = user_lon.id
- AND user_third_person.third_person_id = third_person.id; 
-
+ AND user_third_person.third_person_id = third_person.id
 
 
 -- VIEW FOR   ThirdPerson
@@ -1566,8 +1562,7 @@ third_person.pname as third_person_pname,
 third_person.rfc as third_person_rfc,
 third_person.tipo as third_person_tipo 
   FROM 
-  third_person ; 
-
+  third_person 
 
 
 -- VIEW FOR   EntityPermisionRole
@@ -1584,8 +1579,7 @@ role.id as role_id,role.pkey as role_pkey,role.pname as role_pname
   entity_permision_role,
   role as role  
  WHERE 
- entity_permision_role.role_id = role.id; 
-
+ entity_permision_role.role_id = role.id
 
 
 -- VIEW FOR   Base
@@ -1596,8 +1590,7 @@ SELECT base.id as base_id,
 base.pkey as base_pkey,
 base.pname as base_pname 
   FROM 
-  base ; 
-
+  base 
 
 
 -- VIEW FOR   TimePeriod
@@ -1611,8 +1604,7 @@ time_period.end_date as time_period_end_date,
 time_period.pname as time_period_pname,
 time_period.type_lon as time_period_type_lon 
   FROM 
-  time_period ; 
-
+  time_period 
 
 
 -- VIEW FOR   BaseTimePeriod
@@ -1629,8 +1621,7 @@ time_period.id as time_period_id,time_period.pkey as time_period_pkey,time_perio
   time_period as time_period  
  WHERE 
  base_time_period.base_id = base.id
- AND base_time_period.time_period_id = time_period.id; 
-
+ AND base_time_period.time_period_id = time_period.id
 
 
 -- VIEW FOR   WorkSpaceGroup
@@ -1646,8 +1637,7 @@ base.id as base_id,base.pkey as base_pkey,base.pname as base_pname
   work_space_group,
   base as base  
  WHERE 
- work_space_group.base_id = base.id; 
-
+ work_space_group.base_id = base.id
 
 
 -- VIEW FOR   WorkSpace
@@ -1667,8 +1657,7 @@ base.id as base_id, base.pkey as base_pkey,base.pname as base_pname
   base as base  
  WHERE 
  work_space.work_space_group_id = work_space_group.id
- AND work_space_group.base_id = base.id; 
-
+ AND work_space_group.base_id = base.id
 
 
 -- VIEW FOR   Departament
@@ -1681,8 +1670,7 @@ departament.description as departament_description,
 departament.fast_key as departament_fast_key,
 departament.pname as departament_pname 
   FROM 
-  departament ; 
-
+  departament 
 
 
 -- VIEW FOR   DepartamentJob
@@ -1700,8 +1688,7 @@ departament.id as departament_id,departament.pkey as departament_pkey,departamen
   departament_job,
   departament as departament  
  WHERE 
- departament_job.departament_id = departament.id; 
-
+ departament_job.departament_id = departament.id
 
 
 -- VIEW FOR   DepartamentJobInstance
@@ -1714,27 +1701,26 @@ departament_job_instance.description as departament_job_instance_description,
 departament_job_instance.nhoras as departament_job_instance_nhoras,
 departament_job_instance.pname as departament_job_instance_pname,
 departament_job.id as departament_job_id,departament_job.pkey as departament_job_pkey,departament_job.pname as departament_job_pname,
-departament_base_time_period.id as departament_base_time_period_id,departament_base_time_period.pkey as departament_base_time_period_pkey,
 departament.id as departament_id, departament.pkey as departament_pkey,departament.pname as departament_pname,
+departament_base_time_period.id as departament_base_time_period_id,departament_base_time_period.pkey as departament_base_time_period_pkey,
 base_time_period.id as base_time_period_id, base_time_period.pkey as base_time_period_pkey,
 base.id as base_id, base.pkey as base_pkey,base.pname as base_pname,
 time_period.id as time_period_id, time_period.pkey as time_period_pkey,time_period.pname as time_period_pname 
   FROM 
   departament_job_instance,
   departament_job as departament_job,
-  departament_base_time_period as departament_base_time_period,
   departament as departament,
+  departament_base_time_period as departament_base_time_period,
   base_time_period as base_time_period,
   base as base,
   time_period as time_period  
  WHERE 
  departament_job_instance.departament_job_id = departament_job.id
- AND departament_job_instance.departament_base_time_period_id = departament_base_time_period.id
  AND departament_job.departament_id = departament.id
+ AND departament_job_instance.departament_base_time_period_id = departament_base_time_period.id
  AND departament_base_time_period.base_time_period_id = base_time_period.id
  AND base_time_period.base_id = base.id
- AND base_time_period.time_period_id = time_period.id; 
-
+ AND base_time_period.time_period_id = time_period.id
 
 
 -- VIEW FOR   Program
@@ -1747,8 +1733,7 @@ program.description as program_description,
 program.fast_key as program_fast_key,
 program.pname as program_pname 
   FROM 
-  program ; 
-
+  program 
 
 
 -- VIEW FOR   ProgramJob
@@ -1772,8 +1757,7 @@ departament.id as departament_id, departament.pkey as departament_pkey,departame
  WHERE 
  program_job.program_id = program.id
  AND program_job.departament_job_id = departament_job.id
- AND departament_job.departament_id = departament.id; 
-
+ AND departament_job.departament_id = departament.id
 
 
 -- VIEW FOR   DepartamentUserLon
@@ -1790,8 +1774,7 @@ user_lon.id as user_lon_id,user_lon.pkey as user_lon_pkey,user_lon.pname as user
   user_lon as user_lon  
  WHERE 
  departament_user_lon.departament_id = departament.id
- AND departament_user_lon.user_lon_id = user_lon.id; 
-
+ AND departament_user_lon.user_lon_id = user_lon.id
 
 
 -- VIEW FOR   ProgramUserLon
@@ -1808,8 +1791,7 @@ user_lon.id as user_lon_id,user_lon.pkey as user_lon_pkey,user_lon.pname as user
   user_lon as user_lon  
  WHERE 
  program_user_lon.program_id = program.id
- AND program_user_lon.user_lon_id = user_lon.id; 
-
+ AND program_user_lon.user_lon_id = user_lon.id
 
 
 -- VIEW FOR   BaseUserLon
@@ -1826,8 +1808,7 @@ user_lon.id as user_lon_id,user_lon.pkey as user_lon_pkey,user_lon.pname as user
   user_lon as user_lon  
  WHERE 
  base_user_lon.base_id = base.id
- AND base_user_lon.user_lon_id = user_lon.id; 
-
+ AND base_user_lon.user_lon_id = user_lon.id
 
 
 -- VIEW FOR   DepartamentBaseTimePeriod
@@ -1837,21 +1818,20 @@ CREATE OR REPLACE VIEW departament_base_time_period_view as
 SELECT departament_base_time_period.id as departament_base_time_period_id,
 departament_base_time_period.pkey as departament_base_time_period_pkey,
 base_time_period.id as base_time_period_id,base_time_period.pkey as base_time_period_pkey,
-departament.id as departament_id,departament.pkey as departament_pkey,departament.pname as departament_pname,
 base.id as base_id, base.pkey as base_pkey,base.pname as base_pname,
-time_period.id as time_period_id, time_period.pkey as time_period_pkey,time_period.pname as time_period_pname 
+time_period.id as time_period_id, time_period.pkey as time_period_pkey,time_period.pname as time_period_pname,
+departament.id as departament_id,departament.pkey as departament_pkey,departament.pname as departament_pname 
   FROM 
   departament_base_time_period,
   base_time_period as base_time_period,
-  departament as departament,
   base as base,
-  time_period as time_period  
+  time_period as time_period,
+  departament as departament  
  WHERE 
  departament_base_time_period.base_time_period_id = base_time_period.id
- AND departament_base_time_period.departament_id = departament.id
  AND base_time_period.base_id = base.id
- AND base_time_period.time_period_id = time_period.id; 
-
+ AND base_time_period.time_period_id = time_period.id
+ AND departament_base_time_period.departament_id = departament.id
 
 
 -- VIEW FOR   ProgramBaseTimePeriod
@@ -1861,21 +1841,20 @@ CREATE OR REPLACE VIEW program_base_time_period_view as
 SELECT program_base_time_period.id as program_base_time_period_id,
 program_base_time_period.pkey as program_base_time_period_pkey,
 base_time_period.id as base_time_period_id,base_time_period.pkey as base_time_period_pkey,
-program.id as program_id,program.pkey as program_pkey,program.pname as program_pname,
 base.id as base_id, base.pkey as base_pkey,base.pname as base_pname,
-time_period.id as time_period_id, time_period.pkey as time_period_pkey,time_period.pname as time_period_pname 
+time_period.id as time_period_id, time_period.pkey as time_period_pkey,time_period.pname as time_period_pname,
+program.id as program_id,program.pkey as program_pkey,program.pname as program_pname 
   FROM 
   program_base_time_period,
   base_time_period as base_time_period,
-  program as program,
   base as base,
-  time_period as time_period  
+  time_period as time_period,
+  program as program  
  WHERE 
  program_base_time_period.base_time_period_id = base_time_period.id
- AND program_base_time_period.program_id = program.id
  AND base_time_period.base_id = base.id
- AND base_time_period.time_period_id = time_period.id; 
-
+ AND base_time_period.time_period_id = time_period.id
+ AND program_base_time_period.program_id = program.id
 
 
 -- VIEW FOR   ContractOut
@@ -1886,27 +1865,26 @@ SELECT contract_out.id as contract_out_id,
 contract_out.pkey as contract_out_pkey,
 contract_out.pname as contract_out_pname,
 departament_base_time_period.id as departament_base_time_period_id,departament_base_time_period.pkey as departament_base_time_period_pkey,
-third_person.id as third_person_id,third_person.pkey as third_person_pkey,third_person.pname as third_person_pname,
 base_time_period.id as base_time_period_id, base_time_period.pkey as base_time_period_pkey,
-departament.id as departament_id, departament.pkey as departament_pkey,departament.pname as departament_pname,
 base.id as base_id, base.pkey as base_pkey,base.pname as base_pname,
-time_period.id as time_period_id, time_period.pkey as time_period_pkey,time_period.pname as time_period_pname 
+time_period.id as time_period_id, time_period.pkey as time_period_pkey,time_period.pname as time_period_pname,
+departament.id as departament_id, departament.pkey as departament_pkey,departament.pname as departament_pname,
+third_person.id as third_person_id,third_person.pkey as third_person_pkey,third_person.pname as third_person_pname 
   FROM 
   contract_out,
   departament_base_time_period as departament_base_time_period,
-  third_person as third_person,
   base_time_period as base_time_period,
-  departament as departament,
   base as base,
-  time_period as time_period  
+  time_period as time_period,
+  departament as departament,
+  third_person as third_person  
  WHERE 
  contract_out.departament_base_time_period_id = departament_base_time_period.id
- AND contract_out.third_person_id = third_person.id
  AND departament_base_time_period.base_time_period_id = base_time_period.id
- AND departament_base_time_period.departament_id = departament.id
  AND base_time_period.base_id = base.id
- AND base_time_period.time_period_id = time_period.id; 
-
+ AND base_time_period.time_period_id = time_period.id
+ AND departament_base_time_period.departament_id = departament.id
+ AND contract_out.third_person_id = third_person.id
 
 
 -- VIEW FOR   ContractIn
@@ -1917,27 +1895,26 @@ SELECT contract_in.id as contract_in_id,
 contract_in.pkey as contract_in_pkey,
 contract_in.pname as contract_in_pname,
 program_base_time_period.id as program_base_time_period_id,program_base_time_period.pkey as program_base_time_period_pkey,
-third_person.id as third_person_id,third_person.pkey as third_person_pkey,third_person.pname as third_person_pname,
 base_time_period.id as base_time_period_id, base_time_period.pkey as base_time_period_pkey,
-program.id as program_id, program.pkey as program_pkey,program.pname as program_pname,
 base.id as base_id, base.pkey as base_pkey,base.pname as base_pname,
-time_period.id as time_period_id, time_period.pkey as time_period_pkey,time_period.pname as time_period_pname 
+time_period.id as time_period_id, time_period.pkey as time_period_pkey,time_period.pname as time_period_pname,
+program.id as program_id, program.pkey as program_pkey,program.pname as program_pname,
+third_person.id as third_person_id,third_person.pkey as third_person_pkey,third_person.pname as third_person_pname 
   FROM 
   contract_in,
   program_base_time_period as program_base_time_period,
-  third_person as third_person,
   base_time_period as base_time_period,
-  program as program,
   base as base,
-  time_period as time_period  
+  time_period as time_period,
+  program as program,
+  third_person as third_person  
  WHERE 
  contract_in.program_base_time_period_id = program_base_time_period.id
- AND contract_in.third_person_id = third_person.id
  AND program_base_time_period.base_time_period_id = base_time_period.id
- AND program_base_time_period.program_id = program.id
  AND base_time_period.base_id = base.id
- AND base_time_period.time_period_id = time_period.id; 
-
+ AND base_time_period.time_period_id = time_period.id
+ AND program_base_time_period.program_id = program.id
+ AND contract_in.third_person_id = third_person.id
 
 
 -- VIEW FOR   ComercialDocumentTypeOut
@@ -1949,8 +1926,7 @@ comercial_document_type_out.pkey as comercial_document_type_out_pkey,
 comercial_document_type_out.afect_stock as comercial_document_type_out_afect_stock,
 comercial_document_type_out.pname as comercial_document_type_out_pname 
   FROM 
-  comercial_document_type_out ; 
-
+  comercial_document_type_out 
 
 
 -- VIEW FOR   ComercialDocumentTypeIn
@@ -1962,8 +1938,7 @@ comercial_document_type_in.pkey as comercial_document_type_in_pkey,
 comercial_document_type_in.afect_stock as comercial_document_type_in_afect_stock,
 comercial_document_type_in.pname as comercial_document_type_in_pname 
   FROM 
-  comercial_document_type_in ; 
-
+  comercial_document_type_in 
 
 
 -- VIEW FOR   MonetaryAccount
@@ -1974,8 +1949,7 @@ SELECT monetary_account.id as monetary_account_id,
 monetary_account.pkey as monetary_account_pkey,
 monetary_account.pname as monetary_account_pname 
   FROM 
-  monetary_account ; 
-
+  monetary_account 
 
 
 -- VIEW FOR   PaymentOutType
@@ -1986,8 +1960,7 @@ SELECT payment_out_type.id as payment_out_type_id,
 payment_out_type.pkey as payment_out_type_pkey,
 payment_out_type.pname as payment_out_type_pname 
   FROM 
-  payment_out_type ; 
-
+  payment_out_type 
 
 
 -- VIEW FOR   PaymentInType
@@ -1998,8 +1971,7 @@ SELECT payment_in_type.id as payment_in_type_id,
 payment_in_type.pkey as payment_in_type_pkey,
 payment_in_type.pname as payment_in_type_pname 
   FROM 
-  payment_in_type ; 
-
+  payment_in_type 
 
 
 -- VIEW FOR   PaymentOutForm
@@ -2016,8 +1988,7 @@ payment_out_type.id as payment_out_type_id,payment_out_type.pkey as payment_out_
   payment_out_type as payment_out_type  
  WHERE 
  payment_out_form.monetary_account_id = monetary_account.id
- AND payment_out_form.payment_out_type_id = payment_out_type.id; 
-
+ AND payment_out_form.payment_out_type_id = payment_out_type.id
 
 
 -- VIEW FOR   PaymentInForm
@@ -2034,8 +2005,7 @@ payment_in_type.id as payment_in_type_id,payment_in_type.pkey as payment_in_type
   payment_in_type as payment_in_type  
  WHERE 
  payment_in_form.monetary_account_id = monetary_account.id
- AND payment_in_form.payment_in_type_id = payment_in_type.id; 
-
+ AND payment_in_form.payment_in_type_id = payment_in_type.id
 
 
 -- VIEW FOR   PaymentOut
@@ -2045,36 +2015,35 @@ CREATE OR REPLACE VIEW payment_out_view as
 SELECT payment_out.id as payment_out_id,
 payment_out.pkey as payment_out_pkey,
 payment_out_form.id as payment_out_form_id,payment_out_form.pkey as payment_out_form_pkey,
-comercial_document_out.id as comercial_document_out_id,comercial_document_out.pkey as comercial_document_out_pkey,comercial_document_out.pname as comercial_document_out_pname,
 monetary_account.id as monetary_account_id, monetary_account.pkey as monetary_account_pkey,monetary_account.pname as monetary_account_pname,
 payment_out_type.id as payment_out_type_id, payment_out_type.pkey as payment_out_type_pkey,payment_out_type.pname as payment_out_type_pname,
+comercial_document_out.id as comercial_document_out_id,comercial_document_out.pkey as comercial_document_out_pkey,comercial_document_out.pname as comercial_document_out_pname,
 contract.id as contract_id, contract.pkey as contract_pkey,contract.pname as contract_pname,
-user_autor.id as user_autor_id, user_autor.pkey as user_autor_pkey,user_autor.pname as user_autor_pname,
-comercial_document_type.id as comercial_document_type_id, comercial_document_type.pkey as comercial_document_type_pkey,comercial_document_type.pname as comercial_document_type_pname,
 departament_base_time_period.id as departament_base_time_period_id, departament_base_time_period.pkey as departament_base_time_period_pkey,
-third_person.id as third_person_id, third_person.pkey as third_person_pkey,third_person.pname as third_person_pname 
+third_person.id as third_person_id, third_person.pkey as third_person_pkey,third_person.pname as third_person_pname,
+user_autor.id as user_autor_id, user_autor.pkey as user_autor_pkey,user_autor.pname as user_autor_pname,
+comercial_document_type.id as comercial_document_type_id, comercial_document_type.pkey as comercial_document_type_pkey,comercial_document_type.pname as comercial_document_type_pname 
   FROM 
   payment_out,
   payment_out_form as payment_out_form,
-  comercial_document_out as comercial_document_out,
   monetary_account as monetary_account,
   payment_out_type as payment_out_type,
+  comercial_document_out as comercial_document_out,
   contract_out as contract,
-  user_lon as user_autor,
-  comercial_document_type_out as comercial_document_type,
   departament_base_time_period as departament_base_time_period,
-  third_person as third_person  
+  third_person as third_person,
+  user_lon as user_autor,
+  comercial_document_type_out as comercial_document_type  
  WHERE 
  payment_out.payment_out_form_id = payment_out_form.id
- AND payment_out.comercial_document_out_id = comercial_document_out.id
  AND payment_out_form.monetary_account_id = monetary_account.id
  AND payment_out_form.payment_out_type_id = payment_out_type.id
+ AND payment_out.comercial_document_out_id = comercial_document_out.id
  AND comercial_document_out.contract_id = contract.id
+ AND contract.departament_base_time_period_id = departament_base_time_period.id
+ AND contract.third_person_id = third_person.id
  AND comercial_document_out.user_autor_id = user_autor.id
  AND comercial_document_out.comercial_document_type_id = comercial_document_type.id
- AND contract.departament_base_time_period_id = departament_base_time_period.id
- AND contract.third_person_id = third_person.id; 
-
 
 
 -- VIEW FOR   PaymentIn
@@ -2084,36 +2053,35 @@ CREATE OR REPLACE VIEW payment_in_view as
 SELECT payment_in.id as payment_in_id,
 payment_in.pkey as payment_in_pkey,
 payment_in_form.id as payment_in_form_id,payment_in_form.pkey as payment_in_form_pkey,
-comercial_document_in.id as comercial_document_in_id,comercial_document_in.pkey as comercial_document_in_pkey,comercial_document_in.pname as comercial_document_in_pname,
 monetary_account.id as monetary_account_id, monetary_account.pkey as monetary_account_pkey,monetary_account.pname as monetary_account_pname,
 payment_in_type.id as payment_in_type_id, payment_in_type.pkey as payment_in_type_pkey,payment_in_type.pname as payment_in_type_pname,
+comercial_document_in.id as comercial_document_in_id,comercial_document_in.pkey as comercial_document_in_pkey,comercial_document_in.pname as comercial_document_in_pname,
 contract.id as contract_id, contract.pkey as contract_pkey,contract.pname as contract_pname,
-user_autor.id as user_autor_id, user_autor.pkey as user_autor_pkey,user_autor.pname as user_autor_pname,
-comercial_document_type.id as comercial_document_type_id, comercial_document_type.pkey as comercial_document_type_pkey,comercial_document_type.pname as comercial_document_type_pname,
 program_base_time_period.id as program_base_time_period_id, program_base_time_period.pkey as program_base_time_period_pkey,
-third_person.id as third_person_id, third_person.pkey as third_person_pkey,third_person.pname as third_person_pname 
+third_person.id as third_person_id, third_person.pkey as third_person_pkey,third_person.pname as third_person_pname,
+user_autor.id as user_autor_id, user_autor.pkey as user_autor_pkey,user_autor.pname as user_autor_pname,
+comercial_document_type.id as comercial_document_type_id, comercial_document_type.pkey as comercial_document_type_pkey,comercial_document_type.pname as comercial_document_type_pname 
   FROM 
   payment_in,
   payment_in_form as payment_in_form,
-  comercial_document_in as comercial_document_in,
   monetary_account as monetary_account,
   payment_in_type as payment_in_type,
+  comercial_document_in as comercial_document_in,
   contract_in as contract,
-  user_lon as user_autor,
-  comercial_document_type_in as comercial_document_type,
   program_base_time_period as program_base_time_period,
-  third_person as third_person  
+  third_person as third_person,
+  user_lon as user_autor,
+  comercial_document_type_in as comercial_document_type  
  WHERE 
  payment_in.payment_in_form_id = payment_in_form.id
- AND payment_in.comercial_document_in_id = comercial_document_in.id
  AND payment_in_form.monetary_account_id = monetary_account.id
  AND payment_in_form.payment_in_type_id = payment_in_type.id
+ AND payment_in.comercial_document_in_id = comercial_document_in.id
  AND comercial_document_in.contract_id = contract.id
+ AND contract.program_base_time_period_id = program_base_time_period.id
+ AND contract.third_person_id = third_person.id
  AND comercial_document_in.user_autor_id = user_autor.id
  AND comercial_document_in.comercial_document_type_id = comercial_document_type.id
- AND contract.program_base_time_period_id = program_base_time_period.id
- AND contract.third_person_id = third_person.id; 
-
 
 
 -- VIEW FOR   ComercialDocumentOut
@@ -2129,30 +2097,29 @@ comercial_document_out.pname as comercial_document_out_pname,
 comercial_document_out.status as comercial_document_out_status,
 comercial_document_out.supply_date as comercial_document_out_supply_date,
 contract.id as contract_id,contract.pkey as contract_pkey,contract.pname as contract_pname,
-user_autor.id as user_autor_id,user_autor.pkey as user_autor_pkey,user_autor.pname as user_autor_pname,
-comercial_document_type.id as comercial_document_type_id,comercial_document_type.pkey as comercial_document_type_pkey,comercial_document_type.pname as comercial_document_type_pname,
 departament_base_time_period.id as departament_base_time_period_id, departament_base_time_period.pkey as departament_base_time_period_pkey,
-third_person.id as third_person_id, third_person.pkey as third_person_pkey,third_person.pname as third_person_pname,
 base_time_period.id as base_time_period_id, base_time_period.pkey as base_time_period_pkey,
-departament.id as departament_id, departament.pkey as departament_pkey,departament.pname as departament_pname 
+departament.id as departament_id, departament.pkey as departament_pkey,departament.pname as departament_pname,
+third_person.id as third_person_id, third_person.pkey as third_person_pkey,third_person.pname as third_person_pname,
+user_autor.id as user_autor_id,user_autor.pkey as user_autor_pkey,user_autor.pname as user_autor_pname,
+comercial_document_type.id as comercial_document_type_id,comercial_document_type.pkey as comercial_document_type_pkey,comercial_document_type.pname as comercial_document_type_pname 
   FROM 
   comercial_document_out,
   contract_out as contract,
-  user_lon as user_autor,
-  comercial_document_type_out as comercial_document_type,
   departament_base_time_period as departament_base_time_period,
-  third_person as third_person,
   base_time_period as base_time_period,
-  departament as departament  
+  departament as departament,
+  third_person as third_person,
+  user_lon as user_autor,
+  comercial_document_type_out as comercial_document_type  
  WHERE 
  comercial_document_out.contract_id = contract.id
+ AND contract.departament_base_time_period_id = departament_base_time_period.id
+ AND departament_base_time_period.base_time_period_id = base_time_period.id
+ AND departament_base_time_period.departament_id = departament.id
+ AND contract.third_person_id = third_person.id
  AND comercial_document_out.user_autor_id = user_autor.id
  AND comercial_document_out.comercial_document_type_id = comercial_document_type.id
- AND contract.departament_base_time_period_id = departament_base_time_period.id
- AND contract.third_person_id = third_person.id
- AND departament_base_time_period.base_time_period_id = base_time_period.id
- AND departament_base_time_period.departament_id = departament.id; 
-
 
 
 -- VIEW FOR   ComercialDocumentIn
@@ -2168,30 +2135,29 @@ comercial_document_in.pname as comercial_document_in_pname,
 comercial_document_in.status as comercial_document_in_status,
 comercial_document_in.supply_date as comercial_document_in_supply_date,
 contract.id as contract_id,contract.pkey as contract_pkey,contract.pname as contract_pname,
-user_autor.id as user_autor_id,user_autor.pkey as user_autor_pkey,user_autor.pname as user_autor_pname,
-comercial_document_type.id as comercial_document_type_id,comercial_document_type.pkey as comercial_document_type_pkey,comercial_document_type.pname as comercial_document_type_pname,
 program_base_time_period.id as program_base_time_period_id, program_base_time_period.pkey as program_base_time_period_pkey,
-third_person.id as third_person_id, third_person.pkey as third_person_pkey,third_person.pname as third_person_pname,
 base_time_period.id as base_time_period_id, base_time_period.pkey as base_time_period_pkey,
-program.id as program_id, program.pkey as program_pkey,program.pname as program_pname 
+program.id as program_id, program.pkey as program_pkey,program.pname as program_pname,
+third_person.id as third_person_id, third_person.pkey as third_person_pkey,third_person.pname as third_person_pname,
+user_autor.id as user_autor_id,user_autor.pkey as user_autor_pkey,user_autor.pname as user_autor_pname,
+comercial_document_type.id as comercial_document_type_id,comercial_document_type.pkey as comercial_document_type_pkey,comercial_document_type.pname as comercial_document_type_pname 
   FROM 
   comercial_document_in,
   contract_in as contract,
-  user_lon as user_autor,
-  comercial_document_type_in as comercial_document_type,
   program_base_time_period as program_base_time_period,
-  third_person as third_person,
   base_time_period as base_time_period,
-  program as program  
+  program as program,
+  third_person as third_person,
+  user_lon as user_autor,
+  comercial_document_type_in as comercial_document_type  
  WHERE 
  comercial_document_in.contract_id = contract.id
+ AND contract.program_base_time_period_id = program_base_time_period.id
+ AND program_base_time_period.base_time_period_id = base_time_period.id
+ AND program_base_time_period.program_id = program.id
+ AND contract.third_person_id = third_person.id
  AND comercial_document_in.user_autor_id = user_autor.id
  AND comercial_document_in.comercial_document_type_id = comercial_document_type.id
- AND contract.program_base_time_period_id = program_base_time_period.id
- AND contract.third_person_id = third_person.id
- AND program_base_time_period.base_time_period_id = base_time_period.id
- AND program_base_time_period.program_id = program.id; 
-
 
 
 -- VIEW FOR   ProductType
@@ -2208,8 +2174,7 @@ product_type.pname as product_type_pname,
 product_type.taxable as product_type_taxable,
 product_type.with_serial_number as product_type_with_serial_number 
   FROM 
-  product_type ; 
-
+  product_type 
 
 
 -- VIEW FOR   StockRack
@@ -2231,8 +2196,7 @@ base.id as base_id, base.pkey as base_pkey,base.pname as base_pname
  WHERE 
  stock_rack.work_space_id = work_space.id
  AND work_space.work_space_group_id = work_space_group.id
- AND work_space_group.base_id = base.id; 
-
+ AND work_space_group.base_id = base.id
 
 
 -- VIEW FOR   StockRackProduct
@@ -2245,24 +2209,23 @@ stock_rack_product.pname as stock_rack_product_pname,
 stock_rack_product.quantity as stock_rack_product_quantity,
 stock_rack_product.serial_number as stock_rack_product_serial_number,
 stock_rack.id as stock_rack_id,stock_rack.pkey as stock_rack_pkey,stock_rack.pname as stock_rack_pname,
-product.id as product_id,product.pkey as product_pkey,product.pname as product_pname,
 work_space.id as work_space_id, work_space.pkey as work_space_pkey,work_space.pname as work_space_pname,
-product_type.id as product_type_id, product_type.pkey as product_type_pkey,product_type.pname as product_type_pname,
-work_space_group.id as work_space_group_id, work_space_group.pkey as work_space_group_pkey,work_space_group.pname as work_space_group_pname 
+work_space_group.id as work_space_group_id, work_space_group.pkey as work_space_group_pkey,work_space_group.pname as work_space_group_pname,
+product.id as product_id,product.pkey as product_pkey,product.pname as product_pname,
+product_type.id as product_type_id, product_type.pkey as product_type_pkey,product_type.pname as product_type_pname 
   FROM 
   stock_rack_product,
   stock_rack as stock_rack,
-  product as product,
   work_space as work_space,
-  product_type as product_type,
-  work_space_group as work_space_group  
+  work_space_group as work_space_group,
+  product as product,
+  product_type as product_type  
  WHERE 
  stock_rack_product.stock_rack_id = stock_rack.id
- AND stock_rack_product.product_id = product.id
  AND stock_rack.work_space_id = work_space.id
+ AND work_space.work_space_group_id = work_space_group.id
+ AND stock_rack_product.product_id = product.id
  AND product.product_type_id = product_type.id
- AND work_space.work_space_group_id = work_space_group.id; 
-
 
 
 -- VIEW FOR   Product
@@ -2280,8 +2243,7 @@ product_type.id as product_type_id,product_type.pkey as product_type_pkey,produc
   product,
   product_type as product_type  
  WHERE 
- product.product_type_id = product_type.id; 
-
+ product.product_type_id = product_type.id
 
 
 -- VIEW FOR   InvoiceLineIn
@@ -2303,42 +2265,41 @@ invoice_line_in.total as invoice_line_in_total,
 invoice_line_in.total_cost as invoice_line_in_total_cost,
 invoice_line_in.unit_cost as invoice_line_in_unit_cost,
 comercial_document.id as comercial_document_id,comercial_document.pkey as comercial_document_pkey,comercial_document.pname as comercial_document_pname,
-product.id as product_id,product.pkey as product_pkey,product.pname as product_pname,
-stock_rack_product.id as stock_rack_product_id,stock_rack_product.pkey as stock_rack_product_pkey,stock_rack_product.pname as stock_rack_product_pname,
 contract.id as contract_id, contract.pkey as contract_pkey,contract.pname as contract_pname,
-user_autor.id as user_autor_id, user_autor.pkey as user_autor_pkey,user_autor.pname as user_autor_pname,
-comercial_document_type.id as comercial_document_type_id, comercial_document_type.pkey as comercial_document_type_pkey,comercial_document_type.pname as comercial_document_type_pname,
-product_type.id as product_type_id, product_type.pkey as product_type_pkey,product_type.pname as product_type_pname,
-stock_rack.id as stock_rack_id, stock_rack.pkey as stock_rack_pkey,stock_rack.pname as stock_rack_pname,
 departament_base_time_period.id as departament_base_time_period_id, departament_base_time_period.pkey as departament_base_time_period_pkey,
 third_person.id as third_person_id, third_person.pkey as third_person_pkey,third_person.pname as third_person_pname,
+user_autor.id as user_autor_id, user_autor.pkey as user_autor_pkey,user_autor.pname as user_autor_pname,
+comercial_document_type.id as comercial_document_type_id, comercial_document_type.pkey as comercial_document_type_pkey,comercial_document_type.pname as comercial_document_type_pname,
+product.id as product_id,product.pkey as product_pkey,product.pname as product_pname,
+product_type.id as product_type_id, product_type.pkey as product_type_pkey,product_type.pname as product_type_pname,
+stock_rack_product.id as stock_rack_product_id,stock_rack_product.pkey as stock_rack_product_pkey,stock_rack_product.pname as stock_rack_product_pname,
+stock_rack.id as stock_rack_id, stock_rack.pkey as stock_rack_pkey,stock_rack.pname as stock_rack_pname,
 work_space.id as work_space_id, work_space.pkey as work_space_pkey,work_space.pname as work_space_pname 
   FROM 
   invoice_line_in,
   comercial_document_out as comercial_document,
-  product as product,
-  stock_rack_product as stock_rack_product,
   contract_out as contract,
-  user_lon as user_autor,
-  comercial_document_type_out as comercial_document_type,
-  product_type as product_type,
-  stock_rack as stock_rack,
   departament_base_time_period as departament_base_time_period,
   third_person as third_person,
+  user_lon as user_autor,
+  comercial_document_type_out as comercial_document_type,
+  product as product,
+  product_type as product_type,
+  stock_rack_product as stock_rack_product,
+  stock_rack as stock_rack,
   work_space as work_space  
  WHERE 
  invoice_line_in.comercial_document_id = comercial_document.id
- AND invoice_line_in.product_id = product.id
- AND invoice_line_in.stock_rack_product_id = stock_rack_product.id
  AND comercial_document.contract_id = contract.id
- AND comercial_document.user_autor_id = user_autor.id
- AND comercial_document.comercial_document_type_id = comercial_document_type.id
- AND product.product_type_id = product_type.id
- AND stock_rack_product.stock_rack_id = stock_rack.id
  AND contract.departament_base_time_period_id = departament_base_time_period.id
  AND contract.third_person_id = third_person.id
- AND stock_rack.work_space_id = work_space.id; 
-
+ AND comercial_document.user_autor_id = user_autor.id
+ AND comercial_document.comercial_document_type_id = comercial_document_type.id
+ AND invoice_line_in.product_id = product.id
+ AND product.product_type_id = product_type.id
+ AND invoice_line_in.stock_rack_product_id = stock_rack_product.id
+ AND stock_rack_product.stock_rack_id = stock_rack.id
+ AND stock_rack.work_space_id = work_space.id
 
 
 -- VIEW FOR   InvoiceLineOut
@@ -2360,42 +2321,41 @@ invoice_line_out.total as invoice_line_out_total,
 invoice_line_out.total_cost as invoice_line_out_total_cost,
 invoice_line_out.unit_cost as invoice_line_out_unit_cost,
 comercial_document.id as comercial_document_id,comercial_document.pkey as comercial_document_pkey,comercial_document.pname as comercial_document_pname,
-product.id as product_id,product.pkey as product_pkey,product.pname as product_pname,
-stock_rack_product.id as stock_rack_product_id,stock_rack_product.pkey as stock_rack_product_pkey,stock_rack_product.pname as stock_rack_product_pname,
 contract.id as contract_id, contract.pkey as contract_pkey,contract.pname as contract_pname,
-user_autor.id as user_autor_id, user_autor.pkey as user_autor_pkey,user_autor.pname as user_autor_pname,
-comercial_document_type.id as comercial_document_type_id, comercial_document_type.pkey as comercial_document_type_pkey,comercial_document_type.pname as comercial_document_type_pname,
-product_type.id as product_type_id, product_type.pkey as product_type_pkey,product_type.pname as product_type_pname,
-stock_rack.id as stock_rack_id, stock_rack.pkey as stock_rack_pkey,stock_rack.pname as stock_rack_pname,
 program_base_time_period.id as program_base_time_period_id, program_base_time_period.pkey as program_base_time_period_pkey,
 third_person.id as third_person_id, third_person.pkey as third_person_pkey,third_person.pname as third_person_pname,
+user_autor.id as user_autor_id, user_autor.pkey as user_autor_pkey,user_autor.pname as user_autor_pname,
+comercial_document_type.id as comercial_document_type_id, comercial_document_type.pkey as comercial_document_type_pkey,comercial_document_type.pname as comercial_document_type_pname,
+product.id as product_id,product.pkey as product_pkey,product.pname as product_pname,
+product_type.id as product_type_id, product_type.pkey as product_type_pkey,product_type.pname as product_type_pname,
+stock_rack_product.id as stock_rack_product_id,stock_rack_product.pkey as stock_rack_product_pkey,stock_rack_product.pname as stock_rack_product_pname,
+stock_rack.id as stock_rack_id, stock_rack.pkey as stock_rack_pkey,stock_rack.pname as stock_rack_pname,
 work_space.id as work_space_id, work_space.pkey as work_space_pkey,work_space.pname as work_space_pname 
   FROM 
   invoice_line_out,
   comercial_document_in as comercial_document,
-  product as product,
-  stock_rack_product as stock_rack_product,
   contract_in as contract,
-  user_lon as user_autor,
-  comercial_document_type_in as comercial_document_type,
-  product_type as product_type,
-  stock_rack as stock_rack,
   program_base_time_period as program_base_time_period,
   third_person as third_person,
+  user_lon as user_autor,
+  comercial_document_type_in as comercial_document_type,
+  product as product,
+  product_type as product_type,
+  stock_rack_product as stock_rack_product,
+  stock_rack as stock_rack,
   work_space as work_space  
  WHERE 
  invoice_line_out.comercial_document_id = comercial_document.id
- AND invoice_line_out.product_id = product.id
- AND invoice_line_out.stock_rack_product_id = stock_rack_product.id
  AND comercial_document.contract_id = contract.id
- AND comercial_document.user_autor_id = user_autor.id
- AND comercial_document.comercial_document_type_id = comercial_document_type.id
- AND product.product_type_id = product_type.id
- AND stock_rack_product.stock_rack_id = stock_rack.id
  AND contract.program_base_time_period_id = program_base_time_period.id
  AND contract.third_person_id = third_person.id
- AND stock_rack.work_space_id = work_space.id; 
-
+ AND comercial_document.user_autor_id = user_autor.id
+ AND comercial_document.comercial_document_type_id = comercial_document_type.id
+ AND invoice_line_out.product_id = product.id
+ AND product.product_type_id = product_type.id
+ AND invoice_line_out.stock_rack_product_id = stock_rack_product.id
+ AND stock_rack_product.stock_rack_id = stock_rack.id
+ AND stock_rack.work_space_id = work_space.id
 
 
 -- VIEW FOR   Appointment
@@ -2411,39 +2371,38 @@ appointment.start_hour as appointment_start_hour,
 appointment.start_minute as appointment_start_minute,
 appointment.week_day as appointment_week_day,
 contract.id as contract_id,contract.pkey as contract_pkey,contract.pname as contract_pname,
-work_space.id as work_space_id,work_space.pkey as work_space_pkey,work_space.pname as work_space_pname,
-departament_job_instance.id as departament_job_instance_id,departament_job_instance.pkey as departament_job_instance_pkey,departament_job_instance.pname as departament_job_instance_pname,
 departament_base_time_period.id as departament_base_time_period_id, departament_base_time_period.pkey as departament_base_time_period_pkey,
-third_person.id as third_person_id, third_person.pkey as third_person_pkey,third_person.pname as third_person_pname,
-work_space_group.id as work_space_group_id, work_space_group.pkey as work_space_group_pkey,work_space_group.pname as work_space_group_pname,
-departament_job.id as departament_job_id, departament_job.pkey as departament_job_pkey,departament_job.pname as departament_job_pname,
 base_time_period.id as base_time_period_id, base_time_period.pkey as base_time_period_pkey,
 departament.id as departament_id, departament.pkey as departament_pkey,departament.pname as departament_pname,
-base.id as base_id, base.pkey as base_pkey,base.pname as base_pname 
+third_person.id as third_person_id, third_person.pkey as third_person_pkey,third_person.pname as third_person_pname,
+work_space.id as work_space_id,work_space.pkey as work_space_pkey,work_space.pname as work_space_pname,
+work_space_group.id as work_space_group_id, work_space_group.pkey as work_space_group_pkey,work_space_group.pname as work_space_group_pname,
+base.id as base_id, base.pkey as base_pkey,base.pname as base_pname,
+departament_job_instance.id as departament_job_instance_id,departament_job_instance.pkey as departament_job_instance_pkey,departament_job_instance.pname as departament_job_instance_pname,
+departament_job.id as departament_job_id, departament_job.pkey as departament_job_pkey,departament_job.pname as departament_job_pname 
   FROM 
   appointment,
   contract_out as contract,
-  work_space as work_space,
-  departament_job_instance as departament_job_instance,
   departament_base_time_period as departament_base_time_period,
-  third_person as third_person,
-  work_space_group as work_space_group,
-  departament_job as departament_job,
   base_time_period as base_time_period,
   departament as departament,
-  base as base  
+  third_person as third_person,
+  work_space as work_space,
+  work_space_group as work_space_group,
+  base as base,
+  departament_job_instance as departament_job_instance,
+  departament_job as departament_job  
  WHERE 
  appointment.contract_id = contract.id
- AND appointment.work_space_id = work_space.id
- AND appointment.departament_job_instance_id = departament_job_instance.id
  AND contract.departament_base_time_period_id = departament_base_time_period.id
- AND contract.third_person_id = third_person.id
- AND work_space.work_space_group_id = work_space_group.id
- AND departament_job_instance.departament_job_id = departament_job.id
  AND departament_base_time_period.base_time_period_id = base_time_period.id
  AND departament_base_time_period.departament_id = departament.id
- AND work_space_group.base_id = base.id; 
-
+ AND contract.third_person_id = third_person.id
+ AND appointment.work_space_id = work_space.id
+ AND work_space.work_space_group_id = work_space_group.id
+ AND work_space_group.base_id = base.id
+ AND appointment.departament_job_instance_id = departament_job_instance.id
+ AND departament_job_instance.departament_job_id = departament_job.id
 
 
 -- VIEW FOR   Account
@@ -2456,8 +2415,7 @@ account.description as account_description,
 account.pname as account_pname,
 account.type as account_type 
   FROM 
-  account ; 
-
+  account 
 
 
 -- VIEW FOR   Airport
@@ -2468,8 +2426,7 @@ SELECT airport.id as airport_id,
 airport.pkey as airport_pkey,
 airport.pname as airport_pname 
   FROM 
-  airport ; 
-
+  airport 
 
 
 -- VIEW FOR   Fligth
@@ -2493,8 +2450,7 @@ la_compania.id as la_compania_id, la_compania.pkey as la_compania_pkey,la_compan
  fligth.from_airport_id = from_airport.id
  AND fligth.to_airport_id = to_airport.id
  AND fligth.plane_id = plane.id
- AND plane.la_compania_id = la_compania.id; 
-
+ AND plane.la_compania_id = la_compania.id
 
 
 -- VIEW FOR   FligthInstance
@@ -2523,8 +2479,7 @@ la_compania.id as la_compania_id, la_compania.pkey as la_compania_pkey,la_compan
  AND the_fligth.from_airport_id = from_airport.id
  AND the_fligth.to_airport_id = to_airport.id
  AND the_fligth.plane_id = plane.id
- AND plane.la_compania_id = la_compania.id; 
-
+ AND plane.la_compania_id = la_compania.id
 
 
 -- VIEW FOR   AirCompany
@@ -2535,8 +2490,7 @@ SELECT air_company.id as air_company_id,
 air_company.pkey as air_company_pkey,
 air_company.pname as air_company_pname 
   FROM 
-  air_company ; 
-
+  air_company 
 
 
 -- VIEW FOR   Plane
@@ -2553,8 +2507,7 @@ la_compania.id as la_compania_id,la_compania.pkey as la_compania_pkey,la_compani
   plane,
   air_company as la_compania  
  WHERE 
- plane.la_compania_id = la_compania.id; 
-
+ plane.la_compania_id = la_compania.id
 
 
 -- VIEW FOR   MeUsrInterface
@@ -2567,8 +2520,7 @@ me_usr_interface.dc as me_usr_interface_dc,
 me_usr_interface.label as me_usr_interface_label,
 me_usr_interface.level as me_usr_interface_level 
   FROM 
-  me_usr_interface ; 
-
+  me_usr_interface 
 
 
 -- VIEW FOR   FormLon
@@ -2579,8 +2531,7 @@ SELECT form_lon.id as form_lon_id,
 form_lon.pkey as form_lon_pkey,
 form_lon.pname as form_lon_pname 
   FROM 
-  form_lon ; 
-
+  form_lon 
 
 
 -- VIEW FOR   FormLonField
@@ -2595,8 +2546,7 @@ form_lon.id as form_lon_id,form_lon.pkey as form_lon_pkey,form_lon.pname as form
   form_lon_field,
   form_lon as form_lon  
  WHERE 
- form_lon_field.form_lon_id = form_lon.id; 
-
+ form_lon_field.form_lon_id = form_lon.id
 
 
 

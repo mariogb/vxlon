@@ -17,16 +17,18 @@ import org.lonpe.services.AbstractServiceLon;
 import org.lonpe.services.ConditionInfo;
 import org.lonpe.lonvx.sqlbuilders.SqlLonConditionsBuilder;
 import org.apache.poi.xssf.usermodel.XSSFRow;
+import static org.lonpe.lonvx.ctes.CteLon.*;
 
 
 
 import org.lonpe.lonvx.sqlbuilders.ZtatUnitInfoLon;
+import org.lonpe.lonvx.sqlbuilders.ZtatUnitInfoLon2;
+import org.lonpe.lonvx.sqlbuilders.ZtatUnitInfoLon3;
 
 /**
  *   DepartamentUserLonService 
  * 
  */
-   
   
 public class DepartamentUserLonService extends AbstractServiceLon<DepartamentUserLon>{
 
@@ -41,14 +43,16 @@ public class DepartamentUserLonService extends AbstractServiceLon<DepartamentUse
     private static final String SQLDELETE = "DELETE FROM departament_user_lon WHERE id = $1 returning id";
     private static final String TABLENAME ="departament_user_lon";
     
-//1
-    private static final ZtatUnitInfoLon zDepartament;
 
-//1
-    private static final ZtatUnitInfoLon zUserLon;
+    public DepartamentUserLonService() {
+        init0();
+    }
+
     
+    private static final Map<String, ZtatUnitInfoLon> mz1 = new HashMap<>(6);                       
+
     @Override
-    public  String getTableName(){
+    public String getTableName(){
         return TABLENAME;
     }
 
@@ -62,8 +66,7 @@ public class DepartamentUserLonService extends AbstractServiceLon<DepartamentUse
         return SQLLKEYIN;
     }
 
-/**
-    
+/**    
     private static String sql00 = "SELECT departament_user_lon.id as departament_user_lon_id,
 departament_user_lon.pkey as departament_user_lon_pkey,
 departament.id as departament_id,departament.pkey as departament_pkey,departament.pname as departament_pname,
@@ -74,8 +77,7 @@ user_lon.id as user_lon_id,user_lon.pkey as user_lon_pkey,user_lon.pname as user
   user_lon as user_lon  
  WHERE 
  departament_user_lon.departament_id = departament.id
- AND departament_user_lon.user_lon_id = user_lon.id; 
-"
+ AND departament_user_lon.user_lon_id = user_lon.id"
 */
 
     @Override
@@ -95,28 +97,21 @@ user_lon.id as user_lon_id,user_lon.pkey as user_lon_pkey,user_lon.pname as user
     /**
      * sql select property alias field names
      */
-     
-    private static final LinkedHashSet<String> names;
+    private final LinkedHashSet<String> names =  new LinkedHashSet<>();;
     
     /**
      * Map field insert/update to property 
      */
-    private static final HashMap<String,String> insertMapFields; 
+    private final HashMap<String,String> insertMapFields = new HashMap<>(); 
     
     /**
     * Map property to field order 
     */
-    private static final HashMap<String, String> sortMapFields;
+    private final HashMap<String, String> sortMapFields = new  HashMap<>();
 
-    private static final JsonObject dcModel;
+    private final JsonObject dcModel  = new JsonObject();
     
-    static{
-        names = new LinkedHashSet<>();
-        insertMapFields = new HashMap<>();
-        sortMapFields= new  HashMap<>();
-
-        dcModel = new JsonObject();
-
+    private void init0(){
         
     dcModel.put("dc", "departamentUserLon");
 
@@ -128,19 +123,16 @@ user_lon.id as user_lon_id,user_lon.pkey as user_lon_pkey,user_lon.pname as user
     final JsonArray ps = new JsonArray();   
  
 //pkey
-    names.add("pkey");
-    insertMapFields.put("departament_user_lon.pkey","pkey");  
-
-//Create property pkey       
-    final JsonObject pkey = ps00a("pkey", "String",true);
+    doFieldSort("pkey","pkey","departament_user_lon");               
    
 //Used to map error on index to source property because IS Unique
     insertMapFields.put("departament_user_lon.departament_user_lon_uidx_pkey","pkey");  
 
+//Create property pkey       
+    final JsonObject pkey = psString("pkey",true);
+
 // IS Unique     
     pkey.put("uq",true);                    
-
-    sortMapFields.put("pkey", "departament_user_lon_pkey");                   
  
     ps.add(pkey);
 
@@ -149,50 +141,41 @@ user_lon.id as user_lon_id,user_lon.pkey as user_lon_pkey,user_lon.pname as user
 
     final JsonArray mto = new JsonArray();      
 
-//(1)  departament --------------------
-    names.add("departament_id");      
-    insertMapFields.put("departament_user_lon.departament_id","departament_id");    
-       
-    names.add("departament_pkey");        
-    sortMapFields.put( "departament_pkey", "departament_pkey");        
+//(1)  departament
+    doFieldMT0("departament_user_lon","departament", "departament");  
 
     final JsonObject departament =  doMto("departament","departament");        
    
     names.add("departament_pname");
-    sortMapFields.put( "departament_pname", "departament_pname");         
-
+    sortMapFields.put( "departament_pname", "departament_pname");                
     departament.put("pc","pname");          
 
     mto.add(departament);
         
 
-//(1)  userLon --------------------
-    names.add("userLon_id");      
-    insertMapFields.put("departament_user_lon.user_lon_id","userLon_id");    
-       
-    names.add("userLon_pkey");        
-    sortMapFields.put( "userLon_pkey", "user_lon_pkey");        
+    //1  departament  -- departament_id
+    final ZtatUnitInfoLon zDepartament = new ZtatUnitInfoLon("departament_id", "departament",  "departament","pname","departament");
+    mz1.put("zDepartament", zDepartament);    
+
+//(1)  userLon
+    doFieldMT0("departament_user_lon","userLon", "user_lon");  
 
     final JsonObject userLon =  doMto("userLon","userLon");        
    
     names.add("userLon_pname");
-    sortMapFields.put( "userLon_pname", "user_lon_pname");         
-
+    sortMapFields.put( "userLon_pname", "user_lon_pname");                
     userLon.put("pc","pname");          
 
     mto.add(userLon);
         
 
+    //1  user_lon  -- user_lon_id
+    final ZtatUnitInfoLon zUserLon = new ZtatUnitInfoLon("user_lon_id", "userLon",  "user_lon","pname","user_lon");
+    mz1.put("zUserLon", zUserLon);    
+
     dcModel.put("mto",mto);     
         
-
         
-//1  departament  -- departament_id
-    zDepartament = new ZtatUnitInfoLon("departament_id", "departament",  "departament","pname","departament");
-
-//1  user_lon  -- user_lon_id
-    zUserLon = new ZtatUnitInfoLon("user_lon_id", "userLon",  "user_lon","pname","user_lon");
-
     }        
     @Override
     public LinkedHashSet<String> getNames() {
@@ -217,83 +200,75 @@ user_lon.id as user_lon_id,user_lon.pkey as user_lon_pkey,user_lon.pname as user
     @Override
     public JsonArray toJsonArray(final Row r){
         final JsonArray jsa = new JsonArray();
-        jsa.add(r.getLong("departament_user_lon_id") );
+        jsa.add(r.getLong("departament_user_lon_id") );       
         jsa.add(r.getString("departament_user_lon_pkey") );
-        jsa.add(r.getLong("departament_id"));
-        jsa.add(r.getString("departament_pkey"));
-        jsa.add(r.getString("departament_pname"));
-        jsa.add(r.getLong("user_lon_id"));
-        jsa.add(r.getString("user_lon_pkey"));
-        jsa.add(r.getString("user_lon_pname"));
+    jsa.add(r.getLong("departament_id"));
+    jsa.add(r.getString("departament_pkey"));   
+    
+        
+    jsa.add(r.getString("departament_pname"));
+    jsa.add(r.getLong("user_lon_id"));
+    jsa.add(r.getString("user_lon_pkey"));   
+    
+        
+    jsa.add(r.getString("user_lon_pname"));
         return jsa;
     }
 
     @Override
-    public void fillXRow(final Row r, final XSSFRow row, int nc,boolean withIds) {
-        fillXRow0(r, row, nc, withIds);
+    public int fillXRow(final Row r, final XSSFRow row, int nc,boolean withIds) {
+        return fillXRow0(r, row, nc, withIds);
     }
 
     @Override
     public HashMap<String,String> lXRowH(final boolean withIds, final int level) {        
         
-    final  LinkedHashMap<String,String> m_ = new LinkedHashMap<>();
-    if(withIds){
-                m_.put("departamentUserLon_id","Long");
-            }
-            
-    //pkey       
-            m_.put("departamentUserLon_pkey","String"); 
-            
-if(level<1){
-                return m_;    
-            }
-            
- // departament
-if(withIds){
-            m_.put("departament_id","Long");   
-                    
-            }
-
-        m_.put("departament_pkey","String");   
-        
-
-            m_.put("departament_pname","String");   
-            
- // userLon
-if(withIds){
-            m_.put("userLon_id","Long");   
-                    
-            }
-
-        m_.put("userLon_pkey","String");   
-        
-
-            m_.put("userLon_pname","String");   
-            
+    final  LinkedHashMap<String,String> m = new LinkedHashMap<>();
     
-    return m_;
+    if(withIds){
+        m.put("departamentUserLon_id",LONG);
+    }        
+//pkey    
+    m.put("departamentUserLon_pkey",STRING);          
+    if(level<1){
+        return m;    
+    }       
+// departament   departament
+    if(withIds){
+        m.put("departament_id",LONG);                       
+    }
+    m.put("departament_pkey",STRING);     
+    m.put("departament_pname",STRING);   
+// userLon   userLon
+    if(withIds){
+        m.put("userLon_id",LONG);                       
+    }
+    m.put("userLon_pkey",STRING);     
+    m.put("userLon_pname",STRING);  
+    
+    return m;
     
     }
     
-    private void fillXRow0(final Row r, final XSSFRow row,int nc, boolean withIds){
-        if(withIds){
-        lToCell(r, row,"departament_user_lon_id", nc++); 
-        }
+    private int fillXRow0(final Row r, final XSSFRow row,int nc, final boolean withIds){
         
-    //pkey       
+    if(withIds){
+        lToCell(r, row,"departament_user_lon_id", nc++); 
+    }            //pkey       
             sToCell(r, row,"departament_user_lon_pkey", nc++); 
- // departament
-if(withIds){
-                    lToCell(r, row,"departament_id", nc++);
-                 }
-sToCell(r, row,"departament_pkey", nc++);
-sToCell(r, row,"departament_pname", nc++);
- // userLon
-if(withIds){
-                    lToCell(r, row,"user_lon_id", nc++);
-                 }
-sToCell(r, row,"user_lon_pkey", nc++);
-sToCell(r, row,"user_lon_pname", nc++);
+//departament   departament        
+    if(withIds){
+        lToCell(r, row,"departament_id", nc++);
+    }
+    sToCell(r, row,"departament_pkey", nc++);
+    sToCell(r, row,"departament_pname", nc++);
+//userLon   user_lon        
+    if(withIds){
+        lToCell(r, row,"user_lon_id", nc++);
+    }
+    sToCell(r, row,"user_lon_pkey", nc++);
+    sToCell(r, row,"user_lon_pname", nc++);
+        return nc;
     }
 
     @Override
@@ -313,15 +288,14 @@ sToCell(r, row,"user_lon_pname", nc++);
 
     @Override
     public void fillTupleInsert(final DepartamentUserLon dc0, final Tuple t){
-                t.addString(dc0.getPkey());
-   
-            if(dc0.getDepartament()!=null){
-               t.addLong(dc0.getDepartament().getId());
-            }
-   
-            if(dc0.getUserLon()!=null){
-               t.addLong(dc0.getUserLon().getId());
-            }
+                
+    t.addString(dc0.getPkey());   
+    if(dc0.getDepartament()!=null){
+       t.addLong(dc0.getDepartament().getId());
+    }   
+    if(dc0.getUserLon()!=null){
+       t.addLong(dc0.getUserLon().getId());
+    }
     }
 
     @Override
@@ -329,13 +303,11 @@ sToCell(r, row,"user_lon_pname", nc++);
            
 //      if(dc0.getDepartament()!=null){
 //            t.addLong(dc0.getDepartament().getId());
-//      }
-   
+//      }   
 //      if(dc0.getUserLon()!=null){
 //            t.addLong(dc0.getUserLon().getId());
 //      }
-
-        t.addLong(dc0.getId());
+    t.addLong(dc0.getId());
             
     }    
 
@@ -364,10 +336,8 @@ sToCell(r, row,"user_lon_pname", nc++);
     @Override
     public void fillTupleInsert(final JsonObject js,final Tuple t){       
         
-    fTString("pkey", js, t);
-     
-    fTLong("departament_id",js,t);
-     
+    fTString("pkey", js, t);     
+    fTLong("departament_id",js,t);     
     fTLong("userLon_id",js,t);       
     }
 
@@ -392,20 +362,19 @@ fTLong("id",js,t);
     @Override
     public DepartamentUserLon doFrom(final Row r){
         final DepartamentUserLon departamentUserLon = new DepartamentUserLon();
-         departamentUserLon.setId(r.getLong("departament_user_lon_id"));
-         
-                departamentUserLon.setPkey(  r.getString("departament_user_lon_pkey"));
-
+         departamentUserLon.setId(r.getLong("departament_user_lon_id"));         
+                departamentUserLon.setPkey(  r.getString("departament_user_lon_pkey"));              
         final Departament departament = new Departament();
         departament.setId(r.getLong("departament_id"));
         departament.setPkey(r.getString("departament_pkey"));
+        
         departament.setPname(r.getString("departament_pname"));
         departamentUserLon.setDepartament(departament);
         
-
         final UserLon userLon = new UserLon();
         userLon.setId(r.getLong("user_lon_id"));
         userLon.setPkey(r.getString("user_lon_pkey"));
+        
         userLon.setPname(r.getString("user_lon_pname"));
         departamentUserLon.setUserLon(userLon);
           
@@ -417,9 +386,10 @@ fTLong("id",js,t);
         DepartamentUserLon departamentUserLon = new DepartamentUserLon();
         departamentUserLon.setId(js.getLong("id"));
         
-                departamentUserLon.setPkey(js.getString("pkey"));
-        departamentUserLon.setId(js.getLong("departament_id"));
-        departamentUserLon.setId(js.getLong("userLon_id"));
+                
+                departamentUserLon.setPkey(js.getString("pkey"));        
+            departamentUserLon.setId(js.getLong("departament_id"));        
+            departamentUserLon.setId(js.getLong("userLon_id"));
         return departamentUserLon;
     }
 
@@ -459,13 +429,15 @@ fTLong("id",js,t);
         slcb.doIlPSimple2( "departament_pkey", "departament_pkey");
         slcb.doEQPSimple2( "departament_pkey", "departament_pkey");
         slcb.doInLongCondition("departament_id", "departament_id");  
-//Departament 3        
+//Departament 3        --
         slcb.doIlPSimple2( "departament_pname", "departament_pname");    
+        
         slcb.doIlPSimple2( "userLon_pkey", "user_lon_pkey");
         slcb.doEQPSimple2( "userLon_pkey", "user_lon_pkey");
         slcb.doInLongCondition("userLon_id", "user_lon_id");  
-//UserLon 4        
+//UserLon 4        --
         slcb.doIlPSimple2( "userLon_pname", "user_lon_pname");    
+        
 
         slcb.doSQLORDEN(sortMapFields);
 
@@ -483,12 +455,10 @@ fTLong("id",js,t);
         
 //level 1
              
-    sz0.applyG1(zDepartament);               
-    sz0.applyG1(zUserLon);      
-    //level 2
-    
-    //level 3
-    
+    sz0.applyG1(mz1.get("zDepartament"))   ;               
+    sz0.applyG1(mz1.get("zUserLon"))   ;      
+//level 2    
+//level 3    
         return sz0;
     }
 }

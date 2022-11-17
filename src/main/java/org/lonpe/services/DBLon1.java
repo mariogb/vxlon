@@ -14,6 +14,8 @@ import org.lonpe.model.AbstractDcLon;
 import org.lonpe.services.impl.DcMapForServices;
 
 import io.reactivex.rxjava3.core.Single;
+import io.reactivex.rxjava3.functions.BiConsumer;
+import io.reactivex.rxjava3.functions.Consumer;
 import io.reactivex.rxjava3.functions.Function;
 import io.vertx.core.json.JsonObject;
 import io.vertx.pgclient.PgConnectOptions;
@@ -97,16 +99,16 @@ public class DBLon1 {
      *
      * @param sql
      * @param t
-     * @return 
+     * @return
      */
-    public Single<RowSet<Row>> doPreparedQuery(final String sql, final Tuple t){
-        return client.preparedQuery(sql).rxExecute(t);        
+    public Single<RowSet<Row>> doPreparedQuery(final String sql, final Tuple t) {
+        return client.preparedQuery(sql).rxExecute(t);
     }
-    
-    public Single<RowSet<Row>> doPreparedQuery(final String sql){
-        return client.preparedQuery(sql).rxExecute();        
+
+    public Single<RowSet<Row>> doPreparedQuery(final String sql) {
+        return client.preparedQuery(sql).rxExecute();
     }
-    
+
     /**
      *
      * @param dc
@@ -242,10 +244,12 @@ public class DBLon1 {
 
     protected void doDelete(String sql_delete, Long id) {
         Tuple tuple = Tuple.of(id);
-       // client.preparedQuery(sql_delete).execute(tuple).subscribe(new Consumer<RowSet<Row>>, onError);
-        
-
-      
+        client.preparedQuery(sql_delete).execute(tuple).subscribe((RowSet<Row> t) -> {
+            
+            
+        }, (Throwable t) -> {
+            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        });
 
     }
 

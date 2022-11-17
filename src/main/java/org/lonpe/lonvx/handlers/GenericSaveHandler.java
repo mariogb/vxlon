@@ -111,7 +111,7 @@ public class GenericSaveHandler extends AbstractGenericSave {
     }
 
     private void doFillLon(final String dc, final Map<String, Map<String, Object>> mParents, final JsonObject jso) {
-        
+
         if ("comercialDocumentOut".equals(dc)) {
             AtomicLong al = atomicos.get("comercialDocumentOut_folio");
             if (al != null) {
@@ -167,7 +167,6 @@ public class GenericSaveHandler extends AbstractGenericSave {
 //                    }
 //
 //                }
-
                 response.putHeader("content-type", "application/json")
                         .end(jsR.toBuffer());
             } else {

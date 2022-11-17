@@ -17,6 +17,9 @@ import org.lonpe.services.AbstractServiceLon;
 import org.lonpe.services.ConditionInfo;
 import org.lonpe.lonvx.sqlbuilders.SqlLonConditionsBuilder;
 import org.apache.poi.xssf.usermodel.XSSFRow;
+import static org.lonpe.lonvx.ctes.CteLon.*;
+
+
 
 
 
@@ -26,7 +29,6 @@ import org.apache.poi.xssf.usermodel.XSSFRow;
  *   ThirdPersonService 
  * 
  */
-   
   
 public class ThirdPersonService extends AbstractServiceLon<ThirdPerson>{
 
@@ -41,9 +43,15 @@ public class ThirdPersonService extends AbstractServiceLon<ThirdPerson>{
     private static final String SQLDELETE = "DELETE FROM third_person WHERE id = $1 returning id";
     private static final String TABLENAME ="third_person";
     
+
+    public ThirdPersonService() {
+        init0();
+    }
+
     
+
     @Override
-    public  String getTableName(){
+    public String getTableName(){
         return TABLENAME;
     }
 
@@ -57,16 +65,14 @@ public class ThirdPersonService extends AbstractServiceLon<ThirdPerson>{
         return SQLLKEYIN;
     }
 
-/**
-    
+/**    
     private static String sql00 = "SELECT third_person.id as third_person_id,
 third_person.pkey as third_person_pkey,
 third_person.pname as third_person_pname,
 third_person.rfc as third_person_rfc,
 third_person.tipo as third_person_tipo 
   FROM 
-  third_person ; 
-"
+  third_person "
 */
 
     @Override
@@ -86,28 +92,21 @@ third_person.tipo as third_person_tipo
     /**
      * sql select property alias field names
      */
-     
-    private static final LinkedHashSet<String> names;
+    private final LinkedHashSet<String> names =  new LinkedHashSet<>();;
     
     /**
      * Map field insert/update to property 
      */
-    private static final HashMap<String,String> insertMapFields; 
+    private final HashMap<String,String> insertMapFields = new HashMap<>(); 
     
     /**
     * Map property to field order 
     */
-    private static final HashMap<String, String> sortMapFields;
+    private final HashMap<String, String> sortMapFields = new  HashMap<>();
 
-    private static final JsonObject dcModel;
+    private final JsonObject dcModel  = new JsonObject();
     
-    static{
-        names = new LinkedHashSet<>();
-        insertMapFields = new HashMap<>();
-        sortMapFields= new  HashMap<>();
-
-        dcModel = new JsonObject();
-
+    private void init0(){
         
     dcModel.put("dc", "thirdPerson");
 
@@ -119,30 +118,24 @@ third_person.tipo as third_person_tipo
     final JsonArray ps = new JsonArray();   
  
 //pkey
-    names.add("pkey");
-    insertMapFields.put("third_person.pkey","pkey");  
-
-//Create property pkey       
-    final JsonObject pkey = ps00a("pkey", "String",true);
+    doFieldSort("pkey","pkey","third_person");               
    
 //Used to map error on index to source property because IS Unique
     insertMapFields.put("third_person.third_person_uidx_pkey","pkey");  
 
+//Create property pkey       
+    final JsonObject pkey = psString("pkey",true);
+
 // IS Unique     
     pkey.put("uq",true);                    
-
-    sortMapFields.put("pkey", "third_person_pkey");                   
  
     ps.add(pkey);
  
 //pname
-    names.add("pname");
-    insertMapFields.put("third_person.pname","pname");  
+    doFieldSort("pname","pname","third_person");               
 
 //Create property pname       
-    final JsonObject pname = ps00a("pname", "String",true);
-
-    sortMapFields.put("pname", "third_person_pname");                   
+    final JsonObject pname = psString("pname",true);
   
 //PC
     dcModel.put("pc","pname");  
@@ -150,19 +143,16 @@ third_person.tipo as third_person_tipo
     ps.add(pname);
  
 //rfc
-    names.add("rfc");
-    insertMapFields.put("third_person.rfc","rfc");  
-
-//Create property rfc       
-    final JsonObject rfc = ps00a("rfc", "String",true);
+    doFieldSort("rfc","rfc","third_person");               
    
 //Used to map error on index to source property because IS Unique
     insertMapFields.put("third_person.third_person_uidx_rfc","rfc");  
 
+//Create property rfc       
+    final JsonObject rfc = psString("rfc",true);
+
 // IS Unique     
     rfc.put("uq",true);                    
-
-    sortMapFields.put("rfc", "third_person_rfc");                   
 
 // hasIndex 
     rfc.put("withIndex",true);  
@@ -170,13 +160,10 @@ third_person.tipo as third_person_tipo
     ps.add(rfc);
  
 //tipo
-    names.add("tipo");
-    insertMapFields.put("third_person.tipo","tipo");  
+    doFieldSort("tipo","tipo","third_person");               
 
 //Create property tipo       
-    final JsonObject tipo = ps00a("tipo", "String",true);
-
-    sortMapFields.put("tipo", "third_person_tipo");                   
+    final JsonObject tipo = psString("tipo",true);
 
     final JsonArray tipoInList = new JsonArray();
                 tipoInList.add("FISICA"); 
@@ -236,9 +223,7 @@ tipoInList.add("MORAL");
 /** OTM 3  ON MODEL**/
         dcModel.put("otm3",otm3);
         
-
         
-
     }        
     @Override
     public LinkedHashSet<String> getNames() {
@@ -263,57 +248,50 @@ tipoInList.add("MORAL");
     @Override
     public JsonArray toJsonArray(final Row r){
         final JsonArray jsa = new JsonArray();
-        jsa.add(r.getLong("third_person_id") );
-        jsa.add(r.getString("third_person_pkey") );
-        jsa.add(r.getString("third_person_pname") );
-        jsa.add(r.getString("third_person_rfc") );
+        jsa.add(r.getLong("third_person_id") );       
+        jsa.add(r.getString("third_person_pkey") );       
+        jsa.add(r.getString("third_person_pname") );       
+        jsa.add(r.getString("third_person_rfc") );       
         jsa.add(r.getString("third_person_tipo") );
         return jsa;
     }
 
     @Override
-    public void fillXRow(final Row r, final XSSFRow row, int nc,boolean withIds) {
-        fillXRow0(r, row, nc, withIds);
+    public int fillXRow(final Row r, final XSSFRow row, int nc,boolean withIds) {
+        return fillXRow0(r, row, nc, withIds);
     }
 
     @Override
     public HashMap<String,String> lXRowH(final boolean withIds, final int level) {        
         
-    final  LinkedHashMap<String,String> m_ = new LinkedHashMap<>();
-    if(withIds){
-                m_.put("thirdPerson_id","Long");
-            }
-            
-    //pkey       
-            m_.put("thirdPerson_pkey","String"); 
-            
-    //pname       
-            m_.put("thirdPerson_pname","String"); 
-            
-    //rfc       
-            m_.put("thirdPerson_rfc","String"); 
-            
-    //tipo       
-            m_.put("thirdPerson_tipo","String"); 
-            
+    final  LinkedHashMap<String,String> m = new LinkedHashMap<>();
     
-    return m_;
+    if(withIds){
+        m.put("thirdPerson_id",LONG);
+    }        
+//pkey    
+    m.put("thirdPerson_pkey",STRING);              
+//pname    
+    m.put("thirdPerson_pname",STRING);              
+//rfc    
+    m.put("thirdPerson_rfc",STRING);              
+//tipo    
+    m.put("thirdPerson_tipo",STRING);          
+    
+    return m;
     
     }
     
-    private void fillXRow0(final Row r, final XSSFRow row,int nc, boolean withIds){
-        if(withIds){
-        lToCell(r, row,"third_person_id", nc++); 
-        }
+    private int fillXRow0(final Row r, final XSSFRow row,int nc, final boolean withIds){
         
-    //pkey       
-            sToCell(r, row,"third_person_pkey", nc++); 
-    //pname       
-            sToCell(r, row,"third_person_pname", nc++); 
-    //rfc       
-            sToCell(r, row,"third_person_rfc", nc++); 
-    //tipo       
+    if(withIds){
+        lToCell(r, row,"third_person_id", nc++); 
+    }            //pkey       
+            sToCell(r, row,"third_person_pkey", nc++);     //pname       
+            sToCell(r, row,"third_person_pname", nc++);     //rfc       
+            sToCell(r, row,"third_person_rfc", nc++);     //tipo       
             sToCell(r, row,"third_person_tipo", nc++); 
+        return nc;
     }
 
     @Override
@@ -333,19 +311,20 @@ tipoInList.add("MORAL");
 
     @Override
     public void fillTupleInsert(final ThirdPerson dc0, final Tuple t){
-                t.addString(dc0.getPkey());
-        t.addString(dc0.getPname());
-        t.addString(dc0.getRfc());
-        t.addString(dc0.getTipo());
+                
+    t.addString(dc0.getPkey());        
+    t.addString(dc0.getPname());        
+    t.addString(dc0.getRfc());        
+    t.addString(dc0.getTipo());
     }
 
     @Override
     public void fillTupleUpdate(final ThirdPerson dc0, final Tuple t){
-                t.addString(dc0.getPname());
-        t.addString(dc0.getRfc());
-        t.addString(dc0.getTipo());
-
-        t.addLong(dc0.getId());
+        
+    t.addString(dc0.getPname());
+    t.addString(dc0.getRfc());
+    t.addString(dc0.getTipo());
+    t.addLong(dc0.getId());
             
     }    
 
@@ -370,11 +349,8 @@ tipoInList.add("MORAL");
     public void fillTupleInsert(final JsonObject js,final Tuple t){       
         
     fTString("pkey", js, t);
-
     fTString("pname", js, t);
-
     fTString("rfc", js, t);
-
     fTString("tipo", js, t);       
     }
 
@@ -398,15 +374,11 @@ fTLong("id",js,t);
     @Override
     public ThirdPerson doFrom(final Row r){
         final ThirdPerson thirdPerson = new ThirdPerson();
-         thirdPerson.setId(r.getLong("third_person_id"));
-         
-                thirdPerson.setPkey(  r.getString("third_person_pkey"));
-         
-                thirdPerson.setPname(  r.getString("third_person_pname"));
-         
-                thirdPerson.setRfc(  r.getString("third_person_rfc"));
-         
-                thirdPerson.setTipo(  r.getString("third_person_tipo"));  
+         thirdPerson.setId(r.getLong("third_person_id"));         
+                thirdPerson.setPkey(  r.getString("third_person_pkey"));                       
+                thirdPerson.setPname(  r.getString("third_person_pname"));                       
+                thirdPerson.setRfc(  r.getString("third_person_rfc"));                       
+                thirdPerson.setTipo(  r.getString("third_person_tipo"));                
         return thirdPerson;
     }
     
@@ -415,10 +387,11 @@ fTLong("id",js,t);
         ThirdPerson thirdPerson = new ThirdPerson();
         thirdPerson.setId(js.getLong("id"));
         
-                thirdPerson.setPkey(js.getString("pkey"));
-        thirdPerson.setPname(js.getString("pname"));
-        thirdPerson.setRfc(js.getString("rfc"));
-        thirdPerson.setTipo(js.getString("tipo"));
+                
+                thirdPerson.setPkey(js.getString("pkey"));        
+                thirdPerson.setPname(js.getString("pname"));        
+                thirdPerson.setRfc(js.getString("rfc"));        
+                thirdPerson.setTipo(js.getString("tipo"));
         return thirdPerson;
     }
 

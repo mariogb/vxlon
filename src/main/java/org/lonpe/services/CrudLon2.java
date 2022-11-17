@@ -6,7 +6,6 @@
 package org.lonpe.services;
 
 //import io.vertx.pgclient.PgPool;
-
 import io.reactivex.rxjava3.core.Single;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
@@ -19,43 +18,22 @@ import io.vertx.rxjava3.sqlclient.RowSet;
 import io.vertx.rxjava3.sqlclient.Tuple;
 import io.vertx.sqlclient.PoolOptions;
 
-
-
-
-//import io.vertx.core.AsyncResult;
-//import io.vertx.core.Future;
-//import io.vertx.core.Handler;
-//import io.vertx.pgclient.PgPool;
-//import io.vertx.sqlclient.Row;
-//import io.vertx.sqlclient.RowSet;
-//import io.vertx.sqlclient.Tuple;
-//import java.util.Map;
-
-//import io.vertx.pgclient.
-
-
-
 /**
  *
  * @author l5
  */
 public class CrudLon2 {
+
     PgPool pgPool;
 
     public CrudLon2(PgConnectOptions pgConnOpts) {
-                PoolOptions poolOptions = new PoolOptions()
+        PoolOptions poolOptions = new PoolOptions()
                 .setMaxSize(25);
 
-        
-        this.pgPool =  PgPool.pool(pgConnOpts, poolOptions);
-        
+        this.pgPool = PgPool.pool(pgConnOpts, poolOptions);
+
     }
 
-    
-    
-    
-    
-    
 //    private Single<RowSet<Row>> preparedQuery0(String sql, Tuple tuple) throws Throwable{
 //
 //
@@ -81,11 +59,7 @@ public class CrudLon2 {
 ////        
 ////
 //    }
-    
-    
 //    public Single<Map> doList(String sql, Tuple t) {
 //       return  preparedQuery0(sql, t).map(new TransformerMap());
 //    }
-    
-    
 }

@@ -27,6 +27,7 @@ import io.vertx.sqlclient.Row;
 import io.vertx.sqlclient.Tuple;
 import java.util.Set;
 import org.lonpe.model.IDcLon;
+import static org.lonpe.lonvx.ctes.CteLon.*;
 
 /**
  *
@@ -102,10 +103,10 @@ public abstract class AbstractServiceLon<DC extends IDcLon> implements IServiceL
     public abstract String getSqlIdByPkey();
 
     @Override
-    public abstract void fillXRow(Row r, XSSFRow row, int nc, boolean withIds);
+    public abstract int fillXRow(Row r, XSSFRow row, int nc, boolean withIds);
 
     @Override
-    public abstract Map<String, String> lXRowH(final boolean withIds, final int level);
+    public abstract Map<String, String> lXRowH(boolean withIds, int level);
 
     @Override
     public abstract Map<String, String> getInsertMapFields();
@@ -165,11 +166,7 @@ public abstract class AbstractServiceLon<DC extends IDcLon> implements IServiceL
         cell.setCellValue(new Date(r.getLocalDateTime(sqlN).toEpochSecond(ZoneOffset.UTC)));
     }
 
-    protected JsonObject ps00(String n, String t) {
-        return ps00(n, t, true);
-    }
-
-    protected JsonObject ps00(String n, String t, boolean required) {
+    private static JsonObject ps00a(String n, String t, boolean required) {
         final JsonObject o = new JsonObject()
                 .put("t", t)
                 .put("n", n);
@@ -180,15 +177,32 @@ public abstract class AbstractServiceLon<DC extends IDcLon> implements IServiceL
 
     }
 
-    protected static JsonObject ps00a(String n, String t, boolean required) {
-        final JsonObject o = new JsonObject()
-                .put("t", t)
-                .put("n", n);
-        if (required) {
-            o.put("rq", required);
-        }
-        return o;
+    protected static JsonObject psString(String n, boolean required) {
+        return ps00a(n, STRING, required);
+    }
 
+    protected static JsonObject psLong(String n, boolean required) {
+        return ps00a(n, LONG, required);
+    }
+
+    protected static JsonObject psInteger(String n, boolean required) {
+        return ps00a(n, INTEGER, required);
+    }
+
+    protected static JsonObject psBoolean(String n, boolean required) {
+        return ps00a(n, BOOLEAN, required);
+    }
+
+    protected static JsonObject psLocalDate(String n, boolean required) {
+        return ps00a(n, LOCALDATE, required);
+    }
+
+    protected static JsonObject psLocalDateTime(String n, boolean required) {
+        return ps00a(n, LOCALDATETIME, required);
+    }
+
+    protected static JsonObject psBigDecimal(String n, boolean required) {
+        return ps00a(n, BIGDECIMAL, required);
     }
 
     protected static JsonObject doMto(String n, String t) {
@@ -214,51 +228,46 @@ public abstract class AbstractServiceLon<DC extends IDcLon> implements IServiceL
         applyOtm(otm, n, t, null);
     }
 
-//    protected static void applyOtm(final JsonArray otm, final String n, final String t, final String from) {
-//        applyOtm(otm, n, t, from, null);
-//    }
-
     protected static void applyOtm(final JsonArray otm, final String n, final String t, final String onRelation) {
         final JsonObject jso = new JsonObject().put("n", n).put("t", t);
 
         if (onRelation != null) {
-            jso.put("onRelation", onRelation);
+            jso.put(ONRELATION, onRelation);
         }
         otm.add(jso);
     }
 
-    
-    protected static JsonObject initOtm2(final String n, final String t, final String from){
+    protected static JsonObject initOtm2(final String n, final String t, final String from) {
         return new JsonObject().put("n", n).put("t", t).put("from", from);
 
-        
     }
+
     protected static void applyOtm2(final JsonArray otm, final String n, final String t, final String from) {
-        final JsonObject jso = initOtm2(n,t,from);
+        final JsonObject jso = initOtm2(n, t, from);
         otm.add(jso);
     }
 
     protected static void applyOtm2(final JsonArray otm, final String n, final String t, final String from, final String onRelation, final String onBiRelation) {
-        final JsonObject jso = initOtm2(n,t,from);
+        final JsonObject jso = initOtm2(n, t, from);
         if (onRelation != null) {
-            jso.put("onRelation", onRelation);
+            jso.put(ONRELATION, onRelation);
         }
         if (onBiRelation != null) {
-            jso.put("onBiRelation", onBiRelation);
+            jso.put(ONBIRELATION, onBiRelation);
         }
         otm.add(jso);
     }
 
     protected static void applyOtm3(final JsonArray otm, final String n, final String t, final String from, final String onRelation, final String onBiRelation, final String onTriRelation) {
-        final JsonObject jso = initOtm2(n,t,from);
+        final JsonObject jso = initOtm2(n, t, from);
         if (onRelation != null) {
-            jso.put("onRelation", onRelation);
+            jso.put(ONRELATION, onRelation);
         }
         if (onBiRelation != null) {
-            jso.put("onBiRelation", onBiRelation);
+            jso.put(ONBIRELATION, onBiRelation);
         }
         if (onTriRelation != null) {
-            jso.put("onTriRelation", onTriRelation);
+            jso.put(ONTRIRELATION, onTriRelation);
         }
         otm.add(jso);
     }
@@ -348,4 +357,44 @@ public abstract class AbstractServiceLon<DC extends IDcLon> implements IServiceL
         }
     }
 
+    protected void doFieldSort(final String pn, final String pnSqlField, final String tblName) {
+        doField(pn, pnSqlField, tblName);
+        getSortMapFields().put(pn, tblName + "_" + pnSqlField);
+    }
+
+    protected void doField(final String pn, final String pnSqlField, final String tblName) {
+        getNames().add(pn);
+        getInsertMapFields().put(tblName + "." + pnSqlField, pn);
+    }
+
+    private static final String IDENDIX = "_id";
+    private static final String PKEYENDIX = "_pkey";
+
+    protected void doFieldMT0(final String tbl0, final String dcpn, final String sqlNameMto) {
+        getNames().add(dcpn + IDENDIX);
+        getInsertMapFields().put(tbl0 + "." + sqlNameMto + IDENDIX, dcpn + IDENDIX);
+
+        getNames().add(dcpn + PKEYENDIX);
+        getSortMapFields().put(dcpn + PKEYENDIX, sqlNameMto + PKEYENDIX);
+
+    }
+
+    protected void doFieldMT02(final String tbl0, final String dcpn, final String sqlNameMto) {
+        getNames().add(dcpn + IDENDIX);
+        getNames().add(dcpn + PKEYENDIX);
+        getSortMapFields().put(dcpn + PKEYENDIX, sqlNameMto + PKEYENDIX);
+
+    }
+
+    /*
+            names.add("workSpace_id");
+        insertMapFields.put("appointment.work_space_id", "workSpace_id");
+
+        names.add("workSpace_pkey");
+        sortMapFields.put("workSpace_pkey", "work_space_pkey");
+
+        names.add("workSpace_pname");
+        sortMapFields.put("workSpace_pname", "work_space_pname");
+    
+     */
 }

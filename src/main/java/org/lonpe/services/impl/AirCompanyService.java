@@ -17,6 +17,9 @@ import org.lonpe.services.AbstractServiceLon;
 import org.lonpe.services.ConditionInfo;
 import org.lonpe.lonvx.sqlbuilders.SqlLonConditionsBuilder;
 import org.apache.poi.xssf.usermodel.XSSFRow;
+import static org.lonpe.lonvx.ctes.CteLon.*;
+
+
 
 
 
@@ -26,7 +29,6 @@ import org.apache.poi.xssf.usermodel.XSSFRow;
  *   AirCompanyService 
  * 
  */
-   
   
 public class AirCompanyService extends AbstractServiceLon<AirCompany>{
 
@@ -41,9 +43,15 @@ public class AirCompanyService extends AbstractServiceLon<AirCompany>{
     private static final String SQLDELETE = "DELETE FROM air_company WHERE id = $1 returning id";
     private static final String TABLENAME ="air_company";
     
+
+    public AirCompanyService() {
+        init0();
+    }
+
     
+
     @Override
-    public  String getTableName(){
+    public String getTableName(){
         return TABLENAME;
     }
 
@@ -57,14 +65,12 @@ public class AirCompanyService extends AbstractServiceLon<AirCompany>{
         return SQLLKEYIN;
     }
 
-/**
-    
+/**    
     private static String sql00 = "SELECT air_company.id as air_company_id,
 air_company.pkey as air_company_pkey,
 air_company.pname as air_company_pname 
   FROM 
-  air_company ; 
-"
+  air_company "
 */
 
     @Override
@@ -84,28 +90,21 @@ air_company.pname as air_company_pname
     /**
      * sql select property alias field names
      */
-     
-    private static final LinkedHashSet<String> names;
+    private final LinkedHashSet<String> names =  new LinkedHashSet<>();;
     
     /**
      * Map field insert/update to property 
      */
-    private static final HashMap<String,String> insertMapFields; 
+    private final HashMap<String,String> insertMapFields = new HashMap<>(); 
     
     /**
     * Map property to field order 
     */
-    private static final HashMap<String, String> sortMapFields;
+    private final HashMap<String, String> sortMapFields = new  HashMap<>();
 
-    private static final JsonObject dcModel;
+    private final JsonObject dcModel  = new JsonObject();
     
-    static{
-        names = new LinkedHashSet<>();
-        insertMapFields = new HashMap<>();
-        sortMapFields= new  HashMap<>();
-
-        dcModel = new JsonObject();
-
+    private void init0(){
         
     dcModel.put("dc", "airCompany");
 
@@ -117,30 +116,24 @@ air_company.pname as air_company_pname
     final JsonArray ps = new JsonArray();   
  
 //pkey
-    names.add("pkey");
-    insertMapFields.put("air_company.pkey","pkey");  
-
-//Create property pkey       
-    final JsonObject pkey = ps00a("pkey", "String",true);
+    doFieldSort("pkey","pkey","air_company");               
    
 //Used to map error on index to source property because IS Unique
     insertMapFields.put("air_company.air_company_uidx_pkey","pkey");  
 
+//Create property pkey       
+    final JsonObject pkey = psString("pkey",true);
+
 // IS Unique     
     pkey.put("uq",true);                    
-
-    sortMapFields.put("pkey", "air_company_pkey");                   
  
     ps.add(pkey);
  
 //pname
-    names.add("pname");
-    insertMapFields.put("air_company.pname","pname");  
+    doFieldSort("pname","pname","air_company");               
 
 //Create property pname       
-    final JsonObject pname = ps00a("pname", "String",true);
-
-    sortMapFields.put("pname", "air_company_pname");                   
+    final JsonObject pname = psString("pname",true);
   
 //PC
     dcModel.put("pc","pname");  
@@ -178,9 +171,7 @@ air_company.pname as air_company_pname
 /** OTM 3  ON MODEL**/
         dcModel.put("otm3",otm3);
         
-
         
-
     }        
     @Override
     public LinkedHashSet<String> getNames() {
@@ -205,45 +196,42 @@ air_company.pname as air_company_pname
     @Override
     public JsonArray toJsonArray(final Row r){
         final JsonArray jsa = new JsonArray();
-        jsa.add(r.getLong("air_company_id") );
-        jsa.add(r.getString("air_company_pkey") );
+        jsa.add(r.getLong("air_company_id") );       
+        jsa.add(r.getString("air_company_pkey") );       
         jsa.add(r.getString("air_company_pname") );
         return jsa;
     }
 
     @Override
-    public void fillXRow(final Row r, final XSSFRow row, int nc,boolean withIds) {
-        fillXRow0(r, row, nc, withIds);
+    public int fillXRow(final Row r, final XSSFRow row, int nc,boolean withIds) {
+        return fillXRow0(r, row, nc, withIds);
     }
 
     @Override
     public HashMap<String,String> lXRowH(final boolean withIds, final int level) {        
         
-    final  LinkedHashMap<String,String> m_ = new LinkedHashMap<>();
-    if(withIds){
-                m_.put("airCompany_id","Long");
-            }
-            
-    //pkey       
-            m_.put("airCompany_pkey","String"); 
-            
-    //pname       
-            m_.put("airCompany_pname","String"); 
-            
+    final  LinkedHashMap<String,String> m = new LinkedHashMap<>();
     
-    return m_;
+    if(withIds){
+        m.put("airCompany_id",LONG);
+    }        
+//pkey    
+    m.put("airCompany_pkey",STRING);              
+//pname    
+    m.put("airCompany_pname",STRING);          
+    
+    return m;
     
     }
     
-    private void fillXRow0(final Row r, final XSSFRow row,int nc, boolean withIds){
-        if(withIds){
-        lToCell(r, row,"air_company_id", nc++); 
-        }
+    private int fillXRow0(final Row r, final XSSFRow row,int nc, final boolean withIds){
         
-    //pkey       
-            sToCell(r, row,"air_company_pkey", nc++); 
-    //pname       
+    if(withIds){
+        lToCell(r, row,"air_company_id", nc++); 
+    }            //pkey       
+            sToCell(r, row,"air_company_pkey", nc++);     //pname       
             sToCell(r, row,"air_company_pname", nc++); 
+        return nc;
     }
 
     @Override
@@ -263,15 +251,16 @@ air_company.pname as air_company_pname
 
     @Override
     public void fillTupleInsert(final AirCompany dc0, final Tuple t){
-                t.addString(dc0.getPkey());
-        t.addString(dc0.getPname());
+                
+    t.addString(dc0.getPkey());        
+    t.addString(dc0.getPname());
     }
 
     @Override
     public void fillTupleUpdate(final AirCompany dc0, final Tuple t){
-                t.addString(dc0.getPname());
-
-        t.addLong(dc0.getId());
+        
+    t.addString(dc0.getPname());
+    t.addLong(dc0.getId());
             
     }    
 
@@ -292,7 +281,6 @@ air_company.pname as air_company_pname
     public void fillTupleInsert(final JsonObject js,final Tuple t){       
         
     fTString("pkey", js, t);
-
     fTString("pname", js, t);       
     }
 
@@ -314,11 +302,9 @@ fTLong("id",js,t);
     @Override
     public AirCompany doFrom(final Row r){
         final AirCompany airCompany = new AirCompany();
-         airCompany.setId(r.getLong("air_company_id"));
-         
-                airCompany.setPkey(  r.getString("air_company_pkey"));
-         
-                airCompany.setPname(  r.getString("air_company_pname"));  
+         airCompany.setId(r.getLong("air_company_id"));         
+                airCompany.setPkey(  r.getString("air_company_pkey"));                       
+                airCompany.setPname(  r.getString("air_company_pname"));                
         return airCompany;
     }
     
@@ -327,8 +313,9 @@ fTLong("id",js,t);
         AirCompany airCompany = new AirCompany();
         airCompany.setId(js.getLong("id"));
         
-                airCompany.setPkey(js.getString("pkey"));
-        airCompany.setPname(js.getString("pname"));
+                
+                airCompany.setPkey(js.getString("pkey"));        
+                airCompany.setPname(js.getString("pname"));
         return airCompany;
     }
 

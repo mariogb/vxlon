@@ -47,12 +47,15 @@ public class ZtatHandler implements Handler<RoutingContext> {
         final HttpServerRequest request = rctx.request();
 
         final String dc = request.getParam("dc");
+
         final IServiceLon<IDcLon> serviceFor = dcMapForServices.getServiceFor(dc);
         if (serviceFor == null) {
-            rctx.response().setStatusCode(500).end();
+            System.out.println("AAAA");
+            rctx.response().setStatusCode(500).end(new JsonObject().put("ERROR", "NDC").toBuffer());
             return;
         }
 
+        System.out.println("11111");
         final MultiMap params = request.params();
         final SqlZtatBuilder szb = serviceFor.doZtat(params);
         final String sqlEx = szb.buildSQL();

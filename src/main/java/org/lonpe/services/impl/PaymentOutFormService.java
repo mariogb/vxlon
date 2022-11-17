@@ -17,16 +17,18 @@ import org.lonpe.services.AbstractServiceLon;
 import org.lonpe.services.ConditionInfo;
 import org.lonpe.lonvx.sqlbuilders.SqlLonConditionsBuilder;
 import org.apache.poi.xssf.usermodel.XSSFRow;
+import static org.lonpe.lonvx.ctes.CteLon.*;
 
 
 
 import org.lonpe.lonvx.sqlbuilders.ZtatUnitInfoLon;
+import org.lonpe.lonvx.sqlbuilders.ZtatUnitInfoLon2;
+import org.lonpe.lonvx.sqlbuilders.ZtatUnitInfoLon3;
 
 /**
  *   PaymentOutFormService 
  * 
  */
-   
   
 public class PaymentOutFormService extends AbstractServiceLon<PaymentOutForm>{
 
@@ -41,14 +43,16 @@ public class PaymentOutFormService extends AbstractServiceLon<PaymentOutForm>{
     private static final String SQLDELETE = "DELETE FROM payment_out_form WHERE id = $1 returning id";
     private static final String TABLENAME ="payment_out_form";
     
-//1
-    private static final ZtatUnitInfoLon zMonetaryAccount;
 
-//1
-    private static final ZtatUnitInfoLon zPaymentOutType;
+    public PaymentOutFormService() {
+        init0();
+    }
+
     
+    private static final Map<String, ZtatUnitInfoLon> mz1 = new HashMap<>(6);                       
+
     @Override
-    public  String getTableName(){
+    public String getTableName(){
         return TABLENAME;
     }
 
@@ -62,8 +66,7 @@ public class PaymentOutFormService extends AbstractServiceLon<PaymentOutForm>{
         return SQLLKEYIN;
     }
 
-/**
-    
+/**    
     private static String sql00 = "SELECT payment_out_form.id as payment_out_form_id,
 payment_out_form.pkey as payment_out_form_pkey,
 monetary_account.id as monetary_account_id,monetary_account.pkey as monetary_account_pkey,monetary_account.pname as monetary_account_pname,
@@ -74,8 +77,7 @@ payment_out_type.id as payment_out_type_id,payment_out_type.pkey as payment_out_
   payment_out_type as payment_out_type  
  WHERE 
  payment_out_form.monetary_account_id = monetary_account.id
- AND payment_out_form.payment_out_type_id = payment_out_type.id; 
-"
+ AND payment_out_form.payment_out_type_id = payment_out_type.id"
 */
 
     @Override
@@ -95,28 +97,21 @@ payment_out_type.id as payment_out_type_id,payment_out_type.pkey as payment_out_
     /**
      * sql select property alias field names
      */
-     
-    private static final LinkedHashSet<String> names;
+    private final LinkedHashSet<String> names =  new LinkedHashSet<>();;
     
     /**
      * Map field insert/update to property 
      */
-    private static final HashMap<String,String> insertMapFields; 
+    private final HashMap<String,String> insertMapFields = new HashMap<>(); 
     
     /**
     * Map property to field order 
     */
-    private static final HashMap<String, String> sortMapFields;
+    private final HashMap<String, String> sortMapFields = new  HashMap<>();
 
-    private static final JsonObject dcModel;
+    private final JsonObject dcModel  = new JsonObject();
     
-    static{
-        names = new LinkedHashSet<>();
-        insertMapFields = new HashMap<>();
-        sortMapFields= new  HashMap<>();
-
-        dcModel = new JsonObject();
-
+    private void init0(){
         
     dcModel.put("dc", "paymentOutForm");
 
@@ -128,19 +123,16 @@ payment_out_type.id as payment_out_type_id,payment_out_type.pkey as payment_out_
     final JsonArray ps = new JsonArray();   
  
 //pkey
-    names.add("pkey");
-    insertMapFields.put("payment_out_form.pkey","pkey");  
-
-//Create property pkey       
-    final JsonObject pkey = ps00a("pkey", "String",true);
+    doFieldSort("pkey","pkey","payment_out_form");               
    
 //Used to map error on index to source property because IS Unique
     insertMapFields.put("payment_out_form.payment_out_form_uidx_pkey","pkey");  
 
+//Create property pkey       
+    final JsonObject pkey = psString("pkey",true);
+
 // IS Unique     
     pkey.put("uq",true);                    
-
-    sortMapFields.put("pkey", "payment_out_form_pkey");                   
  
     ps.add(pkey);
 
@@ -149,50 +141,41 @@ payment_out_type.id as payment_out_type_id,payment_out_type.pkey as payment_out_
 
     final JsonArray mto = new JsonArray();      
 
-//(1)  monetaryAccount --------------------
-    names.add("monetaryAccount_id");      
-    insertMapFields.put("payment_out_form.monetary_account_id","monetaryAccount_id");    
-       
-    names.add("monetaryAccount_pkey");        
-    sortMapFields.put( "monetaryAccount_pkey", "monetary_account_pkey");        
+//(1)  monetaryAccount
+    doFieldMT0("payment_out_form","monetaryAccount", "monetary_account");  
 
     final JsonObject monetaryAccount =  doMto("monetaryAccount","monetaryAccount");        
    
     names.add("monetaryAccount_pname");
-    sortMapFields.put( "monetaryAccount_pname", "monetary_account_pname");         
-
+    sortMapFields.put( "monetaryAccount_pname", "monetary_account_pname");                
     monetaryAccount.put("pc","pname");          
 
     mto.add(monetaryAccount);
         
 
-//(1)  paymentOutType --------------------
-    names.add("paymentOutType_id");      
-    insertMapFields.put("payment_out_form.payment_out_type_id","paymentOutType_id");    
-       
-    names.add("paymentOutType_pkey");        
-    sortMapFields.put( "paymentOutType_pkey", "payment_out_type_pkey");        
+    //1  monetary_account  -- monetary_account_id
+    final ZtatUnitInfoLon zMonetaryAccount = new ZtatUnitInfoLon("monetary_account_id", "monetaryAccount",  "monetary_account","pname","monetary_account");
+    mz1.put("zMonetaryAccount", zMonetaryAccount);    
+
+//(1)  paymentOutType
+    doFieldMT0("payment_out_form","paymentOutType", "payment_out_type");  
 
     final JsonObject paymentOutType =  doMto("paymentOutType","paymentOutType");        
    
     names.add("paymentOutType_pname");
-    sortMapFields.put( "paymentOutType_pname", "payment_out_type_pname");         
-
+    sortMapFields.put( "paymentOutType_pname", "payment_out_type_pname");                
     paymentOutType.put("pc","pname");          
 
     mto.add(paymentOutType);
         
 
+    //1  payment_out_type  -- payment_out_type_id
+    final ZtatUnitInfoLon zPaymentOutType = new ZtatUnitInfoLon("payment_out_type_id", "paymentOutType",  "payment_out_type","pname","payment_out_type");
+    mz1.put("zPaymentOutType", zPaymentOutType);    
+
     dcModel.put("mto",mto);     
         
-
         
-//1  monetary_account  -- monetary_account_id
-    zMonetaryAccount = new ZtatUnitInfoLon("monetary_account_id", "monetaryAccount",  "monetary_account","pname","monetary_account");
-
-//1  payment_out_type  -- payment_out_type_id
-    zPaymentOutType = new ZtatUnitInfoLon("payment_out_type_id", "paymentOutType",  "payment_out_type","pname","payment_out_type");
-
     }        
     @Override
     public LinkedHashSet<String> getNames() {
@@ -217,83 +200,75 @@ payment_out_type.id as payment_out_type_id,payment_out_type.pkey as payment_out_
     @Override
     public JsonArray toJsonArray(final Row r){
         final JsonArray jsa = new JsonArray();
-        jsa.add(r.getLong("payment_out_form_id") );
+        jsa.add(r.getLong("payment_out_form_id") );       
         jsa.add(r.getString("payment_out_form_pkey") );
-        jsa.add(r.getLong("monetary_account_id"));
-        jsa.add(r.getString("monetary_account_pkey"));
-        jsa.add(r.getString("monetary_account_pname"));
-        jsa.add(r.getLong("payment_out_type_id"));
-        jsa.add(r.getString("payment_out_type_pkey"));
-        jsa.add(r.getString("payment_out_type_pname"));
+    jsa.add(r.getLong("monetary_account_id"));
+    jsa.add(r.getString("monetary_account_pkey"));   
+    
+        
+    jsa.add(r.getString("monetary_account_pname"));
+    jsa.add(r.getLong("payment_out_type_id"));
+    jsa.add(r.getString("payment_out_type_pkey"));   
+    
+        
+    jsa.add(r.getString("payment_out_type_pname"));
         return jsa;
     }
 
     @Override
-    public void fillXRow(final Row r, final XSSFRow row, int nc,boolean withIds) {
-        fillXRow0(r, row, nc, withIds);
+    public int fillXRow(final Row r, final XSSFRow row, int nc,boolean withIds) {
+        return fillXRow0(r, row, nc, withIds);
     }
 
     @Override
     public HashMap<String,String> lXRowH(final boolean withIds, final int level) {        
         
-    final  LinkedHashMap<String,String> m_ = new LinkedHashMap<>();
-    if(withIds){
-                m_.put("paymentOutForm_id","Long");
-            }
-            
-    //pkey       
-            m_.put("paymentOutForm_pkey","String"); 
-            
-if(level<1){
-                return m_;    
-            }
-            
- // monetaryAccount
-if(withIds){
-            m_.put("monetaryAccount_id","Long");   
-                    
-            }
-
-        m_.put("monetaryAccount_pkey","String");   
-        
-
-            m_.put("monetaryAccount_pname","String");   
-            
- // paymentOutType
-if(withIds){
-            m_.put("paymentOutType_id","Long");   
-                    
-            }
-
-        m_.put("paymentOutType_pkey","String");   
-        
-
-            m_.put("paymentOutType_pname","String");   
-            
+    final  LinkedHashMap<String,String> m = new LinkedHashMap<>();
     
-    return m_;
+    if(withIds){
+        m.put("paymentOutForm_id",LONG);
+    }        
+//pkey    
+    m.put("paymentOutForm_pkey",STRING);          
+    if(level<1){
+        return m;    
+    }       
+// monetaryAccount   monetaryAccount
+    if(withIds){
+        m.put("monetaryAccount_id",LONG);                       
+    }
+    m.put("monetaryAccount_pkey",STRING);     
+    m.put("monetaryAccount_pname",STRING);   
+// paymentOutType   paymentOutType
+    if(withIds){
+        m.put("paymentOutType_id",LONG);                       
+    }
+    m.put("paymentOutType_pkey",STRING);     
+    m.put("paymentOutType_pname",STRING);  
+    
+    return m;
     
     }
     
-    private void fillXRow0(final Row r, final XSSFRow row,int nc, boolean withIds){
-        if(withIds){
-        lToCell(r, row,"payment_out_form_id", nc++); 
-        }
+    private int fillXRow0(final Row r, final XSSFRow row,int nc, final boolean withIds){
         
-    //pkey       
+    if(withIds){
+        lToCell(r, row,"payment_out_form_id", nc++); 
+    }            //pkey       
             sToCell(r, row,"payment_out_form_pkey", nc++); 
- // monetaryAccount
-if(withIds){
-                    lToCell(r, row,"monetary_account_id", nc++);
-                 }
-sToCell(r, row,"monetary_account_pkey", nc++);
-sToCell(r, row,"monetary_account_pname", nc++);
- // paymentOutType
-if(withIds){
-                    lToCell(r, row,"payment_out_type_id", nc++);
-                 }
-sToCell(r, row,"payment_out_type_pkey", nc++);
-sToCell(r, row,"payment_out_type_pname", nc++);
+//monetaryAccount   monetary_account        
+    if(withIds){
+        lToCell(r, row,"monetary_account_id", nc++);
+    }
+    sToCell(r, row,"monetary_account_pkey", nc++);
+    sToCell(r, row,"monetary_account_pname", nc++);
+//paymentOutType   payment_out_type        
+    if(withIds){
+        lToCell(r, row,"payment_out_type_id", nc++);
+    }
+    sToCell(r, row,"payment_out_type_pkey", nc++);
+    sToCell(r, row,"payment_out_type_pname", nc++);
+        return nc;
     }
 
     @Override
@@ -313,15 +288,14 @@ sToCell(r, row,"payment_out_type_pname", nc++);
 
     @Override
     public void fillTupleInsert(final PaymentOutForm dc0, final Tuple t){
-                t.addString(dc0.getPkey());
-   
-            if(dc0.getMonetaryAccount()!=null){
-               t.addLong(dc0.getMonetaryAccount().getId());
-            }
-   
-            if(dc0.getPaymentOutType()!=null){
-               t.addLong(dc0.getPaymentOutType().getId());
-            }
+                
+    t.addString(dc0.getPkey());   
+    if(dc0.getMonetaryAccount()!=null){
+       t.addLong(dc0.getMonetaryAccount().getId());
+    }   
+    if(dc0.getPaymentOutType()!=null){
+       t.addLong(dc0.getPaymentOutType().getId());
+    }
     }
 
     @Override
@@ -329,13 +303,11 @@ sToCell(r, row,"payment_out_type_pname", nc++);
            
 //      if(dc0.getMonetaryAccount()!=null){
 //            t.addLong(dc0.getMonetaryAccount().getId());
-//      }
-   
+//      }   
 //      if(dc0.getPaymentOutType()!=null){
 //            t.addLong(dc0.getPaymentOutType().getId());
 //      }
-
-        t.addLong(dc0.getId());
+    t.addLong(dc0.getId());
             
     }    
 
@@ -364,10 +336,8 @@ sToCell(r, row,"payment_out_type_pname", nc++);
     @Override
     public void fillTupleInsert(final JsonObject js,final Tuple t){       
         
-    fTString("pkey", js, t);
-     
-    fTLong("monetaryAccount_id",js,t);
-     
+    fTString("pkey", js, t);     
+    fTLong("monetaryAccount_id",js,t);     
     fTLong("paymentOutType_id",js,t);       
     }
 
@@ -392,20 +362,19 @@ fTLong("id",js,t);
     @Override
     public PaymentOutForm doFrom(final Row r){
         final PaymentOutForm paymentOutForm = new PaymentOutForm();
-         paymentOutForm.setId(r.getLong("payment_out_form_id"));
-         
-                paymentOutForm.setPkey(  r.getString("payment_out_form_pkey"));
-
+         paymentOutForm.setId(r.getLong("payment_out_form_id"));         
+                paymentOutForm.setPkey(  r.getString("payment_out_form_pkey"));              
         final MonetaryAccount monetaryAccount = new MonetaryAccount();
         monetaryAccount.setId(r.getLong("monetary_account_id"));
         monetaryAccount.setPkey(r.getString("monetary_account_pkey"));
+        
         monetaryAccount.setPname(r.getString("monetary_account_pname"));
         paymentOutForm.setMonetaryAccount(monetaryAccount);
         
-
         final PaymentOutType paymentOutType = new PaymentOutType();
         paymentOutType.setId(r.getLong("payment_out_type_id"));
         paymentOutType.setPkey(r.getString("payment_out_type_pkey"));
+        
         paymentOutType.setPname(r.getString("payment_out_type_pname"));
         paymentOutForm.setPaymentOutType(paymentOutType);
           
@@ -417,9 +386,10 @@ fTLong("id",js,t);
         PaymentOutForm paymentOutForm = new PaymentOutForm();
         paymentOutForm.setId(js.getLong("id"));
         
-                paymentOutForm.setPkey(js.getString("pkey"));
-        paymentOutForm.setId(js.getLong("monetaryAccount_id"));
-        paymentOutForm.setId(js.getLong("paymentOutType_id"));
+                
+                paymentOutForm.setPkey(js.getString("pkey"));        
+            paymentOutForm.setId(js.getLong("monetaryAccount_id"));        
+            paymentOutForm.setId(js.getLong("paymentOutType_id"));
         return paymentOutForm;
     }
 
@@ -459,13 +429,15 @@ fTLong("id",js,t);
         slcb.doIlPSimple2( "monetaryAccount_pkey", "monetary_account_pkey");
         slcb.doEQPSimple2( "monetaryAccount_pkey", "monetary_account_pkey");
         slcb.doInLongCondition("monetaryAccount_id", "monetary_account_id");  
-//MonetaryAccount 1        
+//MonetaryAccount 1        --
         slcb.doIlPSimple2( "monetaryAccount_pname", "monetary_account_pname");    
+        
         slcb.doIlPSimple2( "paymentOutType_pkey", "payment_out_type_pkey");
         slcb.doEQPSimple2( "paymentOutType_pkey", "payment_out_type_pkey");
         slcb.doInLongCondition("paymentOutType_id", "payment_out_type_id");  
-//PaymentOutType 1        
+//PaymentOutType 1        --
         slcb.doIlPSimple2( "paymentOutType_pname", "payment_out_type_pname");    
+        
 
         slcb.doSQLORDEN(sortMapFields);
 
@@ -483,12 +455,10 @@ fTLong("id",js,t);
         
 //level 1
              
-    sz0.applyG1(zMonetaryAccount);               
-    sz0.applyG1(zPaymentOutType);      
-    //level 2
-    
-    //level 3
-    
+    sz0.applyG1(mz1.get("zMonetaryAccount"))   ;               
+    sz0.applyG1(mz1.get("zPaymentOutType"))   ;      
+//level 2    
+//level 3    
         return sz0;
     }
 }

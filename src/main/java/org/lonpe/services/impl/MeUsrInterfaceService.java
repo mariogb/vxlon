@@ -17,6 +17,9 @@ import org.lonpe.services.AbstractServiceLon;
 import org.lonpe.services.ConditionInfo;
 import org.lonpe.lonvx.sqlbuilders.SqlLonConditionsBuilder;
 import org.apache.poi.xssf.usermodel.XSSFRow;
+import static org.lonpe.lonvx.ctes.CteLon.*;
+
+
 
 
 
@@ -26,7 +29,6 @@ import org.apache.poi.xssf.usermodel.XSSFRow;
  *   MeUsrInterfaceService 
  * 
  */
-   
   
 public class MeUsrInterfaceService extends AbstractServiceLon<MeUsrInterface>{
 
@@ -41,9 +43,15 @@ public class MeUsrInterfaceService extends AbstractServiceLon<MeUsrInterface>{
     private static final String SQLDELETE = "DELETE FROM me_usr_interface WHERE id = $1 returning id";
     private static final String TABLENAME ="me_usr_interface";
     
+
+    public MeUsrInterfaceService() {
+        init0();
+    }
+
     
+
     @Override
-    public  String getTableName(){
+    public String getTableName(){
         return TABLENAME;
     }
 
@@ -57,16 +65,14 @@ public class MeUsrInterfaceService extends AbstractServiceLon<MeUsrInterface>{
         return SQLLKEYIN;
     }
 
-/**
-    
+/**    
     private static String sql00 = "SELECT me_usr_interface.id as me_usr_interface_id,
 me_usr_interface.pkey as me_usr_interface_pkey,
 me_usr_interface.dc as me_usr_interface_dc,
 me_usr_interface.label as me_usr_interface_label,
 me_usr_interface.level as me_usr_interface_level 
   FROM 
-  me_usr_interface ; 
-"
+  me_usr_interface "
 */
 
     @Override
@@ -86,28 +92,21 @@ me_usr_interface.level as me_usr_interface_level
     /**
      * sql select property alias field names
      */
-     
-    private static final LinkedHashSet<String> names;
+    private final LinkedHashSet<String> names =  new LinkedHashSet<>();;
     
     /**
      * Map field insert/update to property 
      */
-    private static final HashMap<String,String> insertMapFields; 
+    private final HashMap<String,String> insertMapFields = new HashMap<>(); 
     
     /**
     * Map property to field order 
     */
-    private static final HashMap<String, String> sortMapFields;
+    private final HashMap<String, String> sortMapFields = new  HashMap<>();
 
-    private static final JsonObject dcModel;
+    private final JsonObject dcModel  = new JsonObject();
     
-    static{
-        names = new LinkedHashSet<>();
-        insertMapFields = new HashMap<>();
-        sortMapFields= new  HashMap<>();
-
-        dcModel = new JsonObject();
-
+    private void init0(){
         
     dcModel.put("dc", "meUsrInterface");
 
@@ -119,39 +118,32 @@ me_usr_interface.level as me_usr_interface_level
     final JsonArray ps = new JsonArray();   
  
 //pkey
-    names.add("pkey");
-    insertMapFields.put("me_usr_interface.pkey","pkey");  
-
-//Create property pkey       
-    final JsonObject pkey = ps00a("pkey", "String",true);
+    doFieldSort("pkey","pkey","me_usr_interface");               
    
 //Used to map error on index to source property because IS Unique
     insertMapFields.put("me_usr_interface.me_usr_interface_uidx_pkey","pkey");  
 
+//Create property pkey       
+    final JsonObject pkey = psString("pkey",true);
+
 // IS Unique     
     pkey.put("uq",true);                    
-
-    sortMapFields.put("pkey", "me_usr_interface_pkey");                   
  
     ps.add(pkey);
  
 //dc
-    names.add("dc");
-    insertMapFields.put("me_usr_interface.dc","dc");  
+    doField("dc","dc","me_usr_interface");               
 
 //Create property dc       
-    final JsonObject dc = ps00a("dc", "String",true);
+    final JsonObject dc = psString("dc",true);
  
     ps.add(dc);
  
 //label
-    names.add("label");
-    insertMapFields.put("me_usr_interface.label","label");  
+    doFieldSort("label","label","me_usr_interface");               
 
 //Create property label       
-    final JsonObject label = ps00a("label", "String",true);
-
-    sortMapFields.put("label", "me_usr_interface_label");                   
+    final JsonObject label = psString("label",true);
   
 //PC
     dcModel.put("pc","label");  
@@ -159,22 +151,17 @@ me_usr_interface.level as me_usr_interface_level
     ps.add(label);
  
 //level
-    names.add("level");
-    insertMapFields.put("me_usr_interface.level","level");  
+    doFieldSort("level","level","me_usr_interface");               
 
 //Create property level       
-    final JsonObject level = ps00a("level", "Integer",true);
-
-    sortMapFields.put("level", "me_usr_interface_level");               
+    final JsonObject level = psInteger("level",true);
  
     ps.add(level);
 
 //Add ps to model            
     dcModel.put("ps", ps);        
         
-
         
-
     }        
     @Override
     public LinkedHashSet<String> getNames() {
@@ -199,57 +186,50 @@ me_usr_interface.level as me_usr_interface_level
     @Override
     public JsonArray toJsonArray(final Row r){
         final JsonArray jsa = new JsonArray();
-        jsa.add(r.getLong("me_usr_interface_id") );
-        jsa.add(r.getString("me_usr_interface_pkey") );
-        jsa.add(r.getString("me_usr_interface_dc") );
-        jsa.add(r.getString("me_usr_interface_label") );
+        jsa.add(r.getLong("me_usr_interface_id") );       
+        jsa.add(r.getString("me_usr_interface_pkey") );       
+        jsa.add(r.getString("me_usr_interface_dc") );       
+        jsa.add(r.getString("me_usr_interface_label") );       
         jsa.add(r.getInteger("me_usr_interface_level") );
         return jsa;
     }
 
     @Override
-    public void fillXRow(final Row r, final XSSFRow row, int nc,boolean withIds) {
-        fillXRow0(r, row, nc, withIds);
+    public int fillXRow(final Row r, final XSSFRow row, int nc,boolean withIds) {
+        return fillXRow0(r, row, nc, withIds);
     }
 
     @Override
     public HashMap<String,String> lXRowH(final boolean withIds, final int level) {        
         
-    final  LinkedHashMap<String,String> m_ = new LinkedHashMap<>();
-    if(withIds){
-                m_.put("meUsrInterface_id","Long");
-            }
-            
-    //pkey       
-            m_.put("meUsrInterface_pkey","String"); 
-            
-    //dc       
-            m_.put("meUsrInterface_dc","String"); 
-            
-    //label       
-            m_.put("meUsrInterface_label","String"); 
-            
-    //level       
-            m_.put("meUsrInterface_level","Integer"); 
-            
+    final  LinkedHashMap<String,String> m = new LinkedHashMap<>();
     
-    return m_;
+    if(withIds){
+        m.put("meUsrInterface_id",LONG);
+    }        
+//pkey    
+    m.put("meUsrInterface_pkey",STRING);              
+//dc    
+    m.put("meUsrInterface_dc",STRING);              
+//label    
+    m.put("meUsrInterface_label",STRING);              
+//level    
+    m.put("meUsrInterface_level",INTEGER);          
+    
+    return m;
     
     }
     
-    private void fillXRow0(final Row r, final XSSFRow row,int nc, boolean withIds){
-        if(withIds){
-        lToCell(r, row,"me_usr_interface_id", nc++); 
-        }
+    private int fillXRow0(final Row r, final XSSFRow row,int nc, final boolean withIds){
         
-    //pkey       
-            sToCell(r, row,"me_usr_interface_pkey", nc++); 
-    //dc       
-            sToCell(r, row,"me_usr_interface_dc", nc++); 
-    //label       
-            sToCell(r, row,"me_usr_interface_label", nc++); 
-    //level            
+    if(withIds){
+        lToCell(r, row,"me_usr_interface_id", nc++); 
+    }            //pkey       
+            sToCell(r, row,"me_usr_interface_pkey", nc++);     //dc       
+            sToCell(r, row,"me_usr_interface_dc", nc++);     //label       
+            sToCell(r, row,"me_usr_interface_label", nc++);     //level            
             ldToCell(r, row,"me_usr_interface_level", nc++); 
+        return nc;
     }
 
     @Override
@@ -269,19 +249,20 @@ me_usr_interface.level as me_usr_interface_level
 
     @Override
     public void fillTupleInsert(final MeUsrInterface dc0, final Tuple t){
-                t.addString(dc0.getPkey());
-        t.addString(dc0.getDc());
-        t.addString(dc0.getLabel());
-        t.addInteger(dc0.getLevel());
+                
+    t.addString(dc0.getPkey());        
+    t.addString(dc0.getDc());        
+    t.addString(dc0.getLabel());        
+    t.addInteger(dc0.getLevel());
     }
 
     @Override
     public void fillTupleUpdate(final MeUsrInterface dc0, final Tuple t){
-                t.addString(dc0.getDc());
-        t.addString(dc0.getLabel());
-        t.addInteger(dc0.getLevel());
-
-        t.addLong(dc0.getId());
+        
+    t.addString(dc0.getDc());
+    t.addString(dc0.getLabel());
+    t.addInteger(dc0.getLevel());
+    t.addLong(dc0.getId());
             
     }    
 
@@ -306,11 +287,8 @@ me_usr_interface.level as me_usr_interface_level
     public void fillTupleInsert(final JsonObject js,final Tuple t){       
         
     fTString("pkey", js, t);
-
     fTString("dc", js, t);
-
     fTString("label", js, t);
-
     fTInteger("level", js, t);       
     }
 
@@ -334,15 +312,11 @@ fTLong("id",js,t);
     @Override
     public MeUsrInterface doFrom(final Row r){
         final MeUsrInterface meUsrInterface = new MeUsrInterface();
-         meUsrInterface.setId(r.getLong("me_usr_interface_id"));
-         
-                meUsrInterface.setPkey(  r.getString("me_usr_interface_pkey"));
-         
-                meUsrInterface.setDc(  r.getString("me_usr_interface_dc"));
-         
-                meUsrInterface.setLabel(  r.getString("me_usr_interface_label"));
-         
-                meUsrInterface.setLevel(  r.getInteger("me_usr_interface_level"));  
+         meUsrInterface.setId(r.getLong("me_usr_interface_id"));         
+                meUsrInterface.setPkey(  r.getString("me_usr_interface_pkey"));                       
+                meUsrInterface.setDc(  r.getString("me_usr_interface_dc"));                       
+                meUsrInterface.setLabel(  r.getString("me_usr_interface_label"));                       
+                meUsrInterface.setLevel(  r.getInteger("me_usr_interface_level"));                
         return meUsrInterface;
     }
     
@@ -351,10 +325,11 @@ fTLong("id",js,t);
         MeUsrInterface meUsrInterface = new MeUsrInterface();
         meUsrInterface.setId(js.getLong("id"));
         
-                meUsrInterface.setPkey(js.getString("pkey"));
-        meUsrInterface.setDc(js.getString("dc"));
-        meUsrInterface.setLabel(js.getString("label"));
-        meUsrInterface.setLevel(js.getInteger("level"));
+                
+                meUsrInterface.setPkey(js.getString("pkey"));        
+                meUsrInterface.setDc(js.getString("dc"));        
+                meUsrInterface.setLabel(js.getString("label"));        
+                meUsrInterface.setLevel(js.getInteger("level"));
         return meUsrInterface;
     }
 
@@ -399,8 +374,7 @@ fTLong("id",js,t);
         final SqlZtatBuilder sz0 = new SqlZtatBuilder(params,"me_usr_interface");
         sz0.addField("COUNT(me_usr_interface.id) as c_me_usr_interface_id").addName("count");
         
-    sz0.addField("sum(me_usr_interface.level) as sum_me_usr_interface_level").addName("sum_level");
-        
+    sz0.addField("sum(me_usr_interface.level) as sum_me_usr_interface_level").addName("sum_level"); 
         
         return sz0;
     }

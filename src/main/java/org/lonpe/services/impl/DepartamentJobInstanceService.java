@@ -17,16 +17,18 @@ import org.lonpe.services.AbstractServiceLon;
 import org.lonpe.services.ConditionInfo;
 import org.lonpe.lonvx.sqlbuilders.SqlLonConditionsBuilder;
 import org.apache.poi.xssf.usermodel.XSSFRow;
+import static org.lonpe.lonvx.ctes.CteLon.*;
 
 
 
 import org.lonpe.lonvx.sqlbuilders.ZtatUnitInfoLon;
+import org.lonpe.lonvx.sqlbuilders.ZtatUnitInfoLon2;
+import org.lonpe.lonvx.sqlbuilders.ZtatUnitInfoLon3;
 
 /**
  *   DepartamentJobInstanceService 
  * 
  */
-   
   
 public class DepartamentJobInstanceService extends AbstractServiceLon<DepartamentJobInstance>{
 
@@ -41,26 +43,18 @@ public class DepartamentJobInstanceService extends AbstractServiceLon<Departamen
     private static final String SQLDELETE = "DELETE FROM departament_job_instance WHERE id = $1 returning id";
     private static final String TABLENAME ="departament_job_instance";
     
-//1
-    private static final ZtatUnitInfoLon zDepartamentJob;
 
-//1
-    private static final ZtatUnitInfoLon zDepartamentBaseTimePeriod;
+    public DepartamentJobInstanceService() {
+        init0();
+    }
 
-//2
-    private static final ZtatUnitInfoLon zDepartament;
-
-//2
-    private static final ZtatUnitInfoLon zBaseTimePeriod;
-
-//3
-    private static final ZtatUnitInfoLon zBase;
-
-//3
-    private static final ZtatUnitInfoLon zTimePeriod;
     
+    private static final Map<String, ZtatUnitInfoLon> mz1 = new HashMap<>(6);                       
+    private static final Map<String, ZtatUnitInfoLon2> mz2 = new HashMap<>(6);                       
+    private static final Map<String, ZtatUnitInfoLon3> mz3 = new HashMap<>(6);                       
+
     @Override
-    public  String getTableName(){
+    public String getTableName(){
         return TABLENAME;
     }
 
@@ -74,35 +68,33 @@ public class DepartamentJobInstanceService extends AbstractServiceLon<Departamen
         return SQLLKEYIN;
     }
 
-/**
-    
+/**    
     private static String sql00 = "SELECT departament_job_instance.id as departament_job_instance_id,
 departament_job_instance.pkey as departament_job_instance_pkey,
 departament_job_instance.description as departament_job_instance_description,
 departament_job_instance.nhoras as departament_job_instance_nhoras,
 departament_job_instance.pname as departament_job_instance_pname,
 departament_job.id as departament_job_id,departament_job.pkey as departament_job_pkey,departament_job.pname as departament_job_pname,
-departament_base_time_period.id as departament_base_time_period_id,departament_base_time_period.pkey as departament_base_time_period_pkey,
 departament.id as departament_id, departament.pkey as departament_pkey,departament.pname as departament_pname,
+departament_base_time_period.id as departament_base_time_period_id,departament_base_time_period.pkey as departament_base_time_period_pkey,
 base_time_period.id as base_time_period_id, base_time_period.pkey as base_time_period_pkey,
 base.id as base_id, base.pkey as base_pkey,base.pname as base_pname,
 time_period.id as time_period_id, time_period.pkey as time_period_pkey,time_period.pname as time_period_pname 
   FROM 
   departament_job_instance,
   departament_job as departament_job,
-  departament_base_time_period as departament_base_time_period,
   departament as departament,
+  departament_base_time_period as departament_base_time_period,
   base_time_period as base_time_period,
   base as base,
   time_period as time_period  
  WHERE 
  departament_job_instance.departament_job_id = departament_job.id
- AND departament_job_instance.departament_base_time_period_id = departament_base_time_period.id
  AND departament_job.departament_id = departament.id
+ AND departament_job_instance.departament_base_time_period_id = departament_base_time_period.id
  AND departament_base_time_period.base_time_period_id = base_time_period.id
  AND base_time_period.base_id = base.id
- AND base_time_period.time_period_id = time_period.id; 
-"
+ AND base_time_period.time_period_id = time_period.id"
 */
 
     @Override
@@ -122,28 +114,21 @@ time_period.id as time_period_id, time_period.pkey as time_period_pkey,time_peri
     /**
      * sql select property alias field names
      */
-     
-    private static final LinkedHashSet<String> names;
+    private final LinkedHashSet<String> names =  new LinkedHashSet<>();;
     
     /**
      * Map field insert/update to property 
      */
-    private static final HashMap<String,String> insertMapFields; 
+    private final HashMap<String,String> insertMapFields = new HashMap<>(); 
     
     /**
     * Map property to field order 
     */
-    private static final HashMap<String, String> sortMapFields;
+    private final HashMap<String, String> sortMapFields = new  HashMap<>();
 
-    private static final JsonObject dcModel;
+    private final JsonObject dcModel  = new JsonObject();
     
-    static{
-        names = new LinkedHashSet<>();
-        insertMapFields = new HashMap<>();
-        sortMapFields= new  HashMap<>();
-
-        dcModel = new JsonObject();
-
+    private void init0(){
         
     dcModel.put("dc", "departamentJobInstance");
 
@@ -155,56 +140,46 @@ time_period.id as time_period_id, time_period.pkey as time_period_pkey,time_peri
     final JsonArray ps = new JsonArray();   
  
 //pkey
-    names.add("pkey");
-    insertMapFields.put("departament_job_instance.pkey","pkey");  
-
-//Create property pkey       
-    final JsonObject pkey = ps00a("pkey", "String",true);
+    doFieldSort("pkey","pkey","departament_job_instance");               
    
 //Used to map error on index to source property because IS Unique
     insertMapFields.put("departament_job_instance.departament_job_instance_uidx_pkey","pkey");  
 
+//Create property pkey       
+    final JsonObject pkey = psString("pkey",true);
+
 // IS Unique     
     pkey.put("uq",true);                    
-
-    sortMapFields.put("pkey", "departament_job_instance_pkey");                   
  
     ps.add(pkey);
  
 //description
-    names.add("description");
-    insertMapFields.put("departament_job_instance.description","description");  
+    doField("description","description","departament_job_instance");               
 
 //Create property description       
-    final JsonObject description = ps00a("description", "String",false);
+    final JsonObject description = psString("description",false);
  
     ps.add(description);
  
 //nhoras
-    names.add("nhoras");
-    insertMapFields.put("departament_job_instance.nhoras","nhoras");  
+    doFieldSort("nhoras","nhoras","departament_job_instance");               
 
 //Create property nhoras       
-    final JsonObject nhoras = ps00a("nhoras", "Integer",true);
-
-    sortMapFields.put("nhoras", "departament_job_instance_nhoras");               
+    final JsonObject nhoras = psInteger("nhoras",true);
  
     ps.add(nhoras);
  
 //pname
-    names.add("pname");
-    insertMapFields.put("departament_job_instance.pname","pname");  
-
-//Create property pname       
-    final JsonObject pname = ps00a("pname", "String",true);
+    doFieldSort("pname","pname","departament_job_instance");               
    
 //Used to map error on index to source property because IS Unique
     insertMapFields.put("departament_job_instance.departament_job_instance_uidx_pname","pname");  
 
+//Create property pname       
+    final JsonObject pname = psString("pname",true);
+
 // IS Unique     
     pname.put("uq",true);                    
-
-    sortMapFields.put("pname", "departament_job_instance_pname");                   
   
 //PC
     dcModel.put("pc","pname");  
@@ -216,89 +191,99 @@ time_period.id as time_period_id, time_period.pkey as time_period_pkey,time_peri
 
     final JsonArray mto = new JsonArray();      
 
-//(1)  departamentJob --------------------
-    names.add("departamentJob_id");      
-    insertMapFields.put("departament_job_instance.departament_job_id","departamentJob_id");    
-       
-    names.add("departamentJob_pkey");        
-    sortMapFields.put( "departamentJob_pkey", "departament_job_pkey");        
+//(1)  departamentJob
+    doFieldMT0("departament_job_instance","departamentJob", "departament_job");  
 
     final JsonObject departamentJob =  doMto("departamentJob","departamentJob");        
    
     names.add("departamentJob_pname");
-    sortMapFields.put( "departamentJob_pname", "departament_job_pname");         
-
+    sortMapFields.put( "departamentJob_pname", "departament_job_pname");                
     departamentJob.put("pc","pname");          
 
     mto.add(departamentJob);
         
 
-//(1)  departamentBaseTimePeriod --------------------
-    names.add("departamentBaseTimePeriod_id");      
-    insertMapFields.put("departament_job_instance.departament_base_time_period_id","departamentBaseTimePeriod_id");    
-       
-    names.add("departamentBaseTimePeriod_pkey");        
-    sortMapFields.put( "departamentBaseTimePeriod_pkey", "departament_base_time_period_pkey");        
+    //1  departament_job  -- departament_job_id
+    final ZtatUnitInfoLon zDepartamentJob = new ZtatUnitInfoLon("departament_job_id", "departamentJob",  "departament_job","pname","departament_job");
+    mz1.put("zDepartamentJob", zDepartamentJob);    
+
+//(1)  departamentBaseTimePeriod
+    doFieldMT0("departament_job_instance","departamentBaseTimePeriod", "departament_base_time_period");  
 
     final JsonObject departamentBaseTimePeriod =  doMto("departamentBaseTimePeriod","departamentBaseTimePeriod");        
 
     mto.add(departamentBaseTimePeriod);
         
 
+    //1  departament_base_time_period  -- departament_base_time_period_id
+    final ZtatUnitInfoLon zDepartamentBaseTimePeriod = new ZtatUnitInfoLon("departament_base_time_period_id", "departamentBaseTimePeriod",  "departament_base_time_period","null","departament_base_time_period");
+    mz1.put("zDepartamentBaseTimePeriod", zDepartamentBaseTimePeriod);    
+
     dcModel.put("mto",mto);     
 
     final JsonArray mto2 = new JsonArray();        
-//(2)   departament 
-        
+
+//(2)  departament   departament  
     names.add("departament_id");          
     names.add("departament_pkey");
 
-    final JsonObject departament =   doMto2("departament","departament","departamentJob");        
+    final JsonObject departamentFromDepartamentJob =   doMto2("departament","departament","departamentJob");        
    
-    names.add("departament_pname");  
-    departament.put("pc","pname");             
-   
-    sortMapFields.put( "departament_pname", "departament_pname");            
+    names.add("departament_pname");           
+    sortMapFields.put( "departament_pname", "departament_pname");  
+    departamentFromDepartamentJob.put("pc","pname");    
          
-    mto2.add(departament);        
-//(2)   baseTimePeriod 
-        
+    mto2.add(departamentFromDepartamentJob);        
+
+    final ZtatUnitInfoLon2 zDepartamentFromDepartamentJob = new ZtatUnitInfoLon2(zDepartamentJob, "departament_id", "departament",  "departament","pname","departament");
+    mz2.put("zDepartamentFromDepartamentJob",zDepartamentFromDepartamentJob);
+
+//(2)  baseTimePeriod   baseTimePeriod  
     names.add("baseTimePeriod_id");          
     names.add("baseTimePeriod_pkey");
 
-    final JsonObject baseTimePeriod =   doMto2("baseTimePeriod","baseTimePeriod","departamentBaseTimePeriod");        
+    final JsonObject baseTimePeriodFromDepartamentBaseTimePeriod =   doMto2("baseTimePeriod","baseTimePeriod","departamentBaseTimePeriod");        
          
-    mto2.add(baseTimePeriod);        
+    mto2.add(baseTimePeriodFromDepartamentBaseTimePeriod);        
+
+    final ZtatUnitInfoLon2 zBaseTimePeriodFromDepartamentBaseTimePeriod = new ZtatUnitInfoLon2(zDepartamentBaseTimePeriod, "base_time_period_id", "baseTimePeriod",  "base_time_period","null","base_time_period");
+    mz2.put("zBaseTimePeriodFromDepartamentBaseTimePeriod",zBaseTimePeriodFromDepartamentBaseTimePeriod);
 
     dcModel.put("mto2",mto2);    
 
     final JsonArray mto3 = new JsonArray();           
-//(3)   base 
-        
+
+//(3)   base   
     names.add("base_id");          
     names.add("base_pkey");
 
-    final JsonObject base =   doMto2("base","base","baseTimePeriod");        
+    final JsonObject baseFromBaseTimePeriodFromDepartamentBaseTimePeriod =   doMto2("base","base","baseTimePeriod");        
    
-    names.add("base_pname");  
-    base.put("pc","pname");             
-   
-    sortMapFields.put( "base_pname", "base_pname");            
+    names.add("base_pname");            
+    sortMapFields.put( "base_pname", "base_pname"); 
+    baseFromBaseTimePeriodFromDepartamentBaseTimePeriod.put("pc","pname");     
          
-    mto3.add(base);        
-//(3)   timePeriod 
-        
+    mto3.add(baseFromBaseTimePeriodFromDepartamentBaseTimePeriod);        
+
+     
+    final ZtatUnitInfoLon3 zBaseFromBaseTimePeriodFromDepartamentBaseTimePeriod = new ZtatUnitInfoLon3(zBaseTimePeriodFromDepartamentBaseTimePeriod, "base_id", "base",  "base","pname","base");
+    mz3.put("zBaseFromBaseTimePeriodFromDepartamentBaseTimePeriod",zBaseFromBaseTimePeriodFromDepartamentBaseTimePeriod);    
+
+//(3)   timePeriod   
     names.add("timePeriod_id");          
     names.add("timePeriod_pkey");
 
-    final JsonObject timePeriod =   doMto2("timePeriod","timePeriod","baseTimePeriod");        
+    final JsonObject timePeriodFromBaseTimePeriodFromDepartamentBaseTimePeriod =   doMto2("timePeriod","timePeriod","baseTimePeriod");        
    
-    names.add("timePeriod_pname");  
-    timePeriod.put("pc","pname");             
-   
-    sortMapFields.put( "timePeriod_pname", "time_period_pname");            
+    names.add("timePeriod_pname");            
+    sortMapFields.put( "timePeriod_pname", "time_period_pname"); 
+    timePeriodFromBaseTimePeriodFromDepartamentBaseTimePeriod.put("pc","pname");     
          
-    mto3.add(timePeriod);        
+    mto3.add(timePeriodFromBaseTimePeriodFromDepartamentBaseTimePeriod);        
+
+     
+    final ZtatUnitInfoLon3 zTimePeriodFromBaseTimePeriodFromDepartamentBaseTimePeriod = new ZtatUnitInfoLon3(zBaseTimePeriodFromDepartamentBaseTimePeriod, "time_period_id", "timePeriod",  "time_period","pname","time_period");
+    mz3.put("zTimePeriodFromBaseTimePeriodFromDepartamentBaseTimePeriod",zTimePeriodFromBaseTimePeriodFromDepartamentBaseTimePeriod);    
 
     dcModel.put("mto3",mto3);       
         
@@ -309,26 +294,7 @@ time_period.id as time_period_id, time_period.pkey as time_period_pkey,time_peri
 
 /** OTM ON MODEL  **/
         dcModel.put("otm",otm);  
-
         
-//1  departament_job  -- departament_job_id
-    zDepartamentJob = new ZtatUnitInfoLon("departament_job_id", "departamentJob",  "departament_job","pname","departament_job");
-
-//1  departament_base_time_period  -- departament_base_time_period_id
-    zDepartamentBaseTimePeriod = new ZtatUnitInfoLon("departament_base_time_period_id", "departamentBaseTimePeriod",  "departament_base_time_period","null","departament_base_time_period");
-
-//2    
-    zDepartament = new ZtatUnitInfoLon("departament_id", "departament",  "departament","pname","departament");
-
-//2    
-    zBaseTimePeriod = new ZtatUnitInfoLon("base_time_period_id", "baseTimePeriod",  "base_time_period","null","base_time_period");
-
-//3
-    zBase = new ZtatUnitInfoLon("base_id", "base",  "base","pname","base");
-
-//3
-    zTimePeriod = new ZtatUnitInfoLon("time_period_id", "timePeriod",  "time_period","pname","time_period");
-
     }        
     @Override
     public LinkedHashSet<String> getNames() {
@@ -353,176 +319,161 @@ time_period.id as time_period_id, time_period.pkey as time_period_pkey,time_peri
     @Override
     public JsonArray toJsonArray(final Row r){
         final JsonArray jsa = new JsonArray();
-        jsa.add(r.getLong("departament_job_instance_id") );
-        jsa.add(r.getString("departament_job_instance_pkey") );
-        jsa.add(r.getString("departament_job_instance_description") );
-        jsa.add(r.getInteger("departament_job_instance_nhoras") );
+        jsa.add(r.getLong("departament_job_instance_id") );       
+        jsa.add(r.getString("departament_job_instance_pkey") );       
+        jsa.add(r.getString("departament_job_instance_description") );       
+        jsa.add(r.getInteger("departament_job_instance_nhoras") );       
         jsa.add(r.getString("departament_job_instance_pname") );
-        jsa.add(r.getLong("departament_job_id"));
-        jsa.add(r.getString("departament_job_pkey"));
-        jsa.add(r.getString("departament_job_pname"));
-        jsa.add(r.getLong("departament_base_time_period_id"));
-        jsa.add(r.getString("departament_base_time_period_pkey"));
-        jsa.add(r.getLong("departament_id"));
-        jsa.add(r.getString("departament_pkey"));
-        jsa.add(r.getString("departament_pname"));
-        jsa.add(r.getLong("base_time_period_id"));
-        jsa.add(r.getString("base_time_period_pkey"));
-        jsa.add(r.getLong("base_id"));
-        jsa.add(r.getString("base_pkey"));
-        jsa.add(r.getString("base_pname"));
-        jsa.add(r.getLong("time_period_id"));
-        jsa.add(r.getString("time_period_pkey"));
-        jsa.add(r.getString("time_period_pname"));
+    jsa.add(r.getLong("departament_job_id"));
+    jsa.add(r.getString("departament_job_pkey"));   
+    
+        
+    jsa.add(r.getString("departament_job_pname"));
+    jsa.add(r.getLong("departament_base_time_period_id"));
+    jsa.add(r.getString("departament_base_time_period_pkey"));   
+    
+    jsa.add(r.getLong("departament_id"));
+    jsa.add(r.getString("departament_pkey"));
+    
+
+    jsa.add(r.getString("departament_pname"));
+    
+    jsa.add(r.getLong("base_time_period_id"));
+    jsa.add(r.getString("base_time_period_pkey"));
+    
+    jsa.add(r.getLong("base_id"));
+    jsa.add(r.getString("base_pkey"));
+    
+
+    jsa.add(r.getString("base_pname"));
+    
+    jsa.add(r.getLong("time_period_id"));
+    jsa.add(r.getString("time_period_pkey"));
+    
+
+    jsa.add(r.getString("time_period_pname"));
+    
         return jsa;
     }
 
     @Override
-    public void fillXRow(final Row r, final XSSFRow row, int nc,boolean withIds) {
-        fillXRow0(r, row, nc, withIds);
+    public int fillXRow(final Row r, final XSSFRow row, int nc,boolean withIds) {
+        return fillXRow0(r, row, nc, withIds);
     }
 
     @Override
     public HashMap<String,String> lXRowH(final boolean withIds, final int level) {        
         
-    final  LinkedHashMap<String,String> m_ = new LinkedHashMap<>();
-    if(withIds){
-                m_.put("departamentJobInstance_id","Long");
-            }
-            
-    //pkey       
-            m_.put("departamentJobInstance_pkey","String"); 
-            
-    //description       
-            m_.put("departamentJobInstance_description","String"); 
-            
-    //nhoras       
-            m_.put("departamentJobInstance_nhoras","Integer"); 
-            
-    //pname       
-            m_.put("departamentJobInstance_pname","String"); 
-            
-if(level<1){
-                return m_;    
-            }
-            
- // departamentJob
-if(withIds){
-            m_.put("departamentJob_id","Long");   
-                    
-            }
-
-        m_.put("departamentJob_pkey","String");   
-        
-
-            m_.put("departamentJob_pname","String");   
-            
- // departamentBaseTimePeriod
-if(withIds){
-            m_.put("departamentBaseTimePeriod_id","Long");   
-                    
-            }
-
-        m_.put("departamentBaseTimePeriod_pkey","String");   
-        
-//[2] departament  
-
-        if(level>1){
-            if(withIds){
-               m_.put("departament_id","Long");              
-            }      
-        
-        m_.put("departament_pkey","String");  
-
-            m_.put("departament_pname","String");    
- 
-                      }             
-//[2] baseTimePeriod  
-
-        if(level>1){
-            if(withIds){
-               m_.put("baseTimePeriod_id","Long");              
-            }      
-        
-        m_.put("baseTimePeriod_pkey","String");  
- 
-                      }             
-//[3] base  
-
-        if(level>2){
-            if(withIds){
-               m_.put("base_id","Long");              
-            }      
-        
-        m_.put("base_pkey","String");  
-
-            m_.put("base_pname","String");    
- 
-                      }             
-//[3] timePeriod  
-
-        if(level>2){
-            if(withIds){
-               m_.put("timePeriod_id","Long");              
-            }      
-        
-        m_.put("timePeriod_pkey","String");  
-
-            m_.put("timePeriod_pname","String");    
- 
-                      }             
+    final  LinkedHashMap<String,String> m = new LinkedHashMap<>();
     
-    return m_;
+    if(withIds){
+        m.put("departamentJobInstance_id",LONG);
+    }        
+//pkey    
+    m.put("departamentJobInstance_pkey",STRING);              
+//description    
+    m.put("departamentJobInstance_description",STRING);              
+//nhoras    
+    m.put("departamentJobInstance_nhoras",INTEGER);              
+//pname    
+    m.put("departamentJobInstance_pname",STRING);          
+    if(level<1){
+        return m;    
+    }       
+// departamentJob   departamentJob
+    if(withIds){
+        m.put("departamentJob_id",LONG);                       
+    }
+    m.put("departamentJob_pkey",STRING);     
+    m.put("departamentJob_pname",STRING);   
+// departamentBaseTimePeriod   departamentBaseTimePeriod
+    if(withIds){
+        m.put("departamentBaseTimePeriod_id",LONG);                       
+    }
+    m.put("departamentBaseTimePeriod_pkey",STRING);     
+//[2] departament --   departament
+    if(withIds){
+        m.put("departament_id",LONG);              
+    }              
+    m.put("departament_pkey",STRING);  
+        
+    m.put("departament_pname",STRING);  
+//[2] baseTimePeriod --   baseTimePeriod
+    if(withIds){
+        m.put("baseTimePeriod_id",LONG);              
+    }              
+    m.put("baseTimePeriod_pkey",STRING);  
+        
+//[3] base --   base
+    if(withIds){
+        m.put("base_id",LONG);              
+    }              
+    m.put("base_pkey",STRING);  
+        
+    m.put("base_pname",STRING);  
+//[3] timePeriod --   timePeriod
+    if(withIds){
+        m.put("timePeriod_id",LONG);              
+    }              
+    m.put("timePeriod_pkey",STRING);  
+        
+    m.put("timePeriod_pname",STRING);  
+    
+    return m;
     
     }
     
-    private void fillXRow0(final Row r, final XSSFRow row,int nc, boolean withIds){
-        if(withIds){
-        lToCell(r, row,"departament_job_instance_id", nc++); 
-        }
+    private int fillXRow0(final Row r, final XSSFRow row,int nc, final boolean withIds){
         
-    //pkey       
-            sToCell(r, row,"departament_job_instance_pkey", nc++); 
-    //description       
-            sToCell(r, row,"departament_job_instance_description", nc++); 
-    //nhoras            
-            ldToCell(r, row,"departament_job_instance_nhoras", nc++); 
-    //pname       
+    if(withIds){
+        lToCell(r, row,"departament_job_instance_id", nc++); 
+    }            //pkey       
+            sToCell(r, row,"departament_job_instance_pkey", nc++);     //description       
+            sToCell(r, row,"departament_job_instance_description", nc++);     //nhoras            
+            ldToCell(r, row,"departament_job_instance_nhoras", nc++);     //pname       
             sToCell(r, row,"departament_job_instance_pname", nc++); 
- // departamentJob
-if(withIds){
-                    lToCell(r, row,"departament_job_id", nc++);
-                 }
-sToCell(r, row,"departament_job_pkey", nc++);
-sToCell(r, row,"departament_job_pname", nc++);
- // departamentBaseTimePeriod
-if(withIds){
-                    lToCell(r, row,"departament_base_time_period_id", nc++);
-                 }
-sToCell(r, row,"departament_base_time_period_pkey", nc++);
-// departament
-if(withIds){
-            lToCell(r, row,"departament_id", nc++);
-        }
-sToCell(r, row,"departament_pkey", nc++);
-sToCell(r, row,"departament_pname", nc++);
-// baseTimePeriod
-if(withIds){
-            lToCell(r, row,"base_time_period_id", nc++);
-        }
-sToCell(r, row,"base_time_period_pkey", nc++);
-// base
-if(withIds){
-            lToCell(r, row,"base_id", nc++);
-        }
-sToCell(r, row,"base_pkey", nc++);
-sToCell(r, row,"base_pname", nc++);
-// timePeriod
-if(withIds){
-            lToCell(r, row,"time_period_id", nc++);
-        }
-sToCell(r, row,"time_period_pkey", nc++);
-sToCell(r, row,"time_period_pname", nc++);
+//departamentJob   departament_job        
+    if(withIds){
+        lToCell(r, row,"departament_job_id", nc++);
+    }
+    sToCell(r, row,"departament_job_pkey", nc++);
+    sToCell(r, row,"departament_job_pname", nc++);
+//departamentBaseTimePeriod   departament_base_time_period        
+    if(withIds){
+        lToCell(r, row,"departament_base_time_period_id", nc++);
+    }
+    sToCell(r, row,"departament_base_time_period_pkey", nc++);
+// departament  departament
+    if(withIds){
+       lToCell(r, row,"departament_id", nc++);
+    }
+
+    sToCell(r, row,"departament_pkey", nc++);
+
+    sToCell(r, row,"departament_pname", nc++);
+// baseTimePeriod  base_time_period
+    if(withIds){
+       lToCell(r, row,"base_time_period_id", nc++);
+    }
+
+    sToCell(r, row,"base_time_period_pkey", nc++);
+// base  base
+    if(withIds){
+       lToCell(r, row,"base_id", nc++);
+    }
+
+    sToCell(r, row,"base_pkey", nc++);
+
+    sToCell(r, row,"base_pname", nc++);
+// timePeriod  time_period
+    if(withIds){
+       lToCell(r, row,"time_period_id", nc++);
+    }
+
+    sToCell(r, row,"time_period_pkey", nc++);
+
+    sToCell(r, row,"time_period_pname", nc++);
+        return nc;
     }
 
     @Override
@@ -542,35 +493,32 @@ sToCell(r, row,"time_period_pname", nc++);
 
     @Override
     public void fillTupleInsert(final DepartamentJobInstance dc0, final Tuple t){
-                t.addString(dc0.getPkey());
-        t.addString(dc0.getDescription());
-        t.addInteger(dc0.getNhoras());
-        t.addString(dc0.getPname());
-   
-            if(dc0.getDepartamentJob()!=null){
-               t.addLong(dc0.getDepartamentJob().getId());
-            }
-   
-            if(dc0.getDepartamentBaseTimePeriod()!=null){
-               t.addLong(dc0.getDepartamentBaseTimePeriod().getId());
-            }
+                
+    t.addString(dc0.getPkey());        
+    t.addString(dc0.getDescription());        
+    t.addInteger(dc0.getNhoras());        
+    t.addString(dc0.getPname());   
+    if(dc0.getDepartamentJob()!=null){
+       t.addLong(dc0.getDepartamentJob().getId());
+    }   
+    if(dc0.getDepartamentBaseTimePeriod()!=null){
+       t.addLong(dc0.getDepartamentBaseTimePeriod().getId());
+    }
     }
 
     @Override
     public void fillTupleUpdate(final DepartamentJobInstance dc0, final Tuple t){
-                t.addString(dc0.getDescription());
-        t.addInteger(dc0.getNhoras());
-        t.addString(dc0.getPname());
-   
+        
+    t.addString(dc0.getDescription());
+    t.addInteger(dc0.getNhoras());
+    t.addString(dc0.getPname());   
 //      if(dc0.getDepartamentJob()!=null){
 //            t.addLong(dc0.getDepartamentJob().getId());
-//      }
-   
+//      }   
 //      if(dc0.getDepartamentBaseTimePeriod()!=null){
 //            t.addLong(dc0.getDepartamentBaseTimePeriod().getId());
 //      }
-
-        t.addLong(dc0.getId());
+    t.addLong(dc0.getId());
             
     }    
 
@@ -606,15 +554,10 @@ sToCell(r, row,"time_period_pname", nc++);
     public void fillTupleInsert(final JsonObject js,final Tuple t){       
         
     fTString("pkey", js, t);
-
     fTString("description", js, t);
-
     fTInteger("nhoras", js, t);
-
-    fTString("pname", js, t);
-     
-    fTLong("departamentJob_id",js,t);
-     
+    fTString("pname", js, t);     
+    fTLong("departamentJob_id",js,t);     
     fTLong("departamentBaseTimePeriod_id",js,t);       
     }
 
@@ -642,40 +585,35 @@ fTLong("id",js,t);
     @Override
     public DepartamentJobInstance doFrom(final Row r){
         final DepartamentJobInstance departamentJobInstance = new DepartamentJobInstance();
-         departamentJobInstance.setId(r.getLong("departament_job_instance_id"));
-         
-                departamentJobInstance.setPkey(  r.getString("departament_job_instance_pkey"));
-         
-                departamentJobInstance.setDescription(  r.getString("departament_job_instance_description"));
-         
-                departamentJobInstance.setNhoras(  r.getInteger("departament_job_instance_nhoras"));
-         
-                departamentJobInstance.setPname(  r.getString("departament_job_instance_pname"));
-
+         departamentJobInstance.setId(r.getLong("departament_job_instance_id"));         
+                departamentJobInstance.setPkey(  r.getString("departament_job_instance_pkey"));                       
+                departamentJobInstance.setDescription(  r.getString("departament_job_instance_description"));                       
+                departamentJobInstance.setNhoras(  r.getInteger("departament_job_instance_nhoras"));                       
+                departamentJobInstance.setPname(  r.getString("departament_job_instance_pname"));              
         final DepartamentJob departamentJob = new DepartamentJob();
         departamentJob.setId(r.getLong("departament_job_id"));
         departamentJob.setPkey(r.getString("departament_job_pkey"));
+        
         departamentJob.setPname(r.getString("departament_job_pname"));
         departamentJobInstance.setDepartamentJob(departamentJob);
         
-
         final DepartamentBaseTimePeriod departamentBaseTimePeriod = new DepartamentBaseTimePeriod();
         departamentBaseTimePeriod.setId(r.getLong("departament_base_time_period_id"));
         departamentBaseTimePeriod.setPkey(r.getString("departament_base_time_period_pkey"));
         
         departamentJobInstance.setDepartamentBaseTimePeriod(departamentBaseTimePeriod);
         
-
         final Departament departament = new Departament();
         departament.setId(r.getLong("departament_id"));
         departament.setPkey(r.getString("departament_pkey"));
         departament.setPname(r.getString("departament_pname"));
- departamentJob.setDepartament(departament); 
-
+ 
+        departamentJob.setDepartament(departament); 
         final BaseTimePeriod baseTimePeriod = new BaseTimePeriod();
         baseTimePeriod.setId(r.getLong("base_time_period_id"));
         baseTimePeriod.setPkey(r.getString("base_time_period_pkey"));
-         departamentBaseTimePeriod.setBaseTimePeriod(baseTimePeriod);   
+         
+        departamentBaseTimePeriod.setBaseTimePeriod(baseTimePeriod);   
         return departamentJobInstance;
     }
     
@@ -684,12 +622,13 @@ fTLong("id",js,t);
         DepartamentJobInstance departamentJobInstance = new DepartamentJobInstance();
         departamentJobInstance.setId(js.getLong("id"));
         
-                departamentJobInstance.setPkey(js.getString("pkey"));
-        departamentJobInstance.setDescription(js.getString("description"));
-        departamentJobInstance.setNhoras(js.getInteger("nhoras"));
-        departamentJobInstance.setPname(js.getString("pname"));
-        departamentJobInstance.setId(js.getLong("departamentJob_id"));
-        departamentJobInstance.setId(js.getLong("departamentBaseTimePeriod_id"));
+                
+                departamentJobInstance.setPkey(js.getString("pkey"));        
+                departamentJobInstance.setDescription(js.getString("description"));        
+                departamentJobInstance.setNhoras(js.getInteger("nhoras"));        
+                departamentJobInstance.setPname(js.getString("pname"));        
+            departamentJobInstance.setId(js.getLong("departamentJob_id"));        
+            departamentJobInstance.setId(js.getLong("departamentBaseTimePeriod_id"));
         return departamentJobInstance;
     }
 
@@ -737,21 +676,22 @@ fTLong("id",js,t);
         slcb.doIlPSimple2( "departamentJob_pkey", "departament_job_pkey");
         slcb.doEQPSimple2( "departamentJob_pkey", "departament_job_pkey");
         slcb.doInLongCondition("departamentJob_id", "departament_job_id");  
-//DepartamentJob 4        
+//DepartamentJob 4        --
         slcb.doIlPSimple2( "departamentJob_pname", "departament_job_pname");    
+        
         slcb.doIlPSimple2( "departamentBaseTimePeriod_pkey", "departament_base_time_period_pkey");
         slcb.doEQPSimple2( "departamentBaseTimePeriod_pkey", "departament_base_time_period_pkey");
         slcb.doInLongCondition("departamentBaseTimePeriod_id", "departament_base_time_period_id");  
-//DepartamentBaseTimePeriod undefined        
-
+//DepartamentBaseTimePeriod undefined        --
         slcb.doIlPSimple2( "departament_pkey", "departament_pkey");
         slcb.doEQPSimple2( "departament_pkey", "departament_pkey");
-        slcb.doInLongCondition("departament_id", "departament_id");//Departament 3
+        slcb.doInLongCondition("departament_id", "departament_id");
+//Departament 3
         slcb.doIlPSimple2( "departament_pname", "departament_pname"); 
-
         slcb.doIlPSimple2( "baseTimePeriod_pkey", "base_time_period_pkey");
         slcb.doEQPSimple2( "baseTimePeriod_pkey", "base_time_period_pkey");
-        slcb.doInLongCondition("baseTimePeriod_id", "base_time_period_id");//BaseTimePeriod undefined
+        slcb.doInLongCondition("baseTimePeriod_id", "base_time_period_id");
+//BaseTimePeriod undefined
         slcb.doIlPSimple2( "base_pkey", "base_pkey");
         slcb.doEQPSimple2( "base_pkey", "base_pkey");
         slcb.doInLongCondition("base_id", "base_id"); 
@@ -772,21 +712,19 @@ fTLong("id",js,t);
         final SqlZtatBuilder sz0 = new SqlZtatBuilder(params,"departament_job_instance");
         sz0.addField("COUNT(departament_job_instance.id) as c_departament_job_instance_id").addName("count");
         
-    sz0.addField("sum(departament_job_instance.nhoras) as sum_departament_job_instance_nhoras").addName("sum_nhoras");
-        
+    sz0.addField("sum(departament_job_instance.nhoras) as sum_departament_job_instance_nhoras").addName("sum_nhoras"); 
         
 //level 1
              
-    sz0.applyG1(zDepartamentJob);               
-    sz0.applyG1(zDepartamentBaseTimePeriod);      
-    //level 2
-    
-    sz0.applyG2(zDepartamentJob,zDepartament);                           
-    sz0.applyG2(zDepartamentBaseTimePeriod,zBaseTimePeriod);                           
-    //level 3
-    
-        sz0.applyG3(zDepartamentBaseTimePeriod,zBaseTimePeriod,zBase);               
-        sz0.applyG3(zDepartamentBaseTimePeriod,zBaseTimePeriod,zTimePeriod);               
+    sz0.applyG1(mz1.get("zDepartamentJob"))   ;               
+    sz0.applyG1(mz1.get("zDepartamentBaseTimePeriod"))   ;      
+//level 2    
+    sz0.applyG2(mz2.get("zDepartamentFromDepartamentJob"));                           
+    sz0.applyG2(mz2.get("zBaseTimePeriodFromDepartamentBaseTimePeriod"));                           
+    sz0.applyG2(mz2.get("zDepartamentFromDepartamentBaseTimePeriod"));                           
+//level 3    
+        sz0.applyG3(mz3.get("zBaseFromBaseTimePeriodFromDepartamentBaseTimePeriod"));               
+        sz0.applyG3(mz3.get("zTimePeriodFromBaseTimePeriodFromDepartamentBaseTimePeriod"));               
         return sz0;
     }
 }

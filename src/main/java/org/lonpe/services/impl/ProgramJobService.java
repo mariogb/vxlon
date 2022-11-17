@@ -17,16 +17,18 @@ import org.lonpe.services.AbstractServiceLon;
 import org.lonpe.services.ConditionInfo;
 import org.lonpe.lonvx.sqlbuilders.SqlLonConditionsBuilder;
 import org.apache.poi.xssf.usermodel.XSSFRow;
+import static org.lonpe.lonvx.ctes.CteLon.*;
 
 
 
 import org.lonpe.lonvx.sqlbuilders.ZtatUnitInfoLon;
+import org.lonpe.lonvx.sqlbuilders.ZtatUnitInfoLon2;
+import org.lonpe.lonvx.sqlbuilders.ZtatUnitInfoLon3;
 
 /**
  *   ProgramJobService 
  * 
  */
-   
   
 public class ProgramJobService extends AbstractServiceLon<ProgramJob>{
 
@@ -41,17 +43,17 @@ public class ProgramJobService extends AbstractServiceLon<ProgramJob>{
     private static final String SQLDELETE = "DELETE FROM program_job WHERE id = $1 returning id";
     private static final String TABLENAME ="program_job";
     
-//1
-    private static final ZtatUnitInfoLon zProgram;
 
-//1
-    private static final ZtatUnitInfoLon zDepartamentJob;
+    public ProgramJobService() {
+        init0();
+    }
 
-//2
-    private static final ZtatUnitInfoLon zDepartament;
     
+    private static final Map<String, ZtatUnitInfoLon> mz1 = new HashMap<>(6);                       
+    private static final Map<String, ZtatUnitInfoLon2> mz2 = new HashMap<>(6);                       
+
     @Override
-    public  String getTableName(){
+    public String getTableName(){
         return TABLENAME;
     }
 
@@ -65,8 +67,7 @@ public class ProgramJobService extends AbstractServiceLon<ProgramJob>{
         return SQLLKEYIN;
     }
 
-/**
-    
+/**    
     private static String sql00 = "SELECT program_job.id as program_job_id,
 program_job.pkey as program_job_pkey,
 program_job.description as program_job_description,
@@ -84,8 +85,7 @@ departament.id as departament_id, departament.pkey as departament_pkey,departame
  WHERE 
  program_job.program_id = program.id
  AND program_job.departament_job_id = departament_job.id
- AND departament_job.departament_id = departament.id; 
-"
+ AND departament_job.departament_id = departament.id"
 */
 
     @Override
@@ -105,28 +105,21 @@ departament.id as departament_id, departament.pkey as departament_pkey,departame
     /**
      * sql select property alias field names
      */
-     
-    private static final LinkedHashSet<String> names;
+    private final LinkedHashSet<String> names =  new LinkedHashSet<>();;
     
     /**
      * Map field insert/update to property 
      */
-    private static final HashMap<String,String> insertMapFields; 
+    private final HashMap<String,String> insertMapFields = new HashMap<>(); 
     
     /**
     * Map property to field order 
     */
-    private static final HashMap<String, String> sortMapFields;
+    private final HashMap<String, String> sortMapFields = new  HashMap<>();
 
-    private static final JsonObject dcModel;
+    private final JsonObject dcModel  = new JsonObject();
     
-    static{
-        names = new LinkedHashSet<>();
-        insertMapFields = new HashMap<>();
-        sortMapFields= new  HashMap<>();
-
-        dcModel = new JsonObject();
-
+    private void init0(){
         
     dcModel.put("dc", "programJob");
 
@@ -138,37 +131,32 @@ departament.id as departament_id, departament.pkey as departament_pkey,departame
     final JsonArray ps = new JsonArray();   
  
 //pkey
-    names.add("pkey");
-    insertMapFields.put("program_job.pkey","pkey");  
-
-//Create property pkey       
-    final JsonObject pkey = ps00a("pkey", "String",true);
+    doFieldSort("pkey","pkey","program_job");               
    
 //Used to map error on index to source property because IS Unique
     insertMapFields.put("program_job.program_job_uidx_pkey","pkey");  
 
+//Create property pkey       
+    final JsonObject pkey = psString("pkey",true);
+
 // IS Unique     
     pkey.put("uq",true);                    
-
-    sortMapFields.put("pkey", "program_job_pkey");                   
  
     ps.add(pkey);
  
 //description
-    names.add("description");
-    insertMapFields.put("program_job.description","description");  
+    doField("description","description","program_job");               
 
 //Create property description       
-    final JsonObject description = ps00a("description", "String",false);
+    final JsonObject description = psString("description",false);
  
     ps.add(description);
  
 //fastKey
-    names.add("fastKey");
-    insertMapFields.put("program_job.fast_key","fastKey");  
+    doField("fastKey","fast_key","program_job");               
 
 //Create property fastKey       
-    final JsonObject fastKey = ps00a("fastKey", "String",false);
+    final JsonObject fastKey = psString("fastKey",false);
 
 // hasIndex 
     fastKey.put("withIndex",true);  
@@ -176,30 +164,24 @@ departament.id as departament_id, departament.pkey as departament_pkey,departame
     ps.add(fastKey);
  
 //nhoras
-    names.add("nhoras");
-    insertMapFields.put("program_job.nhoras","nhoras");  
+    doFieldSort("nhoras","nhoras","program_job");               
 
 //Create property nhoras       
-    final JsonObject nhoras = ps00a("nhoras", "Integer",true);
-
-    sortMapFields.put("nhoras", "program_job_nhoras");               
+    final JsonObject nhoras = psInteger("nhoras",true);
  
     ps.add(nhoras);
  
 //pname
-    names.add("pname");
-    insertMapFields.put("program_job.pname","pname");  
-
-//Create property pname       
-    final JsonObject pname = ps00a("pname", "String",true);
+    doFieldSort("pname","pname","program_job");               
    
 //Used to map error on index to source property because IS Unique
     insertMapFields.put("program_job.program_job_uidx_pname","pname");  
 
+//Create property pname       
+    final JsonObject pname = psString("pname",true);
+
 // IS Unique     
     pname.put("uq",true);                    
-
-    sortMapFields.put("pname", "program_job_pname");                   
   
 //PC
     dcModel.put("pc","pname");  
@@ -211,70 +193,60 @@ departament.id as departament_id, departament.pkey as departament_pkey,departame
 
     final JsonArray mto = new JsonArray();      
 
-//(1)  program --------------------
-    names.add("program_id");      
-    insertMapFields.put("program_job.program_id","program_id");    
-       
-    names.add("program_pkey");        
-    sortMapFields.put( "program_pkey", "program_pkey");        
+//(1)  program
+    doFieldMT0("program_job","program", "program");  
 
     final JsonObject program =  doMto("program","program");        
    
     names.add("program_pname");
-    sortMapFields.put( "program_pname", "program_pname");         
-
+    sortMapFields.put( "program_pname", "program_pname");                
     program.put("pc","pname");          
 
     mto.add(program);
         
 
-//(1)  departamentJob --------------------
-    names.add("departamentJob_id");      
-    insertMapFields.put("program_job.departament_job_id","departamentJob_id");    
-       
-    names.add("departamentJob_pkey");        
-    sortMapFields.put( "departamentJob_pkey", "departament_job_pkey");        
+    //1  program  -- program_id
+    final ZtatUnitInfoLon zProgram = new ZtatUnitInfoLon("program_id", "program",  "program","pname","program");
+    mz1.put("zProgram", zProgram);    
+
+//(1)  departamentJob
+    doFieldMT0("program_job","departamentJob", "departament_job");  
 
     final JsonObject departamentJob =  doMto("departamentJob","departamentJob");        
    
     names.add("departamentJob_pname");
-    sortMapFields.put( "departamentJob_pname", "departament_job_pname");         
-
+    sortMapFields.put( "departamentJob_pname", "departament_job_pname");                
     departamentJob.put("pc","pname");          
 
     mto.add(departamentJob);
         
 
+    //1  departament_job  -- departament_job_id
+    final ZtatUnitInfoLon zDepartamentJob = new ZtatUnitInfoLon("departament_job_id", "departamentJob",  "departament_job","pname","departament_job");
+    mz1.put("zDepartamentJob", zDepartamentJob);    
+
     dcModel.put("mto",mto);     
 
     final JsonArray mto2 = new JsonArray();        
-//(2)   departament 
-        
+
+//(2)  departament   departament  
     names.add("departament_id");          
     names.add("departament_pkey");
 
-    final JsonObject departament =   doMto2("departament","departament","departamentJob");        
+    final JsonObject departamentFromDepartamentJob =   doMto2("departament","departament","departamentJob");        
    
-    names.add("departament_pname");  
-    departament.put("pc","pname");             
-   
-    sortMapFields.put( "departament_pname", "departament_pname");            
+    names.add("departament_pname");           
+    sortMapFields.put( "departament_pname", "departament_pname");  
+    departamentFromDepartamentJob.put("pc","pname");    
          
-    mto2.add(departament);        
+    mto2.add(departamentFromDepartamentJob);        
+
+    final ZtatUnitInfoLon2 zDepartamentFromDepartamentJob = new ZtatUnitInfoLon2(zDepartamentJob, "departament_id", "departament",  "departament","pname","departament");
+    mz2.put("zDepartamentFromDepartamentJob",zDepartamentFromDepartamentJob);
 
     dcModel.put("mto2",mto2);    
         
-
         
-//1  program  -- program_id
-    zProgram = new ZtatUnitInfoLon("program_id", "program",  "program","pname","program");
-
-//1  departament_job  -- departament_job_id
-    zDepartamentJob = new ZtatUnitInfoLon("departament_job_id", "departamentJob",  "departament_job","pname","departament_job");
-
-//2    
-    zDepartament = new ZtatUnitInfoLon("departament_id", "departament",  "departament","pname","departament");
-
     }        
     @Override
     public LinkedHashSet<String> getNames() {
@@ -299,128 +271,112 @@ departament.id as departament_id, departament.pkey as departament_pkey,departame
     @Override
     public JsonArray toJsonArray(final Row r){
         final JsonArray jsa = new JsonArray();
-        jsa.add(r.getLong("program_job_id") );
-        jsa.add(r.getString("program_job_pkey") );
-        jsa.add(r.getString("program_job_description") );
-        jsa.add(r.getString("program_job_fast_key") );
-        jsa.add(r.getInteger("program_job_nhoras") );
+        jsa.add(r.getLong("program_job_id") );       
+        jsa.add(r.getString("program_job_pkey") );       
+        jsa.add(r.getString("program_job_description") );       
+        jsa.add(r.getString("program_job_fast_key") );       
+        jsa.add(r.getInteger("program_job_nhoras") );       
         jsa.add(r.getString("program_job_pname") );
-        jsa.add(r.getLong("program_id"));
-        jsa.add(r.getString("program_pkey"));
-        jsa.add(r.getString("program_pname"));
-        jsa.add(r.getLong("departament_job_id"));
-        jsa.add(r.getString("departament_job_pkey"));
-        jsa.add(r.getString("departament_job_pname"));
-        jsa.add(r.getLong("departament_id"));
-        jsa.add(r.getString("departament_pkey"));
-        jsa.add(r.getString("departament_pname"));
+    jsa.add(r.getLong("program_id"));
+    jsa.add(r.getString("program_pkey"));   
+    
+        
+    jsa.add(r.getString("program_pname"));
+    jsa.add(r.getLong("departament_job_id"));
+    jsa.add(r.getString("departament_job_pkey"));   
+    
+        
+    jsa.add(r.getString("departament_job_pname"));
+    jsa.add(r.getLong("departament_id"));
+    jsa.add(r.getString("departament_pkey"));
+    
+
+    jsa.add(r.getString("departament_pname"));
+    
         return jsa;
     }
 
     @Override
-    public void fillXRow(final Row r, final XSSFRow row, int nc,boolean withIds) {
-        fillXRow0(r, row, nc, withIds);
+    public int fillXRow(final Row r, final XSSFRow row, int nc,boolean withIds) {
+        return fillXRow0(r, row, nc, withIds);
     }
 
     @Override
     public HashMap<String,String> lXRowH(final boolean withIds, final int level) {        
         
-    final  LinkedHashMap<String,String> m_ = new LinkedHashMap<>();
-    if(withIds){
-                m_.put("programJob_id","Long");
-            }
-            
-    //pkey       
-            m_.put("programJob_pkey","String"); 
-            
-    //description       
-            m_.put("programJob_description","String"); 
-            
-    //fastKey       
-            m_.put("programJob_fastKey","String"); 
-            
-    //nhoras       
-            m_.put("programJob_nhoras","Integer"); 
-            
-    //pname       
-            m_.put("programJob_pname","String"); 
-            
-if(level<1){
-                return m_;    
-            }
-            
- // program
-if(withIds){
-            m_.put("program_id","Long");   
-                    
-            }
-
-        m_.put("program_pkey","String");   
-        
-
-            m_.put("program_pname","String");   
-            
- // departamentJob
-if(withIds){
-            m_.put("departamentJob_id","Long");   
-                    
-            }
-
-        m_.put("departamentJob_pkey","String");   
-        
-
-            m_.put("departamentJob_pname","String");   
-            
-//[2] departament  
-
-        if(level>1){
-            if(withIds){
-               m_.put("departament_id","Long");              
-            }      
-        
-        m_.put("departament_pkey","String");  
-
-            m_.put("departament_pname","String");    
- 
-                      }             
+    final  LinkedHashMap<String,String> m = new LinkedHashMap<>();
     
-    return m_;
+    if(withIds){
+        m.put("programJob_id",LONG);
+    }        
+//pkey    
+    m.put("programJob_pkey",STRING);              
+//description    
+    m.put("programJob_description",STRING);              
+//fastKey    
+    m.put("programJob_fastKey",STRING);              
+//nhoras    
+    m.put("programJob_nhoras",INTEGER);              
+//pname    
+    m.put("programJob_pname",STRING);          
+    if(level<1){
+        return m;    
+    }       
+// program   program
+    if(withIds){
+        m.put("program_id",LONG);                       
+    }
+    m.put("program_pkey",STRING);     
+    m.put("program_pname",STRING);   
+// departamentJob   departamentJob
+    if(withIds){
+        m.put("departamentJob_id",LONG);                       
+    }
+    m.put("departamentJob_pkey",STRING);     
+    m.put("departamentJob_pname",STRING);  
+//[2] departament --   departament
+    if(withIds){
+        m.put("departament_id",LONG);              
+    }              
+    m.put("departament_pkey",STRING);  
+        
+    m.put("departament_pname",STRING);  
+    
+    return m;
     
     }
     
-    private void fillXRow0(final Row r, final XSSFRow row,int nc, boolean withIds){
-        if(withIds){
-        lToCell(r, row,"program_job_id", nc++); 
-        }
+    private int fillXRow0(final Row r, final XSSFRow row,int nc, final boolean withIds){
         
-    //pkey       
-            sToCell(r, row,"program_job_pkey", nc++); 
-    //description       
-            sToCell(r, row,"program_job_description", nc++); 
-    //fastKey       
-            sToCell(r, row,"program_job_fast_key", nc++); 
-    //nhoras            
-            ldToCell(r, row,"program_job_nhoras", nc++); 
-    //pname       
+    if(withIds){
+        lToCell(r, row,"program_job_id", nc++); 
+    }            //pkey       
+            sToCell(r, row,"program_job_pkey", nc++);     //description       
+            sToCell(r, row,"program_job_description", nc++);     //fastKey       
+            sToCell(r, row,"program_job_fast_key", nc++);     //nhoras            
+            ldToCell(r, row,"program_job_nhoras", nc++);     //pname       
             sToCell(r, row,"program_job_pname", nc++); 
- // program
-if(withIds){
-                    lToCell(r, row,"program_id", nc++);
-                 }
-sToCell(r, row,"program_pkey", nc++);
-sToCell(r, row,"program_pname", nc++);
- // departamentJob
-if(withIds){
-                    lToCell(r, row,"departament_job_id", nc++);
-                 }
-sToCell(r, row,"departament_job_pkey", nc++);
-sToCell(r, row,"departament_job_pname", nc++);
-// departament
-if(withIds){
-            lToCell(r, row,"departament_id", nc++);
-        }
-sToCell(r, row,"departament_pkey", nc++);
-sToCell(r, row,"departament_pname", nc++);
+//program   program        
+    if(withIds){
+        lToCell(r, row,"program_id", nc++);
+    }
+    sToCell(r, row,"program_pkey", nc++);
+    sToCell(r, row,"program_pname", nc++);
+//departamentJob   departament_job        
+    if(withIds){
+        lToCell(r, row,"departament_job_id", nc++);
+    }
+    sToCell(r, row,"departament_job_pkey", nc++);
+    sToCell(r, row,"departament_job_pname", nc++);
+// departament  departament
+    if(withIds){
+       lToCell(r, row,"departament_id", nc++);
+    }
+
+    sToCell(r, row,"departament_pkey", nc++);
+
+    sToCell(r, row,"departament_pname", nc++);
+        return nc;
     }
 
     @Override
@@ -440,37 +396,34 @@ sToCell(r, row,"departament_pname", nc++);
 
     @Override
     public void fillTupleInsert(final ProgramJob dc0, final Tuple t){
-                t.addString(dc0.getPkey());
-        t.addString(dc0.getDescription());
-        t.addString(dc0.getFastKey());
-        t.addInteger(dc0.getNhoras());
-        t.addString(dc0.getPname());
-   
-            if(dc0.getProgram()!=null){
-               t.addLong(dc0.getProgram().getId());
-            }
-   
-            if(dc0.getDepartamentJob()!=null){
-               t.addLong(dc0.getDepartamentJob().getId());
-            }
+                
+    t.addString(dc0.getPkey());        
+    t.addString(dc0.getDescription());        
+    t.addString(dc0.getFastKey());        
+    t.addInteger(dc0.getNhoras());        
+    t.addString(dc0.getPname());   
+    if(dc0.getProgram()!=null){
+       t.addLong(dc0.getProgram().getId());
+    }   
+    if(dc0.getDepartamentJob()!=null){
+       t.addLong(dc0.getDepartamentJob().getId());
+    }
     }
 
     @Override
     public void fillTupleUpdate(final ProgramJob dc0, final Tuple t){
-                t.addString(dc0.getDescription());
-        t.addString(dc0.getFastKey());
-        t.addInteger(dc0.getNhoras());
-        t.addString(dc0.getPname());
-   
+        
+    t.addString(dc0.getDescription());
+    t.addString(dc0.getFastKey());
+    t.addInteger(dc0.getNhoras());
+    t.addString(dc0.getPname());   
 //      if(dc0.getProgram()!=null){
 //            t.addLong(dc0.getProgram().getId());
-//      }
-   
+//      }   
 //      if(dc0.getDepartamentJob()!=null){
 //            t.addLong(dc0.getDepartamentJob().getId());
 //      }
-
-        t.addLong(dc0.getId());
+    t.addLong(dc0.getId());
             
     }    
 
@@ -508,17 +461,11 @@ sToCell(r, row,"departament_pname", nc++);
     public void fillTupleInsert(final JsonObject js,final Tuple t){       
         
     fTString("pkey", js, t);
-
     fTString("description", js, t);
-
     fTString("fastKey", js, t);
-
     fTInteger("nhoras", js, t);
-
-    fTString("pname", js, t);
-     
-    fTLong("program_id",js,t);
-     
+    fTString("pname", js, t);     
+    fTLong("program_id",js,t);     
     fTLong("departamentJob_id",js,t);       
     }
 
@@ -547,37 +494,32 @@ fTLong("id",js,t);
     @Override
     public ProgramJob doFrom(final Row r){
         final ProgramJob programJob = new ProgramJob();
-         programJob.setId(r.getLong("program_job_id"));
-         
-                programJob.setPkey(  r.getString("program_job_pkey"));
-         
-                programJob.setDescription(  r.getString("program_job_description"));
-         
-                programJob.setFastKey(  r.getString("program_job_fast_key"));
-         
-                programJob.setNhoras(  r.getInteger("program_job_nhoras"));
-         
-                programJob.setPname(  r.getString("program_job_pname"));
-
+         programJob.setId(r.getLong("program_job_id"));         
+                programJob.setPkey(  r.getString("program_job_pkey"));                       
+                programJob.setDescription(  r.getString("program_job_description"));                       
+                programJob.setFastKey(  r.getString("program_job_fast_key"));                       
+                programJob.setNhoras(  r.getInteger("program_job_nhoras"));                       
+                programJob.setPname(  r.getString("program_job_pname"));              
         final Program program = new Program();
         program.setId(r.getLong("program_id"));
         program.setPkey(r.getString("program_pkey"));
+        
         program.setPname(r.getString("program_pname"));
         programJob.setProgram(program);
         
-
         final DepartamentJob departamentJob = new DepartamentJob();
         departamentJob.setId(r.getLong("departament_job_id"));
         departamentJob.setPkey(r.getString("departament_job_pkey"));
+        
         departamentJob.setPname(r.getString("departament_job_pname"));
         programJob.setDepartamentJob(departamentJob);
         
-
         final Departament departament = new Departament();
         departament.setId(r.getLong("departament_id"));
         departament.setPkey(r.getString("departament_pkey"));
         departament.setPname(r.getString("departament_pname"));
- departamentJob.setDepartament(departament);   
+ 
+        departamentJob.setDepartament(departament);   
         return programJob;
     }
     
@@ -586,13 +528,14 @@ fTLong("id",js,t);
         ProgramJob programJob = new ProgramJob();
         programJob.setId(js.getLong("id"));
         
-                programJob.setPkey(js.getString("pkey"));
-        programJob.setDescription(js.getString("description"));
-        programJob.setFastKey(js.getString("fastKey"));
-        programJob.setNhoras(js.getInteger("nhoras"));
-        programJob.setPname(js.getString("pname"));
-        programJob.setId(js.getLong("program_id"));
-        programJob.setId(js.getLong("departamentJob_id"));
+                
+                programJob.setPkey(js.getString("pkey"));        
+                programJob.setDescription(js.getString("description"));        
+                programJob.setFastKey(js.getString("fastKey"));        
+                programJob.setNhoras(js.getInteger("nhoras"));        
+                programJob.setPname(js.getString("pname"));        
+            programJob.setId(js.getLong("program_id"));        
+            programJob.setId(js.getLong("departamentJob_id"));
         return programJob;
     }
 
@@ -644,17 +587,19 @@ fTLong("id",js,t);
         slcb.doIlPSimple2( "program_pkey", "program_pkey");
         slcb.doEQPSimple2( "program_pkey", "program_pkey");
         slcb.doInLongCondition("program_id", "program_id");  
-//Program 3        
+//Program 3        --
         slcb.doIlPSimple2( "program_pname", "program_pname");    
+        
         slcb.doIlPSimple2( "departamentJob_pkey", "departament_job_pkey");
         slcb.doEQPSimple2( "departamentJob_pkey", "departament_job_pkey");
         slcb.doInLongCondition("departamentJob_id", "departament_job_id");  
-//DepartamentJob 4        
+//DepartamentJob 4        --
         slcb.doIlPSimple2( "departamentJob_pname", "departament_job_pname");    
-
+        
         slcb.doIlPSimple2( "departament_pkey", "departament_pkey");
         slcb.doEQPSimple2( "departament_pkey", "departament_pkey");
-        slcb.doInLongCondition("departament_id", "departament_id");//Departament 3
+        slcb.doInLongCondition("departament_id", "departament_id");
+//Departament 3
         slcb.doIlPSimple2( "departament_pname", "departament_pname"); 
 
         slcb.doSQLORDEN(sortMapFields);
@@ -670,18 +615,15 @@ fTLong("id",js,t);
         final SqlZtatBuilder sz0 = new SqlZtatBuilder(params,"program_job");
         sz0.addField("COUNT(program_job.id) as c_program_job_id").addName("count");
         
-    sz0.addField("sum(program_job.nhoras) as sum_program_job_nhoras").addName("sum_nhoras");
-        
+    sz0.addField("sum(program_job.nhoras) as sum_program_job_nhoras").addName("sum_nhoras"); 
         
 //level 1
              
-    sz0.applyG1(zProgram);               
-    sz0.applyG1(zDepartamentJob);      
-    //level 2
-    
-    sz0.applyG2(zDepartamentJob,zDepartament);                           
-    //level 3
-    
+    sz0.applyG1(mz1.get("zProgram"))   ;               
+    sz0.applyG1(mz1.get("zDepartamentJob"))   ;      
+//level 2    
+    sz0.applyG2(mz2.get("zDepartamentFromDepartamentJob"));                           
+//level 3    
         return sz0;
     }
 }

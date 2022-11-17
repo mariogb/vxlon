@@ -38,7 +38,7 @@ public final class HzLonConfig {
 
     protected static void doMapStoreConfigG(final String l_name, final Config hzConfig, final MapStore lonmapstore,
             Integer timeToLiveSeconds) {
-       final MapStoreConfig mapStoreConfig = new MapStoreConfig();
+        final MapStoreConfig mapStoreConfig = new MapStoreConfig();
         mapStoreConfig.setImplementation(lonmapstore).setEnabled(true);
         mapStoreConfig.setWriteDelaySeconds(10);
 

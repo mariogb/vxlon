@@ -78,8 +78,7 @@ public class WebSocketLonHandler implements Handler<ServerWebSocket> {
             eb.publish(claveCanal, publishObj);
 
         } catch (Exception ex) {
-            log.error("Datos recibidos no buenos para convertir a json !!!",ex);
-            
+            log.error("Datos recibidos no buenos para convertir a json !!!", ex);
 
         }
 
@@ -193,7 +192,7 @@ public class WebSocketLonHandler implements Handler<ServerWebSocket> {
             }
 
             final User result = res.result();
-            
+
             final JsonObject attributes = result.attributes();
             log.info("----result.attributes()");
             log.info("\t" + result.attributes());
@@ -202,33 +201,33 @@ public class WebSocketLonHandler implements Handler<ServerWebSocket> {
             final JsonObject accObject = attributes.getJsonObject("accessToken");
             final String username = accObject.getString("username");
             final Long uid = accObject.getLong("id");
-            
+
             if (path.startsWith("/wrtc/")) {
-                
+
                 final EventBus eb = vertx.eventBus();
-                
+
                 final MessageConsumer<JsonObject> consumer = eb.consumer(claveCanal, (Message<JsonObject> msg) -> {
                     handleMsg(msg, uid, username, sws0);
                 });
-                
+
                 sws0.closeHandler((Void e) -> {
                     eb.publish(claveCanal, new JsonObject().put(ACTION, CLOSE).put("payload",
                             new JsonObject().put(FROMUID, uid)));
                     log.info("Close en " + consumer.address());
                     consumer.unregister();
                 });
-                
+
                 sws0.endHandler((Void e) -> {
                     eb.publish(claveCanal, new JsonObject().put(ACTION, "END").put("payload",
                             new JsonObject().put(FROMUID, uid)));
                     log.info("end en " + consumer.address());
                     consumer.unregister();
                 });
-                
+
                 sws0.handler((Buffer e) -> {
                     handleBuffToPublish(e, claveCanal, uid, username, eb, consumer);
                 });
-                
+
             }
         });
 

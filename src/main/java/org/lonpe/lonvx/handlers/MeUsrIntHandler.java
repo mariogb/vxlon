@@ -56,14 +56,12 @@ public class MeUsrIntHandler implements Handler<RoutingContext> {
                 response.setStatusCode(500).end(new JsonObject().put("nopkeydata", "1").toBuffer());
                 return;
             }
-            
+
             MeUsrInterface meUsrInterface = serviceLon.doFromJson(jso);
-            
+
             mapMUI.put(meUsrInterface.getPkey(), meUsrInterface);
-            
+
             response.putHeader("content-type", "application/json").end(jso.toBuffer());
-                        
-            
 
         });
 

@@ -17,16 +17,18 @@ import org.lonpe.services.AbstractServiceLon;
 import org.lonpe.services.ConditionInfo;
 import org.lonpe.lonvx.sqlbuilders.SqlLonConditionsBuilder;
 import org.apache.poi.xssf.usermodel.XSSFRow;
+import static org.lonpe.lonvx.ctes.CteLon.*;
 
 
 
 import org.lonpe.lonvx.sqlbuilders.ZtatUnitInfoLon;
+import org.lonpe.lonvx.sqlbuilders.ZtatUnitInfoLon2;
+import org.lonpe.lonvx.sqlbuilders.ZtatUnitInfoLon3;
 
 /**
  *   ProductService 
  * 
  */
-   
   
 public class ProductService extends AbstractServiceLon<Product>{
 
@@ -41,11 +43,16 @@ public class ProductService extends AbstractServiceLon<Product>{
     private static final String SQLDELETE = "DELETE FROM product WHERE id = $1 returning id";
     private static final String TABLENAME ="product";
     
-//1
-    private static final ZtatUnitInfoLon zProductType;
+
+    public ProductService() {
+        init0();
+    }
+
     
+    private static final Map<String, ZtatUnitInfoLon> mz1 = new HashMap<>(6);                       
+
     @Override
-    public  String getTableName(){
+    public String getTableName(){
         return TABLENAME;
     }
 
@@ -59,8 +66,7 @@ public class ProductService extends AbstractServiceLon<Product>{
         return SQLLKEYIN;
     }
 
-/**
-    
+/**    
     private static String sql00 = "SELECT product.id as product_id,
 product.pkey as product_pkey,
 product.description as product_description,
@@ -72,8 +78,7 @@ product_type.id as product_type_id,product_type.pkey as product_type_pkey,produc
   product,
   product_type as product_type  
  WHERE 
- product.product_type_id = product_type.id; 
-"
+ product.product_type_id = product_type.id"
 */
 
     @Override
@@ -93,28 +98,21 @@ product_type.id as product_type_id,product_type.pkey as product_type_pkey,produc
     /**
      * sql select property alias field names
      */
-     
-    private static final LinkedHashSet<String> names;
+    private final LinkedHashSet<String> names =  new LinkedHashSet<>();;
     
     /**
      * Map field insert/update to property 
      */
-    private static final HashMap<String,String> insertMapFields; 
+    private final HashMap<String,String> insertMapFields = new HashMap<>(); 
     
     /**
     * Map property to field order 
     */
-    private static final HashMap<String, String> sortMapFields;
+    private final HashMap<String, String> sortMapFields = new  HashMap<>();
 
-    private static final JsonObject dcModel;
+    private final JsonObject dcModel  = new JsonObject();
     
-    static{
-        names = new LinkedHashSet<>();
-        insertMapFields = new HashMap<>();
-        sortMapFields= new  HashMap<>();
-
-        dcModel = new JsonObject();
-
+    private void init0(){
         
     dcModel.put("dc", "product");
 
@@ -126,37 +124,32 @@ product_type.id as product_type_id,product_type.pkey as product_type_pkey,produc
     final JsonArray ps = new JsonArray();   
  
 //pkey
-    names.add("pkey");
-    insertMapFields.put("product.pkey","pkey");  
-
-//Create property pkey       
-    final JsonObject pkey = ps00a("pkey", "String",true);
+    doFieldSort("pkey","pkey","product");               
    
 //Used to map error on index to source property because IS Unique
     insertMapFields.put("product.product_uidx_pkey","pkey");  
 
+//Create property pkey       
+    final JsonObject pkey = psString("pkey",true);
+
 // IS Unique     
     pkey.put("uq",true);                    
-
-    sortMapFields.put("pkey", "product_pkey");                   
  
     ps.add(pkey);
  
 //description
-    names.add("description");
-    insertMapFields.put("product.description","description");  
+    doField("description","description","product");               
 
 //Create property description       
-    final JsonObject description = ps00a("description", "String",false);
+    final JsonObject description = psString("description",false);
  
     ps.add(description);
  
 //fastKey
-    names.add("fastKey");
-    insertMapFields.put("product.fast_key","fastKey");  
+    doField("fastKey","fast_key","product");               
 
 //Create property fastKey       
-    final JsonObject fastKey = ps00a("fastKey", "String",false);
+    final JsonObject fastKey = psString("fastKey",false);
 
 // hasIndex 
     fastKey.put("withIndex",true);  
@@ -164,13 +157,10 @@ product_type.id as product_type_id,product_type.pkey as product_type_pkey,produc
     ps.add(fastKey);
  
 //pname
-    names.add("pname");
-    insertMapFields.put("product.pname","pname");  
+    doFieldSort("pname","pname","product");               
 
 //Create property pname       
-    final JsonObject pname = ps00a("pname", "String",true);
-
-    sortMapFields.put("pname", "product_pname");                   
+    final JsonObject pname = psString("pname",true);
   
 //PC
     dcModel.put("pc","pname");  
@@ -178,11 +168,10 @@ product_type.id as product_type_id,product_type.pkey as product_type_pkey,produc
     ps.add(pname);
  
 //sku
-    names.add("sku");
-    insertMapFields.put("product.sku","sku");  
+    doField("sku","sku","product");               
 
 //Create property sku       
-    final JsonObject sku = ps00a("sku", "String",false);
+    final JsonObject sku = psString("sku",false);
 
 // hasIndex 
     sku.put("withIndex",true);  
@@ -194,22 +183,21 @@ product_type.id as product_type_id,product_type.pkey as product_type_pkey,produc
 
     final JsonArray mto = new JsonArray();      
 
-//(1)  productType --------------------
-    names.add("productType_id");      
-    insertMapFields.put("product.product_type_id","productType_id");    
-       
-    names.add("productType_pkey");        
-    sortMapFields.put( "productType_pkey", "product_type_pkey");        
+//(1)  productType
+    doFieldMT0("product","productType", "product_type");  
 
     final JsonObject productType =  doMto("productType","productType");        
    
     names.add("productType_pname");
-    sortMapFields.put( "productType_pname", "product_type_pname");         
-
+    sortMapFields.put( "productType_pname", "product_type_pname");                
     productType.put("pc","pname");          
 
     mto.add(productType);
         
+
+    //1  product_type  -- product_type_id
+    final ZtatUnitInfoLon zProductType = new ZtatUnitInfoLon("product_type_id", "productType",  "product_type","pname","product_type");
+    mz1.put("zProductType", zProductType);    
 
     dcModel.put("mto",mto);     
         
@@ -223,11 +211,7 @@ product_type.id as product_type_id,product_type.pkey as product_type_pkey,produc
 
 /** OTM ON MODEL  **/
         dcModel.put("otm",otm);  
-
         
-//1  product_type  -- product_type_id
-    zProductType = new ZtatUnitInfoLon("product_type_id", "productType",  "product_type","pname","product_type");
-
     }        
     @Override
     public LinkedHashSet<String> getNames() {
@@ -252,87 +236,74 @@ product_type.id as product_type_id,product_type.pkey as product_type_pkey,produc
     @Override
     public JsonArray toJsonArray(final Row r){
         final JsonArray jsa = new JsonArray();
-        jsa.add(r.getLong("product_id") );
-        jsa.add(r.getString("product_pkey") );
-        jsa.add(r.getString("product_description") );
-        jsa.add(r.getString("product_fast_key") );
-        jsa.add(r.getString("product_pname") );
+        jsa.add(r.getLong("product_id") );       
+        jsa.add(r.getString("product_pkey") );       
+        jsa.add(r.getString("product_description") );       
+        jsa.add(r.getString("product_fast_key") );       
+        jsa.add(r.getString("product_pname") );       
         jsa.add(r.getString("product_sku") );
-        jsa.add(r.getLong("product_type_id"));
-        jsa.add(r.getString("product_type_pkey"));
-        jsa.add(r.getString("product_type_pname"));
+    jsa.add(r.getLong("product_type_id"));
+    jsa.add(r.getString("product_type_pkey"));   
+    
+        
+    jsa.add(r.getString("product_type_pname"));
         return jsa;
     }
 
     @Override
-    public void fillXRow(final Row r, final XSSFRow row, int nc,boolean withIds) {
-        fillXRow0(r, row, nc, withIds);
+    public int fillXRow(final Row r, final XSSFRow row, int nc,boolean withIds) {
+        return fillXRow0(r, row, nc, withIds);
     }
 
     @Override
     public HashMap<String,String> lXRowH(final boolean withIds, final int level) {        
         
-    final  LinkedHashMap<String,String> m_ = new LinkedHashMap<>();
-    if(withIds){
-                m_.put("product_id","Long");
-            }
-            
-    //pkey       
-            m_.put("product_pkey","String"); 
-            
-    //description       
-            m_.put("product_description","String"); 
-            
-    //fastKey       
-            m_.put("product_fastKey","String"); 
-            
-    //pname       
-            m_.put("product_pname","String"); 
-            
-    //sku       
-            m_.put("product_sku","String"); 
-            
-if(level<1){
-                return m_;    
-            }
-            
- // productType
-if(withIds){
-            m_.put("productType_id","Long");   
-                    
-            }
-
-        m_.put("productType_pkey","String");   
-        
-
-            m_.put("productType_pname","String");   
-            
+    final  LinkedHashMap<String,String> m = new LinkedHashMap<>();
     
-    return m_;
+    if(withIds){
+        m.put("product_id",LONG);
+    }        
+//pkey    
+    m.put("product_pkey",STRING);              
+//description    
+    m.put("product_description",STRING);              
+//fastKey    
+    m.put("product_fastKey",STRING);              
+//pname    
+    m.put("product_pname",STRING);              
+//sku    
+    m.put("product_sku",STRING);          
+    if(level<1){
+        return m;    
+    }       
+// productType   productType
+    if(withIds){
+        m.put("productType_id",LONG);                       
+    }
+    m.put("productType_pkey",STRING);     
+    m.put("productType_pname",STRING);  
+    
+    return m;
     
     }
     
-    private void fillXRow0(final Row r, final XSSFRow row,int nc, boolean withIds){
-        if(withIds){
-        lToCell(r, row,"product_id", nc++); 
-        }
+    private int fillXRow0(final Row r, final XSSFRow row,int nc, final boolean withIds){
         
-    //pkey       
-            sToCell(r, row,"product_pkey", nc++); 
-    //description       
-            sToCell(r, row,"product_description", nc++); 
-    //fastKey       
-            sToCell(r, row,"product_fast_key", nc++); 
-    //pname       
-            sToCell(r, row,"product_pname", nc++); 
-    //sku       
+    if(withIds){
+        lToCell(r, row,"product_id", nc++); 
+    }            //pkey       
+            sToCell(r, row,"product_pkey", nc++);     //description       
+            sToCell(r, row,"product_description", nc++);     //fastKey       
+            sToCell(r, row,"product_fast_key", nc++);     //pname       
+            sToCell(r, row,"product_pname", nc++);     //sku       
             sToCell(r, row,"product_sku", nc++); 
- // productType
-if(withIds){
-                    lToCell(r, row,"product_type_id", nc++);
-                 }
-sToCell(r, row,"product_type_pkey", nc++);
-sToCell(r, row,"product_type_pname", nc++);
+//productType   product_type        
+    if(withIds){
+        lToCell(r, row,"product_type_id", nc++);
+    }
+    sToCell(r, row,"product_type_pkey", nc++);
+    sToCell(r, row,"product_type_pname", nc++);
+        return nc;
     }
 
     @Override
@@ -352,29 +323,28 @@ sToCell(r, row,"product_type_pname", nc++);
 
     @Override
     public void fillTupleInsert(final Product dc0, final Tuple t){
-                t.addString(dc0.getPkey());
-        t.addString(dc0.getDescription());
-        t.addString(dc0.getFastKey());
-        t.addString(dc0.getPname());
-        t.addString(dc0.getSku());
-   
-            if(dc0.getProductType()!=null){
-               t.addLong(dc0.getProductType().getId());
-            }
+                
+    t.addString(dc0.getPkey());        
+    t.addString(dc0.getDescription());        
+    t.addString(dc0.getFastKey());        
+    t.addString(dc0.getPname());        
+    t.addString(dc0.getSku());   
+    if(dc0.getProductType()!=null){
+       t.addLong(dc0.getProductType().getId());
+    }
     }
 
     @Override
     public void fillTupleUpdate(final Product dc0, final Tuple t){
-                t.addString(dc0.getDescription());
-        t.addString(dc0.getFastKey());
-        t.addString(dc0.getPname());
-        t.addString(dc0.getSku());
-   
+        
+    t.addString(dc0.getDescription());
+    t.addString(dc0.getFastKey());
+    t.addString(dc0.getPname());
+    t.addString(dc0.getSku());   
 //      if(dc0.getProductType()!=null){
 //            t.addLong(dc0.getProductType().getId());
 //      }
-
-        t.addLong(dc0.getId());
+    t.addLong(dc0.getId());
             
     }    
 
@@ -406,15 +376,10 @@ sToCell(r, row,"product_type_pname", nc++);
     public void fillTupleInsert(final JsonObject js,final Tuple t){       
         
     fTString("pkey", js, t);
-
     fTString("description", js, t);
-
     fTString("fastKey", js, t);
-
     fTString("pname", js, t);
-
-    fTString("sku", js, t);
-     
+    fTString("sku", js, t);     
     fTLong("productType_id",js,t);       
     }
 
@@ -441,21 +406,16 @@ fTLong("id",js,t);
     @Override
     public Product doFrom(final Row r){
         final Product product = new Product();
-         product.setId(r.getLong("product_id"));
-         
-                product.setPkey(  r.getString("product_pkey"));
-         
-                product.setDescription(  r.getString("product_description"));
-         
-                product.setFastKey(  r.getString("product_fast_key"));
-         
-                product.setPname(  r.getString("product_pname"));
-         
-                product.setSku(  r.getString("product_sku"));
-
+         product.setId(r.getLong("product_id"));         
+                product.setPkey(  r.getString("product_pkey"));                       
+                product.setDescription(  r.getString("product_description"));                       
+                product.setFastKey(  r.getString("product_fast_key"));                       
+                product.setPname(  r.getString("product_pname"));                       
+                product.setSku(  r.getString("product_sku"));              
         final ProductType productType = new ProductType();
         productType.setId(r.getLong("product_type_id"));
         productType.setPkey(r.getString("product_type_pkey"));
+        
         productType.setPname(r.getString("product_type_pname"));
         product.setProductType(productType);
           
@@ -467,12 +427,13 @@ fTLong("id",js,t);
         Product product = new Product();
         product.setId(js.getLong("id"));
         
-                product.setPkey(js.getString("pkey"));
-        product.setDescription(js.getString("description"));
-        product.setFastKey(js.getString("fastKey"));
-        product.setPname(js.getString("pname"));
-        product.setSku(js.getString("sku"));
-        product.setId(js.getLong("productType_id"));
+                
+                product.setPkey(js.getString("pkey"));        
+                product.setDescription(js.getString("description"));        
+                product.setFastKey(js.getString("fastKey"));        
+                product.setPname(js.getString("pname"));        
+                product.setSku(js.getString("sku"));        
+            product.setId(js.getLong("productType_id"));
         return product;
     }
 
@@ -518,8 +479,9 @@ fTLong("id",js,t);
         slcb.doIlPSimple2( "productType_pkey", "product_type_pkey");
         slcb.doEQPSimple2( "productType_pkey", "product_type_pkey");
         slcb.doInLongCondition("productType_id", "product_type_id");  
-//ProductType 5        
+//ProductType 5        --
         slcb.doIlPSimple2( "productType_pname", "product_type_pname");    
+        
 
         slcb.doSQLORDEN(sortMapFields);
 
@@ -537,11 +499,9 @@ fTLong("id",js,t);
         
 //level 1
              
-    sz0.applyG1(zProductType);      
-    //level 2
-    
-    //level 3
-    
+    sz0.applyG1(mz1.get("zProductType"))   ;      
+//level 2    
+//level 3    
         return sz0;
     }
 }

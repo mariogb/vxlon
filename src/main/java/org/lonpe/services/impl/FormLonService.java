@@ -17,6 +17,9 @@ import org.lonpe.services.AbstractServiceLon;
 import org.lonpe.services.ConditionInfo;
 import org.lonpe.lonvx.sqlbuilders.SqlLonConditionsBuilder;
 import org.apache.poi.xssf.usermodel.XSSFRow;
+import static org.lonpe.lonvx.ctes.CteLon.*;
+
+
 
 
 
@@ -26,7 +29,6 @@ import org.apache.poi.xssf.usermodel.XSSFRow;
  *   FormLonService 
  * 
  */
-   
   
 public class FormLonService extends AbstractServiceLon<FormLon>{
 
@@ -41,9 +43,15 @@ public class FormLonService extends AbstractServiceLon<FormLon>{
     private static final String SQLDELETE = "DELETE FROM form_lon WHERE id = $1 returning id";
     private static final String TABLENAME ="form_lon";
     
+
+    public FormLonService() {
+        init0();
+    }
+
     
+
     @Override
-    public  String getTableName(){
+    public String getTableName(){
         return TABLENAME;
     }
 
@@ -57,14 +65,12 @@ public class FormLonService extends AbstractServiceLon<FormLon>{
         return SQLLKEYIN;
     }
 
-/**
-    
+/**    
     private static String sql00 = "SELECT form_lon.id as form_lon_id,
 form_lon.pkey as form_lon_pkey,
 form_lon.pname as form_lon_pname 
   FROM 
-  form_lon ; 
-"
+  form_lon "
 */
 
     @Override
@@ -84,28 +90,21 @@ form_lon.pname as form_lon_pname
     /**
      * sql select property alias field names
      */
-     
-    private static final LinkedHashSet<String> names;
+    private final LinkedHashSet<String> names =  new LinkedHashSet<>();;
     
     /**
      * Map field insert/update to property 
      */
-    private static final HashMap<String,String> insertMapFields; 
+    private final HashMap<String,String> insertMapFields = new HashMap<>(); 
     
     /**
     * Map property to field order 
     */
-    private static final HashMap<String, String> sortMapFields;
+    private final HashMap<String, String> sortMapFields = new  HashMap<>();
 
-    private static final JsonObject dcModel;
+    private final JsonObject dcModel  = new JsonObject();
     
-    static{
-        names = new LinkedHashSet<>();
-        insertMapFields = new HashMap<>();
-        sortMapFields= new  HashMap<>();
-
-        dcModel = new JsonObject();
-
+    private void init0(){
         
     dcModel.put("dc", "formLon");
 
@@ -117,30 +116,24 @@ form_lon.pname as form_lon_pname
     final JsonArray ps = new JsonArray();   
  
 //pkey
-    names.add("pkey");
-    insertMapFields.put("form_lon.pkey","pkey");  
-
-//Create property pkey       
-    final JsonObject pkey = ps00a("pkey", "String",true);
+    doFieldSort("pkey","pkey","form_lon");               
    
 //Used to map error on index to source property because IS Unique
     insertMapFields.put("form_lon.form_lon_uidx_pkey","pkey");  
 
+//Create property pkey       
+    final JsonObject pkey = psString("pkey",true);
+
 // IS Unique     
     pkey.put("uq",true);                    
-
-    sortMapFields.put("pkey", "form_lon_pkey");                   
  
     ps.add(pkey);
  
 //pname
-    names.add("pname");
-    insertMapFields.put("form_lon.pname","pname");  
+    doFieldSort("pname","pname","form_lon");               
 
 //Create property pname       
-    final JsonObject pname = ps00a("pname", "String",true);
-
-    sortMapFields.put("pname", "form_lon_pname");                   
+    final JsonObject pname = psString("pname",true);
   
 //PC
     dcModel.put("pc","pname");  
@@ -157,9 +150,7 @@ form_lon.pname as form_lon_pname
 
 /** OTM ON MODEL  **/
         dcModel.put("otm",otm);  
-
         
-
     }        
     @Override
     public LinkedHashSet<String> getNames() {
@@ -184,45 +175,42 @@ form_lon.pname as form_lon_pname
     @Override
     public JsonArray toJsonArray(final Row r){
         final JsonArray jsa = new JsonArray();
-        jsa.add(r.getLong("form_lon_id") );
-        jsa.add(r.getString("form_lon_pkey") );
+        jsa.add(r.getLong("form_lon_id") );       
+        jsa.add(r.getString("form_lon_pkey") );       
         jsa.add(r.getString("form_lon_pname") );
         return jsa;
     }
 
     @Override
-    public void fillXRow(final Row r, final XSSFRow row, int nc,boolean withIds) {
-        fillXRow0(r, row, nc, withIds);
+    public int fillXRow(final Row r, final XSSFRow row, int nc,boolean withIds) {
+        return fillXRow0(r, row, nc, withIds);
     }
 
     @Override
     public HashMap<String,String> lXRowH(final boolean withIds, final int level) {        
         
-    final  LinkedHashMap<String,String> m_ = new LinkedHashMap<>();
-    if(withIds){
-                m_.put("formLon_id","Long");
-            }
-            
-    //pkey       
-            m_.put("formLon_pkey","String"); 
-            
-    //pname       
-            m_.put("formLon_pname","String"); 
-            
+    final  LinkedHashMap<String,String> m = new LinkedHashMap<>();
     
-    return m_;
+    if(withIds){
+        m.put("formLon_id",LONG);
+    }        
+//pkey    
+    m.put("formLon_pkey",STRING);              
+//pname    
+    m.put("formLon_pname",STRING);          
+    
+    return m;
     
     }
     
-    private void fillXRow0(final Row r, final XSSFRow row,int nc, boolean withIds){
-        if(withIds){
-        lToCell(r, row,"form_lon_id", nc++); 
-        }
+    private int fillXRow0(final Row r, final XSSFRow row,int nc, final boolean withIds){
         
-    //pkey       
-            sToCell(r, row,"form_lon_pkey", nc++); 
-    //pname       
+    if(withIds){
+        lToCell(r, row,"form_lon_id", nc++); 
+    }            //pkey       
+            sToCell(r, row,"form_lon_pkey", nc++);     //pname       
             sToCell(r, row,"form_lon_pname", nc++); 
+        return nc;
     }
 
     @Override
@@ -242,15 +230,16 @@ form_lon.pname as form_lon_pname
 
     @Override
     public void fillTupleInsert(final FormLon dc0, final Tuple t){
-                t.addString(dc0.getPkey());
-        t.addString(dc0.getPname());
+                
+    t.addString(dc0.getPkey());        
+    t.addString(dc0.getPname());
     }
 
     @Override
     public void fillTupleUpdate(final FormLon dc0, final Tuple t){
-                t.addString(dc0.getPname());
-
-        t.addLong(dc0.getId());
+        
+    t.addString(dc0.getPname());
+    t.addLong(dc0.getId());
             
     }    
 
@@ -271,7 +260,6 @@ form_lon.pname as form_lon_pname
     public void fillTupleInsert(final JsonObject js,final Tuple t){       
         
     fTString("pkey", js, t);
-
     fTString("pname", js, t);       
     }
 
@@ -293,11 +281,9 @@ fTLong("id",js,t);
     @Override
     public FormLon doFrom(final Row r){
         final FormLon formLon = new FormLon();
-         formLon.setId(r.getLong("form_lon_id"));
-         
-                formLon.setPkey(  r.getString("form_lon_pkey"));
-         
-                formLon.setPname(  r.getString("form_lon_pname"));  
+         formLon.setId(r.getLong("form_lon_id"));         
+                formLon.setPkey(  r.getString("form_lon_pkey"));                       
+                formLon.setPname(  r.getString("form_lon_pname"));                
         return formLon;
     }
     
@@ -306,8 +292,9 @@ fTLong("id",js,t);
         FormLon formLon = new FormLon();
         formLon.setId(js.getLong("id"));
         
-                formLon.setPkey(js.getString("pkey"));
-        formLon.setPname(js.getString("pname"));
+                
+                formLon.setPkey(js.getString("pkey"));        
+                formLon.setPname(js.getString("pname"));
         return formLon;
     }
 

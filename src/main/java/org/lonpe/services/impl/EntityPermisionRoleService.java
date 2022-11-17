@@ -17,16 +17,18 @@ import org.lonpe.services.AbstractServiceLon;
 import org.lonpe.services.ConditionInfo;
 import org.lonpe.lonvx.sqlbuilders.SqlLonConditionsBuilder;
 import org.apache.poi.xssf.usermodel.XSSFRow;
+import static org.lonpe.lonvx.ctes.CteLon.*;
 
 
 
 import org.lonpe.lonvx.sqlbuilders.ZtatUnitInfoLon;
+import org.lonpe.lonvx.sqlbuilders.ZtatUnitInfoLon2;
+import org.lonpe.lonvx.sqlbuilders.ZtatUnitInfoLon3;
 
 /**
  *   EntityPermisionRoleService 
  * 
  */
-   
   
 public class EntityPermisionRoleService extends AbstractServiceLon<EntityPermisionRole>{
 
@@ -41,11 +43,16 @@ public class EntityPermisionRoleService extends AbstractServiceLon<EntityPermisi
     private static final String SQLDELETE = "DELETE FROM entity_permision_role WHERE id = $1 returning id";
     private static final String TABLENAME ="entity_permision_role";
     
-//1
-    private static final ZtatUnitInfoLon zRole;
+
+    public EntityPermisionRoleService() {
+        init0();
+    }
+
     
+    private static final Map<String, ZtatUnitInfoLon> mz1 = new HashMap<>(6);                       
+
     @Override
-    public  String getTableName(){
+    public String getTableName(){
         return TABLENAME;
     }
 
@@ -59,8 +66,7 @@ public class EntityPermisionRoleService extends AbstractServiceLon<EntityPermisi
         return SQLLKEYIN;
     }
 
-/**
-    
+/**    
     private static String sql00 = "SELECT entity_permision_role.id as entity_permision_role_id,
 entity_permision_role.pkey as entity_permision_role_pkey,
 entity_permision_role.enabled as entity_permision_role_enabled,
@@ -71,8 +77,7 @@ role.id as role_id,role.pkey as role_pkey,role.pname as role_pname
   entity_permision_role,
   role as role  
  WHERE 
- entity_permision_role.role_id = role.id; 
-"
+ entity_permision_role.role_id = role.id"
 */
 
     @Override
@@ -92,28 +97,21 @@ role.id as role_id,role.pkey as role_pkey,role.pname as role_pname
     /**
      * sql select property alias field names
      */
-     
-    private static final LinkedHashSet<String> names;
+    private final LinkedHashSet<String> names =  new LinkedHashSet<>();;
     
     /**
      * Map field insert/update to property 
      */
-    private static final HashMap<String,String> insertMapFields; 
+    private final HashMap<String,String> insertMapFields = new HashMap<>(); 
     
     /**
     * Map property to field order 
     */
-    private static final HashMap<String, String> sortMapFields;
+    private final HashMap<String, String> sortMapFields = new  HashMap<>();
 
-    private static final JsonObject dcModel;
+    private final JsonObject dcModel  = new JsonObject();
     
-    static{
-        names = new LinkedHashSet<>();
-        insertMapFields = new HashMap<>();
-        sortMapFields= new  HashMap<>();
-
-        dcModel = new JsonObject();
-
+    private void init0(){
         
     dcModel.put("dc", "entityPermisionRole");
 
@@ -125,52 +123,40 @@ role.id as role_id,role.pkey as role_pkey,role.pname as role_pname
     final JsonArray ps = new JsonArray();   
  
 //pkey
-    names.add("pkey");
-    insertMapFields.put("entity_permision_role.pkey","pkey");  
-
-//Create property pkey       
-    final JsonObject pkey = ps00a("pkey", "String",true);
+    doFieldSort("pkey","pkey","entity_permision_role");               
    
 //Used to map error on index to source property because IS Unique
     insertMapFields.put("entity_permision_role.entity_permision_role_uidx_pkey","pkey");  
 
+//Create property pkey       
+    final JsonObject pkey = psString("pkey",true);
+
 // IS Unique     
     pkey.put("uq",true);                    
-
-    sortMapFields.put("pkey", "entity_permision_role_pkey");                   
  
     ps.add(pkey);
  
 //enabled
-    names.add("enabled");
-    insertMapFields.put("entity_permision_role.enabled","enabled");  
+    doFieldSort("enabled","enabled","entity_permision_role");               
 
 //Create property enabled       
-    final JsonObject enabled = ps00a("enabled", "Boolean",true);
-
-    sortMapFields.put("enabled", "entity_permision_role_enabled");               
+    final JsonObject enabled = psBoolean("enabled",true);
  
     ps.add(enabled);
  
 //nombre
-    names.add("nombre");
-    insertMapFields.put("entity_permision_role.nombre","nombre");  
+    doFieldSort("nombre","nombre","entity_permision_role");               
 
 //Create property nombre       
-    final JsonObject nombre = ps00a("nombre", "String",true);
-
-    sortMapFields.put("nombre", "entity_permision_role_nombre");                   
+    final JsonObject nombre = psString("nombre",true);
  
     ps.add(nombre);
  
 //permission
-    names.add("permission");
-    insertMapFields.put("entity_permision_role.permission","permission");  
+    doFieldSort("permission","permission","entity_permision_role");               
 
 //Create property permission       
-    final JsonObject permission = ps00a("permission", "String",true);
-
-    sortMapFields.put("permission", "entity_permision_role_permission");                   
+    final JsonObject permission = psString("permission",true);
 
     final JsonArray permissionInList = new JsonArray();
                 permissionInList.add("BROWSE"); 
@@ -191,30 +177,25 @@ permissionInList.add("TEMPLATEEXCEL");
 
     final JsonArray mto = new JsonArray();      
 
-//(1)  role --------------------
-    names.add("role_id");      
-    insertMapFields.put("entity_permision_role.role_id","role_id");    
-       
-    names.add("role_pkey");        
-    sortMapFields.put( "role_pkey", "role_pkey");        
+//(1)  role
+    doFieldMT0("entity_permision_role","role", "role");  
 
     final JsonObject role =  doMto("role","role");        
    
     names.add("role_pname");
-    sortMapFields.put( "role_pname", "role_pname");         
-
+    sortMapFields.put( "role_pname", "role_pname");                
     role.put("pc","pname");          
 
     mto.add(role);
         
 
+    //1  role  -- role_id
+    final ZtatUnitInfoLon zRole = new ZtatUnitInfoLon("role_id", "role",  "role","pname","role");
+    mz1.put("zRole", zRole);    
+
     dcModel.put("mto",mto);     
         
-
         
-//1  role  -- role_id
-    zRole = new ZtatUnitInfoLon("role_id", "role",  "role","pname","role");
-
     }        
     @Override
     public LinkedHashSet<String> getNames() {
@@ -239,81 +220,70 @@ permissionInList.add("TEMPLATEEXCEL");
     @Override
     public JsonArray toJsonArray(final Row r){
         final JsonArray jsa = new JsonArray();
-        jsa.add(r.getLong("entity_permision_role_id") );
-        jsa.add(r.getString("entity_permision_role_pkey") );
-        jsa.add(r.getBoolean("entity_permision_role_enabled") );
-        jsa.add(r.getString("entity_permision_role_nombre") );
+        jsa.add(r.getLong("entity_permision_role_id") );       
+        jsa.add(r.getString("entity_permision_role_pkey") );       
+        jsa.add(r.getBoolean("entity_permision_role_enabled") );       
+        jsa.add(r.getString("entity_permision_role_nombre") );       
         jsa.add(r.getString("entity_permision_role_permission") );
-        jsa.add(r.getLong("role_id"));
-        jsa.add(r.getString("role_pkey"));
-        jsa.add(r.getString("role_pname"));
+    jsa.add(r.getLong("role_id"));
+    jsa.add(r.getString("role_pkey"));   
+    
+        
+    jsa.add(r.getString("role_pname"));
         return jsa;
     }
 
     @Override
-    public void fillXRow(final Row r, final XSSFRow row, int nc,boolean withIds) {
-        fillXRow0(r, row, nc, withIds);
+    public int fillXRow(final Row r, final XSSFRow row, int nc,boolean withIds) {
+        return fillXRow0(r, row, nc, withIds);
     }
 
     @Override
     public HashMap<String,String> lXRowH(final boolean withIds, final int level) {        
         
-    final  LinkedHashMap<String,String> m_ = new LinkedHashMap<>();
-    if(withIds){
-                m_.put("entityPermisionRole_id","Long");
-            }
-            
-    //pkey       
-            m_.put("entityPermisionRole_pkey","String"); 
-            
-    //enabled       
-            m_.put("entityPermisionRole_enabled","Boolean"); 
-            
-    //nombre       
-            m_.put("entityPermisionRole_nombre","String"); 
-            
-    //permission       
-            m_.put("entityPermisionRole_permission","String"); 
-            
-if(level<1){
-                return m_;    
-            }
-            
- // role
-if(withIds){
-            m_.put("role_id","Long");   
-                    
-            }
-
-        m_.put("role_pkey","String");   
-        
-
-            m_.put("role_pname","String");   
-            
+    final  LinkedHashMap<String,String> m = new LinkedHashMap<>();
     
-    return m_;
+    if(withIds){
+        m.put("entityPermisionRole_id",LONG);
+    }        
+//pkey    
+    m.put("entityPermisionRole_pkey",STRING);              
+//enabled    
+    m.put("entityPermisionRole_enabled",BOOLEAN);              
+//nombre    
+    m.put("entityPermisionRole_nombre",STRING);              
+//permission    
+    m.put("entityPermisionRole_permission",STRING);          
+    if(level<1){
+        return m;    
+    }       
+// role   role
+    if(withIds){
+        m.put("role_id",LONG);                       
+    }
+    m.put("role_pkey",STRING);     
+    m.put("role_pname",STRING);  
+    
+    return m;
     
     }
     
-    private void fillXRow0(final Row r, final XSSFRow row,int nc, boolean withIds){
-        if(withIds){
-        lToCell(r, row,"entity_permision_role_id", nc++); 
-        }
+    private int fillXRow0(final Row r, final XSSFRow row,int nc, final boolean withIds){
         
-    //pkey       
-            sToCell(r, row,"entity_permision_role_pkey", nc++); 
-    //enabled     
-                bToCell(r, row,"entity_permision_role_enabled", nc++); 
-    //nombre       
-            sToCell(r, row,"entity_permision_role_nombre", nc++); 
-    //permission       
+    if(withIds){
+        lToCell(r, row,"entity_permision_role_id", nc++); 
+    }            //pkey       
+            sToCell(r, row,"entity_permision_role_pkey", nc++);     //enabled     
+                bToCell(r, row,"entity_permision_role_enabled", nc++);     //nombre       
+            sToCell(r, row,"entity_permision_role_nombre", nc++);     //permission       
             sToCell(r, row,"entity_permision_role_permission", nc++); 
- // role
-if(withIds){
-                    lToCell(r, row,"role_id", nc++);
-                 }
-sToCell(r, row,"role_pkey", nc++);
-sToCell(r, row,"role_pname", nc++);
+//role   role        
+    if(withIds){
+        lToCell(r, row,"role_id", nc++);
+    }
+    sToCell(r, row,"role_pkey", nc++);
+    sToCell(r, row,"role_pname", nc++);
+        return nc;
     }
 
     @Override
@@ -333,27 +303,26 @@ sToCell(r, row,"role_pname", nc++);
 
     @Override
     public void fillTupleInsert(final EntityPermisionRole dc0, final Tuple t){
-                t.addString(dc0.getPkey());
-        t.addBoolean(dc0.getEnabled());
-        t.addString(dc0.getNombre());
-        t.addString(dc0.getPermission());
-   
-            if(dc0.getRole()!=null){
-               t.addLong(dc0.getRole().getId());
-            }
+                
+    t.addString(dc0.getPkey());        
+    t.addBoolean(dc0.getEnabled());        
+    t.addString(dc0.getNombre());        
+    t.addString(dc0.getPermission());   
+    if(dc0.getRole()!=null){
+       t.addLong(dc0.getRole().getId());
+    }
     }
 
     @Override
     public void fillTupleUpdate(final EntityPermisionRole dc0, final Tuple t){
-                t.addBoolean(dc0.getEnabled());
-        t.addString(dc0.getNombre());
-        t.addString(dc0.getPermission());
-   
+        
+    t.addBoolean(dc0.getEnabled());
+    t.addString(dc0.getNombre());
+    t.addString(dc0.getPermission());   
 //      if(dc0.getRole()!=null){
 //            t.addLong(dc0.getRole().getId());
 //      }
-
-        t.addLong(dc0.getId());
+    t.addLong(dc0.getId());
             
     }    
 
@@ -383,13 +352,9 @@ sToCell(r, row,"role_pname", nc++);
     public void fillTupleInsert(final JsonObject js,final Tuple t){       
         
     fTString("pkey", js, t);
-
     fTBoolean("enabled", js, t);
-
     fTString("nombre", js, t);
-
-    fTString("permission", js, t);
-     
+    fTString("permission", js, t);     
     fTLong("role_id",js,t);       
     }
 
@@ -415,19 +380,15 @@ fTLong("id",js,t);
     @Override
     public EntityPermisionRole doFrom(final Row r){
         final EntityPermisionRole entityPermisionRole = new EntityPermisionRole();
-         entityPermisionRole.setId(r.getLong("entity_permision_role_id"));
-         
-                entityPermisionRole.setPkey(  r.getString("entity_permision_role_pkey"));
-         
-                entityPermisionRole.setEnabled(  r.getBoolean("entity_permision_role_enabled"));
-         
-                entityPermisionRole.setNombre(  r.getString("entity_permision_role_nombre"));
-         
-                entityPermisionRole.setPermission(  r.getString("entity_permision_role_permission"));
-
+         entityPermisionRole.setId(r.getLong("entity_permision_role_id"));         
+                entityPermisionRole.setPkey(  r.getString("entity_permision_role_pkey"));                       
+                entityPermisionRole.setEnabled(  r.getBoolean("entity_permision_role_enabled"));                       
+                entityPermisionRole.setNombre(  r.getString("entity_permision_role_nombre"));                       
+                entityPermisionRole.setPermission(  r.getString("entity_permision_role_permission"));              
         final Role role = new Role();
         role.setId(r.getLong("role_id"));
         role.setPkey(r.getString("role_pkey"));
+        
         role.setPname(r.getString("role_pname"));
         entityPermisionRole.setRole(role);
           
@@ -439,11 +400,12 @@ fTLong("id",js,t);
         EntityPermisionRole entityPermisionRole = new EntityPermisionRole();
         entityPermisionRole.setId(js.getLong("id"));
         
-                entityPermisionRole.setPkey(js.getString("pkey"));
-        entityPermisionRole.setEnabled(js.getBoolean("enabled"));
-        entityPermisionRole.setNombre(js.getString("nombre"));
-        entityPermisionRole.setPermission(js.getString("permission"));
-        entityPermisionRole.setId(js.getLong("role_id"));
+                
+                entityPermisionRole.setPkey(js.getString("pkey"));        
+                entityPermisionRole.setEnabled(js.getBoolean("enabled"));        
+                entityPermisionRole.setNombre(js.getString("nombre"));        
+                entityPermisionRole.setPermission(js.getString("permission"));        
+            entityPermisionRole.setId(js.getLong("role_id"));
         return entityPermisionRole;
     }
 
@@ -480,8 +442,9 @@ fTLong("id",js,t);
         slcb.doIlPSimple2( "role_pkey", "role_pkey");
         slcb.doEQPSimple2( "role_pkey", "role_pkey");
         slcb.doInLongCondition("role_id", "role_id");  
-//Role 1        
+//Role 1        --
         slcb.doIlPSimple2( "role_pname", "role_pname");    
+        
 
         slcb.doSQLORDEN(sortMapFields);
 
@@ -499,11 +462,9 @@ fTLong("id",js,t);
         
 //level 1
              
-    sz0.applyG1(zRole);      
-    //level 2
-    
-    //level 3
-    
+    sz0.applyG1(mz1.get("zRole"))   ;      
+//level 2    
+//level 3    
         return sz0;
     }
 }

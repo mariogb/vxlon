@@ -10,15 +10,12 @@ package org.lonpe.lonvx.sqlbuilders;
  * @author l5
  */
 public class ZtatUnitInfoLon {
-    
-     private final String foreingTableField;
-     private final String dc;
-     private final String table;
-     private final String dcPc;
-     private String alias;
-     
-     
-        
+
+    private final String foreingTableField;
+    private final String dc;
+    private final String table;
+    private final String dcPc;
+    private String alias;
 
     public ZtatUnitInfoLon(String foreingTableField, String dc, String table, String dcPc, String alias) {
         this.foreingTableField = foreingTableField;
@@ -57,7 +54,5 @@ public class ZtatUnitInfoLon {
     public void setAlias(String alias) {
         this.alias = alias;
     }
-    
-    
-    
+
 }
