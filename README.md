@@ -56,3 +56,14 @@ bash
 docker-compose up --scale vxlon=2
 
 ```
+
+### Esquema funcionando con FrontEnd con Vue3
+
+
+[frontend https://github.com/mariogb/vuelon](https://github.com/mariogb/vuelon)
+
+![Esquema de interacción con el Backend!](https://sketchviz.com/@mariogb/3521333e92e7a7913b749f02a37665d8/3a26c07d9af48ed15abd101d84d6265a16c49499.sketchy.png "Esquema interacción con el BackEnd")
+
+
+
+
